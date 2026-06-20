@@ -78,6 +78,22 @@ export default function App() {
     localStorage.setItem('theme', theme);
   }, [theme]);
   
+  const [collapsedMethods, setCollapsedMethods] = useState(() => {
+    const saved = localStorage.getItem('collapsed_methods_v1');
+    return saved ? JSON.parse(saved) : {};
+  });
+
+  useEffect(() => {
+    localStorage.setItem('collapsed_methods_v1', JSON.stringify(collapsedMethods));
+  }, [collapsedMethods]);
+
+  const toggleMethodCollapse = (method) => {
+    setCollapsedMethods((prev) => ({
+      ...prev,
+      [method]: !prev[method]
+    }));
+  };
+
   const [activeRecipe, setActiveRecipe] = useState(null);
   const [isCreating, setIsCreating] = useState(false);
   const [summaryRecipe, setSummaryRecipe] = useState(null);
@@ -406,57 +422,68 @@ export default function App() {
               {Object.keys(groupedRecipes).length === 0 ? (
                 <p className="text-sm text-slate-400 dark:text-slate-500 text-center py-8">No tienes recetas guardadas.</p>
               ) : (
-                Object.keys(groupedRecipes).map((method) => (
-                  <div key={method} className="space-y-2">
-                    <h3 className="text-xs font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider pl-1 pt-1">
-                      {method}
-                    </h3>
-                    
-                    <div className="space-y-2">
-                      {groupedRecipes[method].map((recipe) => (
-                        <div 
-                          key={recipe.id}
-                          onClick={() => setActiveRecipe(recipe)}
-                          className="p-3 bg-slate-50 dark:bg-slate-800/30 hover:bg-amber-50/20 dark:hover:bg-amber-900/10 border border-slate-200 dark:border-slate-800 hover:border-amber-200 dark:hover:border-amber-800/30 rounded-xl cursor-pointer transition flex justify-between items-center group"
-                        >
-                          <div className="space-y-1">
-                            <span className="font-semibold text-slate-950 dark:text-slate-100 text-sm block">{recipe.name}</span>
-                            <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                              {recipe.coffee_g}g • {recipe.grind_size || 'Molienda N/D'} • {recipe.water_temp_c}°C
-                            </p>
-                            <p className="text-[10px] text-amber-800 dark:text-amber-400 font-medium">
-                              {recipe.steps.length} pasos • {recipe.steps.reduce((acc, s) => acc + s.water_g, 0)}g agua
-                            </p>
-                          </div>
-                          
-                          <div className="flex gap-1.5 opacity-60 group-hover:opacity-100 transition">
-                            <button 
-                              onClick={(e) => { e.stopPropagation(); setSummaryRecipe(recipe); }}
-                              className="p-1 hover:bg-slate-250 dark:hover:bg-slate-700 rounded text-slate-600 dark:text-slate-300 font-bold cursor-pointer"
-                              title="Ver Resumen"
+                Object.keys(groupedRecipes).map((method) => {
+                  const isCollapsed = !!collapsedMethods[method];
+                  return (
+                    <div key={method} className="space-y-2">
+                      <h3 
+                        onClick={() => toggleMethodCollapse(method)}
+                        className="text-xs font-extrabold text-slate-400 dark:text-slate-500 hover:text-amber-800 dark:hover:text-amber-500 uppercase tracking-wider pl-1 pt-1 flex justify-between items-center cursor-pointer select-none transition-colors duration-200"
+                      >
+                        <span>{method} ({groupedRecipes[method].length})</span>
+                        <span className="text-[10px] transform transition-transform duration-200 mr-1">
+                          {isCollapsed ? '▶' : '▼'}
+                        </span>
+                      </h3>
+                      
+                      {!isCollapsed && (
+                        <div className="space-y-2">
+                          {groupedRecipes[method].map((recipe) => (
+                            <div 
+                              key={recipe.id}
+                              onClick={() => setActiveRecipe(recipe)}
+                              className="p-3 bg-slate-50 dark:bg-slate-800/30 hover:bg-amber-50/20 dark:hover:bg-amber-900/10 border border-slate-200 dark:border-slate-800 hover:border-amber-200 dark:hover:border-amber-800/30 rounded-xl cursor-pointer transition flex justify-between items-center group"
                             >
-                              📋
-                            </button>
-                            <button 
-                              onClick={(e) => { e.stopPropagation(); handleExportJson(recipe); }}
-                              className="p-1 hover:bg-slate-250 dark:hover:bg-slate-700 rounded text-slate-500 dark:text-slate-400 cursor-pointer"
-                              title="Exportar Receta"
-                            >
-                              📥
-                            </button>
-                            <button 
-                              onClick={(e) => handleDeleteRecipe(recipe.id, e)}
-                              className="p-1 hover:bg-red-50 dark:hover:bg-red-950/20 rounded text-red-500 dark:text-red-400 cursor-pointer"
-                              title="Eliminar Receta"
-                            >
-                              🗑️
-                            </button>
-                          </div>
+                              <div className="space-y-1">
+                                <span className="font-semibold text-slate-950 dark:text-slate-100 text-sm block">{recipe.name}</span>
+                                <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                                  {recipe.coffee_g}g • {recipe.grind_size || 'Molienda N/D'} • {recipe.water_temp_c}°C
+                                </p>
+                                <p className="text-[10px] text-amber-800 dark:text-amber-400 font-medium">
+                                  {recipe.steps.length} pasos • {recipe.steps.reduce((acc, s) => acc + s.water_g, 0)}g agua
+                                </p>
+                              </div>
+                              
+                              <div className="flex gap-1.5 opacity-60 group-hover:opacity-100 transition">
+                                <button 
+                                  onClick={(e) => { e.stopPropagation(); setSummaryRecipe(recipe); }}
+                                  className="p-1 hover:bg-slate-250 dark:hover:bg-slate-700 rounded text-slate-600 dark:text-slate-300 font-bold cursor-pointer"
+                                  title="Ver Resumen"
+                                >
+                                  📋
+                                </button>
+                                <button 
+                                  onClick={(e) => { e.stopPropagation(); handleExportJson(recipe); }}
+                                  className="p-1 hover:bg-slate-250 dark:hover:bg-slate-700 rounded text-slate-500 dark:text-slate-400 cursor-pointer"
+                                  title="Exportar Receta"
+                                >
+                                  📥
+                                </button>
+                                <button 
+                                  onClick={(e) => handleDeleteRecipe(recipe.id, e)}
+                                  className="p-1 hover:bg-red-50 dark:hover:bg-red-950/20 rounded text-red-500 dark:text-red-400 cursor-pointer"
+                                  title="Eliminar Receta"
+                                >
+                                  🗑️
+                                </button>
+                              </div>
+                            </div>
+                          ))}
                         </div>
-                      ))}
+                      )}
                     </div>
-                  </div>
-                ))
+                  );
+                })
               )}
             </div>
           </div>

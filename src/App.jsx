@@ -62,6 +62,21 @@ export default function App() {
     const saved = localStorage.getItem('coffee_recipes_v1');
     return saved ? JSON.parse(saved) : DEFAULT_RECIPES;
   });
+
+  const [theme, setTheme] = useState(() => {
+    const saved = localStorage.getItem('theme');
+    if (saved) return saved;
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  });
+
+  useEffect(() => {
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    localStorage.setItem('theme', theme);
+  }, [theme]);
   
   const [activeRecipe, setActiveRecipe] = useState(null);
   const [isCreating, setIsCreating] = useState(false);
@@ -195,18 +210,27 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 text-slate-800 p-4 font-sans flex flex-col items-center">
-      <header className="w-full max-w-md mb-6 text-center mt-4">
-        <h1 className="text-3xl font-extrabold text-amber-900 tracking-tight">☕ Barista Timer</h1>
-        <p className="text-xs text-slate-500 mt-1">Administra tus recetas y tiempos de extracción</p>
+    <div className="min-h-screen bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 p-4 font-sans flex flex-col items-center transition-colors duration-300">
+      <header className="w-full max-w-md mb-6 mt-4 flex justify-between items-center px-1">
+        <div className="text-left">
+          <h1 className="text-3xl font-extrabold text-amber-900 dark:text-amber-500 tracking-tight">☕ Barista Timer</h1>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Administra tus recetas y tiempos de extracción</p>
+        </div>
+        <button
+          onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+          className="p-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition cursor-pointer text-base"
+          title={theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
+        >
+          {theme === 'dark' ? '☀️' : '🌙'}
+        </button>
       </header>
 
-      <main className="w-full max-w-md bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden p-6 relative">
+      <main className="w-full max-w-md bg-white dark:bg-slate-900 rounded-2xl shadow-md border border-slate-200 dark:border-slate-850 overflow-hidden p-6 relative transition-colors duration-300">
         {activeRecipe ? (
           <div>
             <button 
               onClick={() => setActiveRecipe(null)} 
-              className="mb-4 text-amber-800 hover:text-amber-950 font-semibold text-sm flex items-center gap-1"
+              className="mb-4 text-amber-800 dark:text-amber-500 hover:text-amber-950 dark:hover:text-amber-400 font-semibold text-sm flex items-center gap-1 cursor-pointer"
             >
               ← Volver al listado
             </button>
@@ -214,24 +238,24 @@ export default function App() {
           </div>
         ) : isCreating ? (
           <div>
-            <div className="flex justify-between items-center mb-4 border-b pb-2">
-              <h2 className="text-lg font-bold text-slate-900">Nueva Receta</h2>
+            <div className="flex justify-between items-center mb-4 border-b border-slate-200 dark:border-slate-800 pb-2">
+              <h2 className="text-lg font-bold text-slate-900 dark:text-white">Nueva Receta</h2>
               <button 
                 onClick={() => setIsCreating(false)} 
-                className="text-slate-400 hover:text-slate-600 text-sm font-semibold"
+                className="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 text-sm font-semibold cursor-pointer"
               >
                 Cancelar
               </button>
             </div>
 
-            <form onSubmit={handleSaveRecipe} className="space-y-4">
+             <form onSubmit={handleSaveRecipe} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold uppercase text-slate-500 mb-1">Nombre de la receta</label>
+                <label className="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Nombre de la receta</label>
                 <input 
                   type="text" 
                   value={newRecipe.name} 
                   onChange={(e) => setNewRecipe({...newRecipe, name: e.target.value})}
-                  className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm" 
+                  className="w-full p-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-850 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm" 
                   placeholder="Ej: Mi V60 Balanceado"
                   required
                 />
@@ -239,11 +263,11 @@ export default function App() {
 
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="block text-xs font-bold uppercase text-slate-500 mb-1">Método</label>
+                  <label className="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Método</label>
                   <select 
                     value={newRecipe.method} 
                     onChange={(e) => setNewRecipe({...newRecipe, method: e.target.value})}
-                    className="w-full p-2 border rounded-lg bg-white text-sm focus:outline-none"
+                    className="w-full p-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-850 text-slate-900 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
                   >
                     <option value="V60">V60</option>
                     <option value="Aeropress">Aeropress</option>
@@ -255,12 +279,12 @@ export default function App() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-bold uppercase text-slate-500 mb-1">Molienda</label>
+                  <label className="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Molienda</label>
                   <input 
                     type="text" 
                     value={newRecipe.grind_size} 
                     onChange={(e) => setNewRecipe({...newRecipe, grind_size: e.target.value})}
-                    className="w-full p-2 border rounded-lg text-sm focus:outline-none" 
+                    className="w-full p-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-850 text-slate-900 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500" 
                     placeholder="Ej: Fina, Media, 15 clicks"
                   />
                 </div>
@@ -268,32 +292,32 @@ export default function App() {
 
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="block text-xs font-bold uppercase text-slate-500 mb-1">Café Inicial (g)</label>
+                  <label className="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Café Inicial (g)</label>
                   <input 
                     type="number" 
                     value={newRecipe.coffee_g} 
                     onChange={(e) => setNewRecipe({...newRecipe, coffee_g: parseFloat(e.target.value) || 0})}
-                    className="w-full p-2 border rounded-lg text-sm focus:outline-none" 
+                    className="w-full p-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-850 text-slate-900 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500" 
                     min="1"
                     step="0.1"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold uppercase text-slate-500 mb-1">Temperatura (°C)</label>
+                  <label className="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Temperatura (°C)</label>
                   <input 
                     type="number" 
                     value={newRecipe.water_temp_c} 
                     onChange={(e) => setNewRecipe({...newRecipe, water_temp_c: parseInt(e.target.value) || 0})}
-                    className="w-full p-2 border rounded-lg text-sm focus:outline-none" 
+                    className="w-full p-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-850 text-slate-900 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500" 
                     min="1"
                   />
                 </div>
               </div>
 
-              <div className="border-t pt-3 mt-2">
-                <h3 className="text-sm font-bold text-slate-800 mb-2">Pasos Añadidos ({newRecipe.steps.length})</h3>
+              <div className="border-t border-slate-200 dark:border-slate-800 pt-3 mt-2">
+                <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">Pasos Añadidos ({newRecipe.steps.length})</h3>
                 {newRecipe.steps.length > 0 && (
-                  <ul className="mb-4 bg-slate-50 rounded-lg p-2 divide-y text-xs text-slate-600">
+                  <ul className="mb-4 bg-slate-50 dark:bg-slate-850 rounded-lg p-2 divide-y divide-slate-200 dark:divide-slate-700 text-xs text-slate-600 dark:text-slate-300">
                     {newRecipe.steps.map((s, idx) => (
                       <li key={idx} className="py-1 flex justify-between">
                         <span>{s.step_number}. {s.title} ({s.duration_s}s | {s.water_g}g)</span>
@@ -302,15 +326,15 @@ export default function App() {
                   </ul>
                 )}
 
-                <div className="bg-amber-50 p-3 rounded-lg space-y-2 border border-amber-100">
-                  <span className="text-xs font-bold text-amber-900 block">Formulario de Paso</span>
+                <div className="bg-amber-50/50 dark:bg-amber-950/10 p-3 rounded-lg space-y-2 border border-amber-100 dark:border-amber-900/20">
+                  <span className="text-xs font-bold text-amber-900 dark:text-amber-400 block">Formulario de Paso</span>
                   <div className="grid grid-cols-2 gap-2">
                     <input 
                       type="text" 
                       placeholder="Título del paso" 
                       value={stepInput.title}
                       onChange={(e) => setStepInput({...stepInput, title: e.target.value})}
-                      className="p-1.5 border rounded bg-white text-xs"
+                      className="p-1.5 border border-slate-200 dark:border-slate-700 rounded bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:outline-none"
                     />
                     <div className="flex gap-1">
                       <input 
@@ -318,14 +342,14 @@ export default function App() {
                         placeholder="Agua (g)" 
                         value={stepInput.water_g || ''}
                         onChange={(e) => setStepInput({...stepInput, water_g: parseFloat(e.target.value) || 0})}
-                        className="w-1/2 p-1.5 border rounded bg-white text-xs"
+                        className="w-1/2 p-1.5 border border-slate-200 dark:border-slate-700 rounded bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:outline-none"
                       />
                       <input 
                         type="number" 
                         placeholder="Tiempo (s)" 
                         value={stepInput.duration_s || ''}
                         onChange={(e) => setStepInput({...stepInput, duration_s: parseInt(e.target.value) || 0})}
-                        className="w-1/2 p-1.5 border rounded bg-white text-xs"
+                        className="w-1/2 p-1.5 border border-slate-200 dark:border-slate-700 rounded bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:outline-none"
                       />
                     </div>
                   </div>
@@ -334,12 +358,12 @@ export default function App() {
                     placeholder="Instrucción corta" 
                     value={stepInput.instruction}
                     onChange={(e) => setStepInput({...stepInput, instruction: e.target.value})}
-                    className="w-full p-1.5 border rounded bg-white text-xs"
+                    className="w-full p-1.5 border border-slate-200 dark:border-slate-700 rounded bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:outline-none"
                   />
                   <button 
                     type="button" 
                     onClick={handleAddStepToForm}
-                    className="w-full py-1.5 bg-amber-800 text-white rounded text-xs font-semibold hover:bg-amber-900"
+                    className="w-full py-1.5 bg-amber-800 hover:bg-amber-900 text-white rounded text-xs font-semibold cursor-pointer"
                   >
                     + Agregar Paso a la lista
                   </button>
@@ -348,7 +372,7 @@ export default function App() {
 
               <button 
                 type="submit" 
-                className="w-full py-2.5 bg-emerald-700 text-white font-bold rounded-xl text-sm hover:bg-emerald-800 transition shadow-sm"
+                className="w-full py-2.5 bg-emerald-700 hover:bg-emerald-800 dark:bg-emerald-600 dark:hover:bg-emerald-700 text-white font-bold rounded-xl text-sm transition shadow-sm cursor-pointer"
               >
                 Guardar Receta Completa
               </button>
@@ -356,11 +380,11 @@ export default function App() {
           </div>
         ) : (
           <div className="space-y-6">
-            <div className="flex justify-between items-center border-b pb-3">
-              <h2 className="text-xl font-bold text-slate-900">Tus Recetas</h2>
+            <div className="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-3">
+              <h2 className="text-xl font-bold text-slate-900 dark:text-white">Tus Recetas</h2>
               
               <div className="flex gap-2">
-                <label className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg cursor-pointer transition flex items-center justify-center border border-slate-200">
+                <label className="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-250 text-xs font-bold rounded-lg cursor-pointer transition flex items-center justify-center border border-slate-200 dark:border-slate-700">
                   Importar
                   <input 
                     type="file" 
@@ -371,7 +395,7 @@ export default function App() {
                 </label>
                 <button 
                   onClick={() => setIsCreating(true)}
-                  className="px-3 py-1.5 bg-amber-800 hover:bg-amber-950 text-white text-xs font-bold rounded-lg transition"
+                  className="px-3 py-1.5 bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-800 text-white text-xs font-bold rounded-lg transition cursor-pointer"
                 >
                   + Nueva Receta
                 </button>
@@ -380,11 +404,11 @@ export default function App() {
 
             <div className="space-y-5 max-h-[480px] overflow-y-auto pr-1">
               {Object.keys(groupedRecipes).length === 0 ? (
-                <p className="text-sm text-slate-400 text-center py-8">No tienes recetas guardadas.</p>
+                <p className="text-sm text-slate-400 dark:text-slate-500 text-center py-8">No tienes recetas guardadas.</p>
               ) : (
                 Object.keys(groupedRecipes).map((method) => (
                   <div key={method} className="space-y-2">
-                    <h3 className="text-xs font-extrabold text-slate-400 uppercase tracking-wider pl-1 pt-1">
+                    <h3 className="text-xs font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider pl-1 pt-1">
                       {method}
                     </h3>
                     
@@ -393,14 +417,14 @@ export default function App() {
                         <div 
                           key={recipe.id}
                           onClick={() => setActiveRecipe(recipe)}
-                          className="p-3 bg-slate-50 hover:bg-amber-50/50 border border-slate-200 hover:border-amber-200 rounded-xl cursor-pointer transition flex justify-between items-center group"
+                          className="p-3 bg-slate-50 dark:bg-slate-800/30 hover:bg-amber-50/20 dark:hover:bg-amber-900/10 border border-slate-200 dark:border-slate-800 hover:border-amber-200 dark:hover:border-amber-800/30 rounded-xl cursor-pointer transition flex justify-between items-center group"
                         >
                           <div className="space-y-1">
-                            <span className="font-semibold text-slate-950 text-sm block">{recipe.name}</span>
-                            <p className="text-[11px] text-slate-500">
+                            <span className="font-semibold text-slate-950 dark:text-slate-100 text-sm block">{recipe.name}</span>
+                            <p className="text-[11px] text-slate-500 dark:text-slate-400">
                               {recipe.coffee_g}g • {recipe.grind_size || 'Molienda N/D'} • {recipe.water_temp_c}°C
                             </p>
-                            <p className="text-[10px] text-amber-800 font-medium">
+                            <p className="text-[10px] text-amber-800 dark:text-amber-400 font-medium">
                               {recipe.steps.length} pasos • {recipe.steps.reduce((acc, s) => acc + s.water_g, 0)}g agua
                             </p>
                           </div>
@@ -408,21 +432,21 @@ export default function App() {
                           <div className="flex gap-1.5 opacity-60 group-hover:opacity-100 transition">
                             <button 
                               onClick={(e) => { e.stopPropagation(); setSummaryRecipe(recipe); }}
-                              className="p-1 hover:bg-slate-200 rounded text-slate-600 font-bold"
+                              className="p-1 hover:bg-slate-250 dark:hover:bg-slate-700 rounded text-slate-600 dark:text-slate-300 font-bold cursor-pointer"
                               title="Ver Resumen"
                             >
                               📋
                             </button>
                             <button 
                               onClick={(e) => { e.stopPropagation(); handleExportJson(recipe); }}
-                              className="p-1 hover:bg-slate-200 rounded text-slate-500"
+                              className="p-1 hover:bg-slate-250 dark:hover:bg-slate-700 rounded text-slate-500 dark:text-slate-400 cursor-pointer"
                               title="Exportar Receta"
                             >
                               📥
                             </button>
                             <button 
                               onClick={(e) => handleDeleteRecipe(recipe.id, e)}
-                              className="p-1 hover:bg-red-50 rounded text-red-500"
+                              className="p-1 hover:bg-red-50 dark:hover:bg-red-950/20 rounded text-red-500 dark:text-red-400 cursor-pointer"
                               title="Eliminar Receta"
                             >
                               🗑️
@@ -439,71 +463,71 @@ export default function App() {
         )}
 
         {summaryRecipe && (
-          <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
-            <div className="bg-white rounded-2xl max-w-sm w-full p-6 shadow-xl max-h-[85vh] overflow-y-auto space-y-4">
-              <div className="flex justify-between items-start border-b pb-3">
+          <div className="fixed inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
+            <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-sm w-full p-6 shadow-xl max-h-[85vh] overflow-y-auto space-y-4 border border-slate-100 dark:border-slate-850">
+              <div className="flex justify-between items-start border-b border-slate-200 dark:border-slate-800 pb-3">
                 <div>
-                  <h3 className="text-lg font-bold text-slate-900 pr-4">{summaryRecipe.name}</h3>
-                  <span className="inline-block text-[10px] bg-amber-50 text-amber-900 border border-amber-200 px-2 py-0.5 rounded font-bold uppercase tracking-wider mt-1">{summaryRecipe.method}</span>
+                  <h3 className="text-lg font-bold text-slate-900 dark:text-white pr-4">{summaryRecipe.name}</h3>
+                  <span className="inline-block text-[10px] bg-amber-50 dark:bg-amber-950/20 text-amber-900 dark:text-amber-300 border border-amber-200 dark:border-amber-900/30 px-2 py-0.5 rounded font-bold uppercase tracking-wider mt-1">{summaryRecipe.method}</span>
                 </div>
                 <button 
                   onClick={() => setSummaryRecipe(null)}
-                  className="text-slate-400 hover:text-slate-600 text-xl font-bold leading-none"
+                  className="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-350 text-xl font-bold leading-none cursor-pointer"
                 >
                   &times;
                 </button>
               </div>
 
-              <div className="grid grid-cols-2 gap-2 text-xs bg-slate-50 p-3 rounded-xl border border-slate-100">
+              <div className="grid grid-cols-2 gap-2 text-xs bg-slate-50 dark:bg-slate-800/40 p-3 rounded-xl border border-slate-100 dark:border-slate-800/80">
                 <div>
-                  <span className="text-slate-400 block font-semibold text-[10px] uppercase">Café Inicial</span>
-                  <span className="text-sm font-bold text-slate-800">{summaryRecipe.coffee_g}g</span>
+                  <span className="text-slate-400 dark:text-slate-500 block font-semibold text-[10px] uppercase">Café Inicial</span>
+                  <span className="text-sm font-bold text-slate-800 dark:text-slate-200">{summaryRecipe.coffee_g}g</span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block font-semibold text-[10px] uppercase">Molienda</span>
-                  <span className="text-sm font-bold text-slate-800 truncate block">{summaryRecipe.grind_size || 'N/D'}</span>
+                  <span className="text-slate-400 dark:text-slate-500 block font-semibold text-[10px] uppercase">Molienda</span>
+                  <span className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate block">{summaryRecipe.grind_size || 'N/D'}</span>
                 </div>
                 <div className="mt-1">
-                  <span className="text-slate-400 block font-semibold text-[10px] uppercase">Temperatura</span>
-                  <span className="text-sm font-bold text-slate-800">{summaryRecipe.water_temp_c}°C</span>
+                  <span className="text-slate-400 dark:text-slate-500 block font-semibold text-[10px] uppercase">Temperatura</span>
+                  <span className="text-sm font-bold text-slate-800 dark:text-slate-200">{summaryRecipe.water_temp_c}°C</span>
                 </div>
                 <div className="mt-1">
-                  <span className="text-slate-400 block font-semibold text-[10px] uppercase">Agua Total</span>
-                  <span className="text-sm font-bold text-slate-800">
+                  <span className="text-slate-400 dark:text-slate-500 block font-semibold text-[10px] uppercase">Agua Total</span>
+                  <span className="text-sm font-bold text-slate-800 dark:text-slate-200">
                     {summaryRecipe.steps.reduce((acc, s) => acc + s.water_g, 0)}g
                   </span>
                 </div>
-                <div className="col-span-2 mt-2 pt-2 border-t border-slate-200 flex justify-between">
-                  <span className="text-slate-400 font-semibold text-[10px] uppercase">Tiempo Total Estimado</span>
-                  <span className="text-xs font-bold text-slate-800">
+                <div className="col-span-2 mt-2 pt-2 border-t border-slate-200 dark:border-slate-700 flex justify-between">
+                  <span className="text-slate-400 dark:text-slate-500 font-semibold text-[10px] uppercase">Tiempo Total Estimado</span>
+                  <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
                     {formatSecondsToMinutes(summaryRecipe.steps.reduce((acc, s) => acc + s.duration_s, 0))}
                   </span>
                 </div>
               </div>
 
               <div className="space-y-2">
-                <h4 className="text-xs font-extrabold text-slate-400 uppercase tracking-wider pl-1">Pasos</h4>
+                <h4 className="text-xs font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider pl-1">Pasos</h4>
                 <div className="space-y-2 max-h-[200px] overflow-y-auto pr-1">
                   {summaryRecipe.steps.map((step, idx) => (
-                    <div key={idx} className="bg-slate-50 p-2.5 rounded-lg border border-slate-100 space-y-1 text-xs">
-                      <div className="flex justify-between font-bold text-slate-700">
+                    <div key={idx} className="bg-slate-50 dark:bg-slate-850 p-2.5 rounded-lg border border-slate-100 dark:border-slate-800 space-y-1 text-xs">
+                      <div className="flex justify-between font-bold text-slate-700 dark:text-slate-350">
                         <span>Paso {step.step_number}: {step.title}</span>
-                        <span className="text-amber-800 font-semibold">
+                        <span className="text-amber-800 dark:text-amber-400 font-semibold">
                           {step.water_g > 0 ? `+${step.water_g}g` : 'Sin agua'} ({step.duration_s}s)
                         </span>
                       </div>
                       {step.instruction && (
-                        <p className="text-slate-500 italic text-[11px]">"{step.instruction}"</p>
+                        <p className="text-slate-500 dark:text-slate-400 italic text-[11px]">"{step.instruction}"</p>
                       )}
                     </div>
                   ))}
                 </div>
               </div>
 
-              <div className="flex gap-2 pt-2 border-t border-slate-100">
+              <div className="flex gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
                 <button 
                   onClick={() => setSummaryRecipe(null)}
-                  className="w-1/2 py-2 border border-slate-200 hover:bg-slate-50 text-slate-600 rounded-xl font-bold text-xs transition"
+                  className="w-1/2 py-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl font-bold text-xs transition cursor-pointer"
                 >
                   Cerrar
                 </button>
@@ -512,7 +536,7 @@ export default function App() {
                     setActiveRecipe(summaryRecipe);
                     setSummaryRecipe(null);
                   }}
-                  className="w-1/2 py-2 bg-amber-800 hover:bg-amber-900 text-white rounded-xl font-bold text-xs transition shadow-sm"
+                  className="w-1/2 py-2 bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-800 text-white rounded-xl font-bold text-xs transition shadow-sm cursor-pointer"
                 >
                   Iniciar Timer
                 </button>
@@ -636,45 +660,45 @@ function TimerComponent({ recipe }) {
   return (
     <div className="space-y-6 text-center">
       <div>
-        <h3 className="text-xl font-bold text-slate-900">{recipe.name}</h3>
-        <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-bold uppercase tracking-wider">{recipe.method}</span>
+        <h3 className="text-xl font-bold text-slate-900 dark:text-white">{recipe.name}</h3>
+        <span className="text-xs bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-350 px-2 py-0.5 rounded font-bold uppercase tracking-wider">{recipe.method}</span>
       </div>
 
-      <div className="grid grid-cols-3 gap-2 bg-slate-50 p-3 rounded-xl text-xs text-slate-600 border border-slate-100">
+      <div className="grid grid-cols-3 gap-2 bg-slate-50 dark:bg-slate-800/40 p-3 rounded-xl text-xs text-slate-600 dark:text-slate-300 border border-slate-100 dark:border-slate-800">
         <div>
-          <span className="block text-slate-400 text-[10px] uppercase font-bold">Café</span>
+          <span className="block text-slate-400 dark:text-slate-550 text-[10px] uppercase font-bold">Café</span>
           <span className="font-semibold text-sm">{recipe.coffee_g}g</span>
         </div>
         <div>
-          <span className="block text-slate-400 text-[10px] uppercase font-bold">Molienda</span>
+          <span className="block text-slate-400 dark:text-slate-550 text-[10px] uppercase font-bold">Molienda</span>
           <span className="font-semibold text-sm truncate block">{recipe.grind_size || 'N/D'}</span>
         </div>
         <div>
-          <span className="block text-slate-400 text-[10px] uppercase font-bold">Temp.</span>
+          <span className="block text-slate-400 dark:text-slate-550 text-[10px] uppercase font-bold">Temp.</span>
           <span className="font-semibold text-sm">{recipe.water_temp_c}°C</span>
         </div>
       </div>
 
-      <div className="border-t border-b border-slate-100 py-4 bg-amber-50/20 rounded-xl px-2">
-        <span className="text-[10px] font-bold text-amber-900 bg-amber-100 px-2 py-1 rounded-full uppercase">
+      <div className="border-t border-b border-slate-100 dark:border-slate-800 py-4 bg-amber-50/20 dark:bg-amber-950/10 rounded-xl px-2">
+        <span className="text-[10px] font-bold text-amber-900 dark:text-amber-300 bg-amber-100 dark:bg-amber-900/30 px-2 py-1 rounded-full uppercase">
           Paso {currentStepIndex + 1} de {recipe.steps.length}
         </span>
-        <h4 className="text-lg font-bold text-slate-800 mt-2">{currentStep.title}</h4>
-        <p className="text-base text-slate-600 mt-1 min-h-[48px] px-4 flex items-center justify-center italic">
+        <h4 className="text-lg font-bold text-slate-800 dark:text-slate-200 mt-2">{currentStep.title}</h4>
+        <p className="text-base text-slate-600 dark:text-slate-450 mt-1 min-h-[48px] px-4 flex items-center justify-center italic">
           "{currentStep.instruction || 'Sin instrucciones adicionales'}"
         </p>
         
         <div className="mt-2 text-xs">
-          <span className="text-slate-400">Verter en este paso: </span>
-          <span className="font-bold text-amber-900">+{currentStep.water_g}g</span>
+          <span className="text-slate-400 dark:text-slate-500">Verter en este paso: </span>
+          <span className="font-bold text-amber-900 dark:text-amber-400">+{currentStep.water_g}g</span>
         </div>
-        <div className="text-sm text-slate-600 mt-1">
-          Agua acumulada: <span className="font-bold text-amber-900 text-lg">{cumulativeWater}g</span>
+        <div className="text-sm text-slate-600 dark:text-slate-350 mt-1">
+          Agua acumulada: <span className="font-bold text-amber-900 dark:text-amber-400 text-lg">{cumulativeWater}g</span>
         </div>
       </div>
 
       <div className="py-2">
-        <div className="text-5xl font-mono font-bold text-slate-900 select-none tracking-tight">
+        <div className="text-5xl font-mono font-bold text-slate-900 dark:text-white select-none tracking-tight">
           {formatTime(timeLeft)}
         </div>
       </div>
@@ -684,7 +708,7 @@ function TimerComponent({ recipe }) {
           <button 
             onClick={handleSkipPrev} 
             disabled={currentStepIndex === 0}
-            className="p-2 text-slate-400 hover:text-slate-800 disabled:opacity-30 disabled:hover:text-slate-400 text-xl"
+            className="p-2 text-slate-400 dark:text-slate-600 hover:text-slate-800 dark:hover:text-slate-200 disabled:opacity-30 disabled:hover:text-slate-400 dark:disabled:hover:text-slate-600 text-xl cursor-pointer"
             title="Paso anterior"
           >
             ⏮️
@@ -692,8 +716,8 @@ function TimerComponent({ recipe }) {
           
           <button 
             onClick={() => setIsRunning(!isRunning)}
-            className={`w-32 py-3 rounded-full text-white font-bold shadow-md transition transform active:scale-95 ${
-              isRunning ? 'bg-red-600 hover:bg-red-700' : 'bg-amber-800 hover:bg-amber-900'
+            className={`w-32 py-3 rounded-full text-white font-bold shadow-md transition transform active:scale-95 cursor-pointer ${
+              isRunning ? 'bg-red-600 hover:bg-red-700' : 'bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-800'
             }`}
           >
             {isRunning ? 'PAUSAR' : 'INICIAR'}
@@ -702,7 +726,7 @@ function TimerComponent({ recipe }) {
           <button 
             onClick={handleSkipNext} 
             disabled={currentStepIndex === recipe.steps.length - 1}
-            className="p-2 text-slate-400 hover:text-slate-800 disabled:opacity-30 disabled:hover:text-slate-400 text-xl"
+            className="p-2 text-slate-400 dark:text-slate-600 hover:text-slate-800 dark:hover:text-slate-200 disabled:opacity-30 disabled:hover:text-slate-400 dark:disabled:hover:text-slate-600 text-xl cursor-pointer"
             title="Siguiente paso"
           >
             ⏭️
@@ -712,7 +736,7 @@ function TimerComponent({ recipe }) {
         <div>
           <button 
             onClick={handleReset}
-            className="text-xs text-slate-400 hover:text-slate-600 underline"
+            className="text-xs text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-350 underline cursor-pointer"
           >
             Reiniciar cronómetro
           </button>

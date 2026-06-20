@@ -65,6 +65,7 @@ export default function App() {
   
   const [activeRecipe, setActiveRecipe] = useState(null);
   const [isCreating, setIsCreating] = useState(false);
+  const [summaryRecipe, setSummaryRecipe] = useState(null); // Estado para controlar el modal de resumen
 
   // Estados para el formulario de creación manual
   const [newRecipe, setNewRecipe] = useState({
@@ -111,7 +112,7 @@ export default function App() {
       }
     };
     reader.readAsText(file);
-    e.target.value = ''; // Resetear el input file
+    e.target.value = ''; 
   };
 
   // Exportar receta a un archivo JSON
@@ -194,6 +195,13 @@ export default function App() {
     return groups;
   }, {});
 
+  // Formatear segundos en formato M:SS para el resumen
+  const formatSecondsToMinutes = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}m ${secs}s`;
+  };
+
   return (
     <div className="min-h-screen bg-slate-100 text-slate-800 p-4 font-sans flex flex-col items-center">
       <header className="w-full max-w-md mb-6 text-center mt-4">
@@ -201,7 +209,7 @@ export default function App() {
         <p className="text-xs text-slate-500 mt-1">Administra tus recetas y tiempos de extracción</p>
       </header>
 
-      <main className="w-full max-w-md bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden p-6">
+      <main className="w-full max-w-md bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden p-6 relative">
         {activeRecipe ? (
           /* PANTALLA TEMPORIZADOR */
           <div>
@@ -363,7 +371,6 @@ export default function App() {
             <div className="flex justify-between items-center border-b pb-3">
               <h2 className="text-xl font-bold text-slate-900">Tus Recetas</h2>
               
-              {/* Botones de acción agrupados */}
               <div className="flex gap-2">
                 <label className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg cursor-pointer transition flex items-center justify-center border border-slate-200">
                   Importar
@@ -390,12 +397,10 @@ export default function App() {
               ) : (
                 Object.keys(groupedRecipes).map((method) => (
                   <div key={method} className="space-y-2">
-                    {/* Encabezado del Método */}
                     <h3 className="text-xs font-extrabold text-slate-400 uppercase tracking-wider pl-1 pt-1">
                       {method}
                     </h3>
                     
-                    {/* Recetas de este método */}
                     <div className="space-y-2">
                       {groupedRecipes[method].map((recipe) => (
                         <div 
@@ -413,7 +418,14 @@ export default function App() {
                             </p>
                           </div>
                           
-                          <div className="flex gap-2 opacity-60 group-hover:opacity-100 transition">
+                          <div className="flex gap-1.5 opacity-60 group-hover:opacity-100 transition">
+                            <button 
+                              onClick={(e) => { e.stopPropagation(); setSummaryRecipe(recipe); }}
+                              className="p-1 hover:bg-slate-200 rounded text-slate-600 font-bold"
+                              title="Ver Resumen"
+                            >
+                              📋
+                            </button>
                             <button 
                               onClick={(e) => { e.stopPropagation(); handleExportJson(recipe); }}
                               className="p-1 hover:bg-slate-200 rounded text-slate-500"
@@ -435,6 +447,93 @@ export default function App() {
                   </div>
                 ))
               )}
+            </div>
+          </div>
+        )}
+
+        {/* MODAL EMERGENTE - RESUMEN DE RECETA */}
+        {summaryRecipe && (
+          <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
+            <div className="bg-white rounded-2xl max-w-sm w-full p-6 shadow-xl max-h-[85vh] overflow-y-auto space-y-4">
+              <div className="flex justify-between items-start border-b pb-3">
+                <div>
+                  <h3 className="text-lg font-bold text-slate-900 pr-4">{summaryRecipe.name}</h3>
+                  <span className="inline-block text-[10px] bg-amber-50 text-amber-900 border border-amber-200 px-2 py-0.5 rounded font-bold uppercase tracking-wider mt-1">{summaryRecipe.method}</span>
+                </div>
+                <button 
+                  onClick={() => setSummaryRecipe(null)}
+                  className="text-slate-400 hover:text-slate-600 text-xl font-bold leading-none"
+                >
+                  &times;
+                </button>
+              </div>
+
+              {/* Ficha de parámetros del resumen */}
+              <div className="grid grid-cols-2 gap-2 text-xs bg-slate-50 p-3 rounded-xl border border-slate-100">
+                <div>
+                  <span className="text-slate-400 block font-semibold text-[10px] uppercase">Café Inicial</span>
+                  <span className="text-sm font-bold text-slate-800">{summaryRecipe.coffee_g}g</span>
+                </div>
+                <div>
+                  <span className="text-slate-400 block font-semibold text-[10px] uppercase">Molienda</span>
+                  <span className="text-sm font-bold text-slate-800 truncate block">{summaryRecipe.grind_size || 'N/D'}</span>
+                </div>
+                <div className="mt-1">
+                  <span className="text-slate-400 block font-semibold text-[10px] uppercase">Temperatura</span>
+                  <span className="text-sm font-bold text-slate-800">{summaryRecipe.water_temp_c}°C</span>
+                </div>
+                <div className="mt-1">
+                  <span className="text-slate-400 block font-semibold text-[10px] uppercase">Agua Total</span>
+                  <span className="text-sm font-bold text-slate-800">
+                    {summaryRecipe.steps.reduce((acc, s) => acc + s.water_g, 0)}g
+                  </span>
+                </div>
+                <div className="col-span-2 mt-2 pt-2 border-t border-slate-200 flex justify-between">
+                  <span className="text-slate-400 font-semibold text-[10px] uppercase">Tiempo Total Estimado</span>
+                  <span className="text-xs font-bold text-slate-800">
+                    {formatSecondsToMinutes(summaryRecipe.steps.reduce((acc, s) => acc + s.duration_s, 0))}
+                  </span>
+                </div>
+              </div>
+
+              {/* Lista Desglosada de Pasos */}
+              <div className="space-y-2">
+                <h4 className="text-xs font-extrabold text-slate-400 uppercase tracking-wider pl-1">Pasos</h4>
+                <div className="space-y-2 max-h-[200px] overflow-y-auto pr-1">
+                  {summaryRecipe.steps.map((step, idx) => (
+                    <div key={idx} className="bg-slate-50 p-2.5 rounded-lg border border-slate-100 space-y-1 text-xs">
+                      <div className="flex justify-between font-bold text-slate-700">
+                        <span>Paso {step.step_number}: {step.title}</span>
+                        <span className="text-amber-800 font-semibold">
+                          {step.water_g > 0 ? `+${step.water_g}g` : 'Sin agua'} ({step.duration_s}s)
+                        </span>
+                      </div>
+                      {step.instruction && (
+                        <p className="text-slate-500 italic text-[11px]">"{step.instruction}"</p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Botones de acción del modal */}
+              <div className="flex gap-2 pt-2 border-t border-slate-100">
+                <button 
+                  onClick={() => setSummaryRecipe(null)}
+                  className="w-1/2 py-2 border border-slate-200 hover:bg-slate-50 text-slate-600 rounded-xl font-bold text-xs transition"
+                >
+                  Cerrar
+                </button>
+                <button 
+                  onClick={() => {
+                    setActiveRecipe(summaryRecipe);
+                    setSummaryRecipe(null);
+                  }}
+                  className="w-1/2 py-2 bg-amber-800 hover:bg-amber-900 text-white rounded-xl font-bold text-xs transition shadow-sm"
+                >
+                  Iniciar Timer
+                </button>
+              </div>
             </div>
           </div>
         )}

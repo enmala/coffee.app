@@ -11,8 +11,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
       manifest: {
-        name: 'Café Brew Timer',
-        short_name: 'CaféTimer',
+        name: 'Barista Timer',
+        short_name: 'BaristaTimer',
         description: 'Recetario y temporizador para café de especialidad',
         theme_color: '#1e1b4b',
         background_color: '#f8fafc',

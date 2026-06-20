@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 // Sonido sintetizado nativo para avisar el cambio de paso
 const playBeep = () => {
@@ -65,9 +65,8 @@ export default function App() {
   
   const [activeRecipe, setActiveRecipe] = useState(null);
   const [isCreating, setIsCreating] = useState(false);
-  const [summaryRecipe, setSummaryRecipe] = useState(null); // Estado para controlar el modal de resumen
+  const [summaryRecipe, setSummaryRecipe] = useState(null);
 
-  // Estados para el formulario de creación manual
   const [newRecipe, setNewRecipe] = useState({
     name: '',
     method: 'V60',
@@ -88,7 +87,6 @@ export default function App() {
     localStorage.setItem('coffee_recipes_v1', JSON.stringify(recipes));
   }, [recipes]);
 
-  // Manejar importación
   const handleImportJson = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -108,14 +106,13 @@ export default function App() {
         setRecipes((prev) => [...prev, updated]);
         alert("Receta importada correctamente.");
       } catch (err) {
-        alert("Error al leer el archivo JSON.");
+        console.error("Error al leer el archivo JSON:", err);
       }
     };
     reader.readAsText(file);
     e.target.value = ''; 
   };
 
-  // Exportar receta a un archivo JSON
   const handleExportJson = (recipe) => {
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(recipe, null, 2));
     const downloadAnchor = document.createElement('a');
@@ -126,7 +123,6 @@ export default function App() {
     downloadAnchor.remove();
   };
 
-  // Eliminar receta
   const handleDeleteRecipe = (id, e) => {
     e.stopPropagation(); 
     if (confirm("¿Estás seguro de que deseas eliminar esta receta?")) {
@@ -134,7 +130,6 @@ export default function App() {
     }
   };
 
-  // Añadir paso al formulario de creación
   const handleAddStepToForm = () => {
     if (!stepInput.title.trim()) {
       alert("Por favor ingresa un título para el paso.");
@@ -156,7 +151,6 @@ export default function App() {
     setStepInput({ title: '', water_g: 0, duration_s: 30, instruction: '' });
   };
 
-  // Guardar receta nueva
   const handleSaveRecipe = (e) => {
     e.preventDefault();
     if (!newRecipe.name.trim()) {
@@ -185,7 +179,6 @@ export default function App() {
     });
   };
 
-  // Agrupamiento de recetas por método
   const groupedRecipes = recipes.reduce((groups, recipe) => {
     const method = recipe.method || 'Otros';
     if (!groups[method]) {
@@ -195,7 +188,6 @@ export default function App() {
     return groups;
   }, {});
 
-  // Formatear segundos en formato M:SS para el resumen
   const formatSecondsToMinutes = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -211,7 +203,6 @@ export default function App() {
 
       <main className="w-full max-w-md bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden p-6 relative">
         {activeRecipe ? (
-          /* PANTALLA TEMPORIZADOR */
           <div>
             <button 
               onClick={() => setActiveRecipe(null)} 
@@ -222,7 +213,6 @@ export default function App() {
             <TimerComponent recipe={activeRecipe} />
           </div>
         ) : isCreating ? (
-          /* PANTALLA CREAR RECETA */
           <div>
             <div className="flex justify-between items-center mb-4 border-b pb-2">
               <h2 className="text-lg font-bold text-slate-900">Nueva Receta</h2>
@@ -300,7 +290,6 @@ export default function App() {
                 </div>
               </div>
 
-              {/* SECCIÓN AGREGAR PASOS */}
               <div className="border-t pt-3 mt-2">
                 <h3 className="text-sm font-bold text-slate-800 mb-2">Pasos Añadidos ({newRecipe.steps.length})</h3>
                 {newRecipe.steps.length > 0 && (
@@ -366,7 +355,6 @@ export default function App() {
             </form>
           </div>
         ) : (
-          /* PANTALLA LISTADO */
           <div className="space-y-6">
             <div className="flex justify-between items-center border-b pb-3">
               <h2 className="text-xl font-bold text-slate-900">Tus Recetas</h2>
@@ -390,7 +378,6 @@ export default function App() {
               </div>
             </div>
 
-            {/* Lista agrupada por métodos */}
             <div className="space-y-5 max-h-[480px] overflow-y-auto pr-1">
               {Object.keys(groupedRecipes).length === 0 ? (
                 <p className="text-sm text-slate-400 text-center py-8">No tienes recetas guardadas.</p>
@@ -451,7 +438,6 @@ export default function App() {
           </div>
         )}
 
-        {/* MODAL EMERGENTE - RESUMEN DE RECETA */}
         {summaryRecipe && (
           <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
             <div className="bg-white rounded-2xl max-w-sm w-full p-6 shadow-xl max-h-[85vh] overflow-y-auto space-y-4">
@@ -468,7 +454,6 @@ export default function App() {
                 </button>
               </div>
 
-              {/* Ficha de parámetros del resumen */}
               <div className="grid grid-cols-2 gap-2 text-xs bg-slate-50 p-3 rounded-xl border border-slate-100">
                 <div>
                   <span className="text-slate-400 block font-semibold text-[10px] uppercase">Café Inicial</span>
@@ -496,7 +481,6 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Lista Desglosada de Pasos */}
               <div className="space-y-2">
                 <h4 className="text-xs font-extrabold text-slate-400 uppercase tracking-wider pl-1">Pasos</h4>
                 <div className="space-y-2 max-h-[200px] overflow-y-auto pr-1">
@@ -516,7 +500,6 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Botones de acción del modal */}
               <div className="flex gap-2 pt-2 border-t border-slate-100">
                 <button 
                   onClick={() => setSummaryRecipe(null)}
@@ -542,43 +525,81 @@ export default function App() {
   );
 }
 
-/* COMPONENTE INTERACTIVO DEL TEMPORIZADOR */
 function TimerComponent({ recipe }) {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [timeLeft, setTimeLeft] = useState(recipe.steps[0].duration_s);
   const [isRunning, setIsRunning] = useState(false);
-
   const currentStep = recipe.steps[currentStepIndex];
+
+  useEffect(() => {
+    let lock = null;
+    const requestWakeLock = async () => {
+      try {
+        if ('wakeLock' in navigator && !lock) {
+          lock = await navigator.wakeLock.request('screen');
+        }
+      } catch (err) {
+        console.error(`Error requesting wake lock: ${err.name}, ${err.message}`);
+      }
+    };
+
+    const handleVisibilityChange = async () => {
+      if (document.visibilityState === 'visible' && isRunning) {
+        await requestWakeLock();
+      }
+    };
+
+    if (isRunning) {
+      requestWakeLock();
+      document.addEventListener('visibilitychange', handleVisibilityChange);
+    }
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      if (lock) {
+        lock.release().catch(() => {});
+      }
+    };
+  }, [isRunning]);
 
   useEffect(() => {
     let interval = null;
 
-    if (isRunning && timeLeft > 0) {
+    if (isRunning) {
       interval = setInterval(() => {
-        setTimeLeft((prev) => prev - 1);
-      }, 1000);
-    } else if (isRunning && timeLeft === 0) {
-      playBeep();
+        setTimeLeft((prevTime) => {
+          if (prevTime > 1) {
+            return prevTime - 1;
+          }
 
-      if (currentStepIndex < recipe.steps.length - 1) {
-        const nextIndex = currentStepIndex + 1;
-        setCurrentStepIndex(nextIndex);
-        setTimeLeft(recipe.steps[nextIndex].duration_s);
-        
-        if ('vibrate' in navigator) {
-          navigator.vibrate([150, 100, 150]);
-        }
-      } else {
-        setIsRunning(false);
-        if ('vibrate' in navigator) {
-          navigator.vibrate(400);
-        }
-        alert("¡Extracción finalizada con éxito!");
-      }
+          playBeep();
+
+          if (currentStepIndex < recipe.steps.length - 1) {
+            const nextIndex = currentStepIndex + 1;
+            setCurrentStepIndex(nextIndex);
+            
+            if ('vibrate' in navigator) {
+              navigator.vibrate([150, 100, 150]);
+            }
+            return recipe.steps[nextIndex].duration_s;
+          } else {
+            setIsRunning(false);
+            if ('vibrate' in navigator) {
+              navigator.vibrate(400);
+            }
+            setTimeout(() => {
+              alert("¡Extracción finalizada con éxito!");
+            }, 100);
+            return 0;
+          }
+        });
+      }, 1000);
     }
 
-    return () => clearInterval(interval);
-  }, [isRunning, timeLeft, currentStepIndex, recipe.steps]);
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [isRunning, currentStepIndex, recipe.steps]);
 
   const handleReset = () => {
     setIsRunning(false);
@@ -634,33 +655,30 @@ function TimerComponent({ recipe }) {
         </div>
       </div>
 
-      {/* Pantalla del Paso Actual */}
       <div className="border-t border-b border-slate-100 py-4 bg-amber-50/20 rounded-xl px-2">
         <span className="text-[10px] font-bold text-amber-900 bg-amber-100 px-2 py-1 rounded-full uppercase">
           Paso {currentStepIndex + 1} de {recipe.steps.length}
         </span>
         <h4 className="text-lg font-bold text-slate-800 mt-2">{currentStep.title}</h4>
-        <p className="text-sm text-slate-500 mt-1 min-h-[44px] px-4 flex items-center justify-center italic">
+        <p className="text-base text-slate-600 mt-1 min-h-[48px] px-4 flex items-center justify-center italic">
           "{currentStep.instruction || 'Sin instrucciones adicionales'}"
         </p>
         
-        <div className="mt-2 text-sm">
-          <span className="text-slate-500">Verter en este paso: </span>
-          <span className="font-bold text-amber-900 text-base">+{currentStep.water_g}g</span>
+        <div className="mt-2 text-xs">
+          <span className="text-slate-400">Verter en este paso: </span>
+          <span className="font-bold text-amber-900">+{currentStep.water_g}g</span>
         </div>
-        <div className="text-xs text-slate-400 mt-0.5">
-          Agua acumulada recomendada: <span className="font-bold text-slate-600">{cumulativeWater}g</span>
+        <div className="text-sm text-slate-600 mt-1">
+          Agua acumulada: <span className="font-bold text-amber-900 text-lg">{cumulativeWater}g</span>
         </div>
       </div>
 
-      {/* Cronómetro gigante */}
       <div className="py-2">
-        <div className="text-7xl font-mono font-bold text-slate-900 select-none tracking-tight">
+        <div className="text-5xl font-mono font-bold text-slate-900 select-none tracking-tight">
           {formatTime(timeLeft)}
         </div>
       </div>
 
-      {/* Controles */}
       <div className="space-y-3">
         <div className="flex justify-center items-center gap-4">
           <button 

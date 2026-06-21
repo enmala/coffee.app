@@ -241,7 +241,7 @@ export default function App() {
         </button>
       </header>
 
-      <main className="w-full max-w-md bg-white dark:bg-slate-900 rounded-2xl shadow-md border border-slate-200 dark:border-slate-850 overflow-hidden p-6 relative transition-colors duration-300">
+      <main className="w-full max-w-md bg-white dark:bg-slate-900 rounded-2xl shadow-md border border-slate-200 dark:border-slate-800 overflow-hidden p-6 relative transition-colors duration-300">
         {activeRecipe ? (
           <div>
             <button 
@@ -258,7 +258,7 @@ export default function App() {
               <h2 className="text-lg font-bold text-slate-900 dark:text-white">Nueva Receta</h2>
               <button 
                 onClick={() => setIsCreating(false)} 
-                className="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 text-sm font-semibold cursor-pointer"
+                className="text-slate-400 dark:text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-sm font-semibold cursor-pointer"
               >
                 Cancelar
               </button>
@@ -271,7 +271,7 @@ export default function App() {
                   type="text" 
                   value={newRecipe.name} 
                   onChange={(e) => setNewRecipe({...newRecipe, name: e.target.value})}
-                  className="w-full p-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-850 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm" 
+                  className="w-full p-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm" 
                   placeholder="Ej: Mi V60 Balanceado"
                   required
                 />
@@ -283,7 +283,7 @@ export default function App() {
                   <select 
                     value={newRecipe.method} 
                     onChange={(e) => setNewRecipe({...newRecipe, method: e.target.value})}
-                    className="w-full p-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-850 text-slate-900 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    className="w-full p-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
                   >
                     <option value="V60">V60</option>
                     <option value="Aeropress">Aeropress</option>
@@ -300,7 +300,7 @@ export default function App() {
                     type="text" 
                     value={newRecipe.grind_size} 
                     onChange={(e) => setNewRecipe({...newRecipe, grind_size: e.target.value})}
-                    className="w-full p-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-850 text-slate-900 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500" 
+                    className="w-full p-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500" 
                     placeholder="Ej: Fina, Media, 15 clicks"
                   />
                 </div>
@@ -313,7 +313,7 @@ export default function App() {
                     type="number" 
                     value={newRecipe.coffee_g} 
                     onChange={(e) => setNewRecipe({...newRecipe, coffee_g: parseFloat(e.target.value) || 0})}
-                    className="w-full p-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-850 text-slate-900 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500" 
+                    className="w-full p-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500" 
                     min="1"
                     step="0.1"
                   />
@@ -324,7 +324,7 @@ export default function App() {
                     type="number" 
                     value={newRecipe.water_temp_c} 
                     onChange={(e) => setNewRecipe({...newRecipe, water_temp_c: parseInt(e.target.value) || 0})}
-                    className="w-full p-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-850 text-slate-900 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500" 
+                    className="w-full p-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500" 
                     min="1"
                   />
                 </div>
@@ -333,7 +333,7 @@ export default function App() {
               <div className="border-t border-slate-200 dark:border-slate-800 pt-3 mt-2">
                 <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">Pasos Añadidos ({newRecipe.steps.length})</h3>
                 {newRecipe.steps.length > 0 && (
-                  <ul className="mb-4 bg-slate-50 dark:bg-slate-850 rounded-lg p-2 divide-y divide-slate-200 dark:divide-slate-700 text-xs text-slate-600 dark:text-slate-300">
+                  <ul className="mb-4 bg-slate-50 dark:bg-slate-800 rounded-lg p-2 divide-y divide-slate-200 dark:divide-slate-700 text-xs text-slate-600 dark:text-slate-300">
                     {newRecipe.steps.map((s, idx) => (
                       <li key={idx} className="py-1 flex justify-between">
                         <span>{s.step_number}. {s.title} ({s.duration_s}s | {s.water_g}g)</span>
@@ -400,7 +400,7 @@ export default function App() {
               <h2 className="text-xl font-bold text-slate-900 dark:text-white">Tus Recetas</h2>
               
               <div className="flex gap-2">
-                <label className="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-250 text-xs font-bold rounded-lg cursor-pointer transition flex items-center justify-center border border-slate-200 dark:border-slate-700">
+                <label className="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold rounded-lg cursor-pointer transition flex items-center justify-center border border-slate-200 dark:border-slate-700">
                   Importar
                   <input 
                     type="file" 
@@ -420,7 +420,7 @@ export default function App() {
 
             <div className="space-y-5 max-h-[480px] overflow-y-auto pr-1">
               {Object.keys(groupedRecipes).length === 0 ? (
-                <p className="text-sm text-slate-400 dark:text-slate-500 text-center py-8">No tienes recetas guardadas.</p>
+                <p className="text-sm text-slate-400 dark:text-slate-400 text-center py-8">No tienes recetas guardadas.</p>
               ) : (
                 Object.keys(groupedRecipes).map((method) => {
                   const isCollapsed = !!collapsedMethods[method];
@@ -428,7 +428,7 @@ export default function App() {
                     <div key={method} className="space-y-2">
                       <h3 
                         onClick={() => toggleMethodCollapse(method)}
-                        className="text-xs font-extrabold text-slate-400 dark:text-slate-500 hover:text-amber-800 dark:hover:text-amber-500 uppercase tracking-wider pl-1 pt-1 flex justify-between items-center cursor-pointer select-none transition-colors duration-200"
+                        className="text-xs font-extrabold text-slate-400 dark:text-slate-300 hover:text-amber-800 dark:hover:text-amber-500 uppercase tracking-wider pl-1 pt-1 flex justify-between items-center cursor-pointer select-none transition-colors duration-200"
                       >
                         <span>{method} ({groupedRecipes[method].length})</span>
                         <span className="text-[10px] transform transition-transform duration-200 mr-1">
@@ -446,7 +446,7 @@ export default function App() {
                             >
                               <div className="space-y-1">
                                 <span className="font-semibold text-slate-950 dark:text-slate-100 text-sm block">{recipe.name}</span>
-                                <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                                <p className="text-[11px] text-slate-500 dark:text-slate-300">
                                   {recipe.coffee_g}g • {recipe.grind_size || 'Molienda N/D'} • {recipe.water_temp_c}°C
                                 </p>
                                 <p className="text-[10px] text-amber-800 dark:text-amber-400 font-medium">
@@ -457,14 +457,14 @@ export default function App() {
                               <div className="flex gap-1.5 opacity-60 group-hover:opacity-100 transition">
                                 <button 
                                   onClick={(e) => { e.stopPropagation(); setSummaryRecipe(recipe); }}
-                                  className="p-1 hover:bg-slate-250 dark:hover:bg-slate-700 rounded text-slate-600 dark:text-slate-300 font-bold cursor-pointer"
+                                  className="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded text-slate-600 dark:text-slate-200 font-bold cursor-pointer"
                                   title="Ver Resumen"
                                 >
                                   📋
                                 </button>
                                 <button 
                                   onClick={(e) => { e.stopPropagation(); handleExportJson(recipe); }}
-                                  className="p-1 hover:bg-slate-250 dark:hover:bg-slate-700 rounded text-slate-500 dark:text-slate-400 cursor-pointer"
+                                  className="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded text-slate-500 dark:text-slate-300 cursor-pointer"
                                   title="Exportar Receta"
                                 >
                                   📥
@@ -491,7 +491,7 @@ export default function App() {
 
         {summaryRecipe && (
           <div className="fixed inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
-            <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-sm w-full p-6 shadow-xl max-h-[85vh] overflow-y-auto space-y-4 border border-slate-100 dark:border-slate-850">
+            <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-sm w-full p-6 shadow-xl max-h-[85vh] overflow-y-auto space-y-4 border border-slate-100 dark:border-slate-800">
               <div className="flex justify-between items-start border-b border-slate-200 dark:border-slate-800 pb-3">
                 <div>
                   <h3 className="text-lg font-bold text-slate-900 dark:text-white pr-4">{summaryRecipe.name}</h3>
@@ -499,7 +499,7 @@ export default function App() {
                 </div>
                 <button 
                   onClick={() => setSummaryRecipe(null)}
-                  className="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-350 text-xl font-bold leading-none cursor-pointer"
+                  className="text-slate-400 dark:text-slate-300 hover:text-slate-600 dark:hover:text-slate-200 text-xl font-bold leading-none cursor-pointer"
                 >
                   &times;
                 </button>
@@ -507,36 +507,36 @@ export default function App() {
 
               <div className="grid grid-cols-2 gap-2 text-xs bg-slate-50 dark:bg-slate-800/40 p-3 rounded-xl border border-slate-100 dark:border-slate-800/80">
                 <div>
-                  <span className="text-slate-400 dark:text-slate-500 block font-semibold text-[10px] uppercase">Café Inicial</span>
-                  <span className="text-sm font-bold text-slate-800 dark:text-slate-200">{summaryRecipe.coffee_g}g</span>
+                  <span className="text-slate-400 dark:text-slate-400 block font-semibold text-[10px] uppercase">Café Inicial</span>
+                  <span className="text-sm font-bold text-slate-800 dark:text-slate-250">{summaryRecipe.coffee_g}g</span>
                 </div>
                 <div>
-                  <span className="text-slate-400 dark:text-slate-500 block font-semibold text-[10px] uppercase">Molienda</span>
-                  <span className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate block">{summaryRecipe.grind_size || 'N/D'}</span>
+                  <span className="text-slate-400 dark:text-slate-400 block font-semibold text-[10px] uppercase">Molienda</span>
+                  <span className="text-sm font-bold text-slate-800 dark:text-slate-250 truncate block">{summaryRecipe.grind_size || 'N/D'}</span>
                 </div>
                 <div className="mt-1">
-                  <span className="text-slate-400 dark:text-slate-500 block font-semibold text-[10px] uppercase">Temperatura</span>
-                  <span className="text-sm font-bold text-slate-800 dark:text-slate-200">{summaryRecipe.water_temp_c}°C</span>
+                  <span className="text-slate-400 dark:text-slate-400 block font-semibold text-[10px] uppercase">Temperatura</span>
+                  <span className="text-sm font-bold text-slate-800 dark:text-slate-250">{summaryRecipe.water_temp_c}°C</span>
                 </div>
                 <div className="mt-1">
-                  <span className="text-slate-400 dark:text-slate-500 block font-semibold text-[10px] uppercase">Agua Total</span>
-                  <span className="text-sm font-bold text-slate-800 dark:text-slate-200">
+                  <span className="text-slate-400 dark:text-slate-400 block font-semibold text-[10px] uppercase">Agua Total</span>
+                  <span className="text-sm font-bold text-slate-800 dark:text-slate-250">
                     {summaryRecipe.steps.reduce((acc, s) => acc + s.water_g, 0)}g
                   </span>
                 </div>
                 <div className="col-span-2 mt-2 pt-2 border-t border-slate-200 dark:border-slate-700 flex justify-between">
-                  <span className="text-slate-400 dark:text-slate-500 font-semibold text-[10px] uppercase">Tiempo Total Estimado</span>
-                  <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                  <span className="text-slate-400 dark:text-slate-400 font-semibold text-[10px] uppercase">Tiempo Total Estimado</span>
+                  <span className="text-xs font-bold text-slate-800 dark:text-slate-250">
                     {formatSecondsToMinutes(summaryRecipe.steps.reduce((acc, s) => acc + s.duration_s, 0))}
                   </span>
                 </div>
               </div>
 
               <div className="space-y-2">
-                <h4 className="text-xs font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider pl-1">Pasos</h4>
+                <h4 className="text-xs font-extrabold text-slate-400 dark:text-slate-450 uppercase tracking-wider pl-1">Pasos</h4>
                 <div className="space-y-2 max-h-[200px] overflow-y-auto pr-1">
                   {summaryRecipe.steps.map((step, idx) => (
-                    <div key={idx} className="bg-slate-50 dark:bg-slate-850 p-2.5 rounded-lg border border-slate-100 dark:border-slate-800 space-y-1 text-xs">
+                    <div key={idx} className="bg-slate-50 dark:bg-slate-800 p-2.5 rounded-lg border border-slate-100 dark:border-slate-800 space-y-1 text-xs">
                       <div className="flex justify-between font-bold text-slate-700 dark:text-slate-350">
                         <span>Paso {step.step_number}: {step.title}</span>
                         <span className="text-amber-800 dark:text-amber-400 font-semibold">
@@ -693,15 +693,15 @@ function TimerComponent({ recipe }) {
 
       <div className="grid grid-cols-3 gap-2 bg-slate-50 dark:bg-slate-800/40 p-3 rounded-xl text-xs text-slate-600 dark:text-slate-300 border border-slate-100 dark:border-slate-800">
         <div>
-          <span className="block text-slate-400 dark:text-slate-550 text-[10px] uppercase font-bold">Café</span>
+          <span className="block text-slate-400 dark:text-slate-400 text-[10px] uppercase font-bold">Café</span>
           <span className="font-semibold text-sm">{recipe.coffee_g}g</span>
         </div>
         <div>
-          <span className="block text-slate-400 dark:text-slate-550 text-[10px] uppercase font-bold">Molienda</span>
+          <span className="block text-slate-400 dark:text-slate-400 text-[10px] uppercase font-bold">Molienda</span>
           <span className="font-semibold text-sm truncate block">{recipe.grind_size || 'N/D'}</span>
         </div>
         <div>
-          <span className="block text-slate-400 dark:text-slate-550 text-[10px] uppercase font-bold">Temp.</span>
+          <span className="block text-slate-400 dark:text-slate-400 text-[10px] uppercase font-bold">Temp.</span>
           <span className="font-semibold text-sm">{recipe.water_temp_c}°C</span>
         </div>
       </div>
@@ -711,12 +711,12 @@ function TimerComponent({ recipe }) {
           Paso {currentStepIndex + 1} de {recipe.steps.length}
         </span>
         <h4 className="text-lg font-bold text-slate-800 dark:text-slate-200 mt-2">{currentStep.title}</h4>
-        <p className="text-base text-slate-600 dark:text-slate-450 mt-1 min-h-[48px] px-4 flex items-center justify-center italic">
+        <p className="text-base text-slate-600 dark:text-slate-400 mt-1 min-h-[48px] px-4 flex items-center justify-center italic">
           "{currentStep.instruction || 'Sin instrucciones adicionales'}"
         </p>
         
         <div className="mt-2 text-xs">
-          <span className="text-slate-400 dark:text-slate-500">Verter en este paso: </span>
+          <span className="text-slate-400 dark:text-slate-400">Verter en este paso: </span>
           <span className="font-bold text-amber-900 dark:text-amber-400">+{currentStep.water_g}g</span>
         </div>
         <div className="text-sm text-slate-600 dark:text-slate-350 mt-1">
@@ -735,7 +735,7 @@ function TimerComponent({ recipe }) {
           <button 
             onClick={handleSkipPrev} 
             disabled={currentStepIndex === 0}
-            className="p-2 text-slate-400 dark:text-slate-600 hover:text-slate-800 dark:hover:text-slate-200 disabled:opacity-30 disabled:hover:text-slate-400 dark:disabled:hover:text-slate-600 text-xl cursor-pointer"
+            className="p-2 text-slate-400 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 disabled:opacity-30 disabled:hover:text-slate-400 dark:disabled:hover:text-slate-600 text-xl cursor-pointer"
             title="Paso anterior"
           >
             ⏮️
@@ -753,7 +753,7 @@ function TimerComponent({ recipe }) {
           <button 
             onClick={handleSkipNext} 
             disabled={currentStepIndex === recipe.steps.length - 1}
-            className="p-2 text-slate-400 dark:text-slate-600 hover:text-slate-800 dark:hover:text-slate-200 disabled:opacity-30 disabled:hover:text-slate-400 dark:disabled:hover:text-slate-600 text-xl cursor-pointer"
+            className="p-2 text-slate-400 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 disabled:opacity-30 disabled:hover:text-slate-400 dark:disabled:hover:text-slate-600 text-xl cursor-pointer"
             title="Siguiente paso"
           >
             ⏭️
@@ -763,7 +763,7 @@ function TimerComponent({ recipe }) {
         <div>
           <button 
             onClick={handleReset}
-            className="text-xs text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-350 underline cursor-pointer"
+            className="text-xs text-slate-400 dark:text-slate-400 hover:text-slate-600 dark:hover:text-slate-350 underline cursor-pointer"
           >
             Reiniciar cronómetro
           </button>

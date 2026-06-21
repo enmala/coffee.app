@@ -65,3 +65,11 @@ Las recetas se estructuran siguiendo este formato JSON:
 3.  **Historial de Preparaciones:** Crear un registro local que guarde la fecha, hora y receta de cada extracción completada exitosamente, permitiendo al usuario añadir notas sobre el resultado de su taza (ej: "Salió un poco amargo, moler más grueso la próxima vez").
 4.  **Temas Visuales / Modo Oscuro:** Añadir un selector para alternar entre modo claro y modo oscuro para mejorar la visibilidad de madrugada o en ambientes con iluminación tenue.
 5.  **Ajuste de Alertas:** Permitir al usuario habilitar/deshabilitar los pitidos de audio de cambio de etapa y configurar la duración o frecuencia de la vibración.
+
+---
+
+## 6. Reglas de trabajo en el repositorio
+
+1. Todos los cambios se deben trabajar en ramas independientes de corta duración
+2. La integración de cambios a la rama principal siempre se realizará utilizando Pull Requests
+3. Una vez integrados los cambios en la rama principal la rama de trabajo de corta duración debe ser eliminada

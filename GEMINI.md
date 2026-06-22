@@ -73,3 +73,4 @@ Las recetas se estructuran siguiendo este formato JSON:
 1. Todos los cambios se deben trabajar en ramas independientes de corta duración
 2. La integración de cambios a la rama principal siempre se realizará utilizando Pull Requests
 3. Una vez integrados los cambios en la rama principal la rama de trabajo de corta duración debe ser eliminada
+4. Seguir las recomendaciones de Conventional Commits [https://www.conventionalcommits.org/en/v1.0.0/]

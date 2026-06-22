@@ -96,6 +96,9 @@ export default function App() {
 
   const [activeRecipe, setActiveRecipe] = useState(null);
   const [isCreating, setIsCreating] = useState(false);
+  const [editingRecipeId, setEditingRecipeId] = useState(null);
+  const [editingStepIndex, setEditingStepIndex] = useState(null);
+  const [menuOpenRecipeId, setMenuOpenRecipeId] = useState(null);
   const [summaryRecipe, setSummaryRecipe] = useState(null);
 
   const [newRecipe, setNewRecipe] = useState({
@@ -166,19 +169,105 @@ export default function App() {
       alert("Por favor ingresa un título para el paso.");
       return;
     }
-    setNewRecipe((prev) => ({
-      ...prev,
-      steps: [
-        ...prev.steps,
-        {
-          step_number: prev.steps.length + 1,
+
+    if (editingStepIndex !== null) {
+      setNewRecipe((prev) => {
+        const updatedSteps = [...prev.steps];
+        updatedSteps[editingStepIndex] = {
+          ...updatedSteps[editingStepIndex],
           title: stepInput.title,
           water_g: Number(stepInput.water_g),
           duration_s: Number(stepInput.duration_s),
           instruction: stepInput.instruction
-        }
-      ]
-    }));
+        };
+        return { ...prev, steps: updatedSteps };
+      });
+      setEditingStepIndex(null);
+    } else {
+      setNewRecipe((prev) => ({
+        ...prev,
+        steps: [
+          ...prev.steps,
+          {
+            step_number: prev.steps.length + 1,
+            title: stepInput.title,
+            water_g: Number(stepInput.water_g),
+            duration_s: Number(stepInput.duration_s),
+            instruction: stepInput.instruction
+          }
+        ]
+      }));
+    }
+    setStepInput({ title: '', water_g: 0, duration_s: 30, instruction: '' });
+  };
+
+  const handleSelectStepToEdit = (idx) => {
+    const step = newRecipe.steps[idx];
+    setStepInput({
+      title: step.title,
+      water_g: step.water_g,
+      duration_s: step.duration_s,
+      instruction: step.instruction || ''
+    });
+    setEditingStepIndex(idx);
+  };
+
+  const handleCancelStepEdit = () => {
+    setEditingStepIndex(null);
+    setStepInput({ title: '', water_g: 0, duration_s: 30, instruction: '' });
+  };
+
+  const handleMoveStep = (idx, direction) => {
+    if (direction === 'up' && idx === 0) return;
+    if (direction === 'down' && idx === newRecipe.steps.length - 1) return;
+
+    const targetIdx = direction === 'up' ? idx - 1 : idx + 1;
+    setNewRecipe((prev) => {
+      const steps = [...prev.steps];
+      const temp = steps[idx];
+      steps[idx] = steps[targetIdx];
+      steps[targetIdx] = temp;
+
+      const updatedSteps = steps.map((s, i) => ({
+        ...s,
+        step_number: i + 1
+      }));
+
+      return { ...prev, steps: updatedSteps };
+    });
+
+    if (editingStepIndex === idx) {
+      setEditingStepIndex(targetIdx);
+    } else if (editingStepIndex === targetIdx) {
+      setEditingStepIndex(idx);
+    }
+  };
+
+  const handleEditRecipe = (recipe) => {
+    setNewRecipe({
+      name: recipe.name,
+      method: recipe.method || 'V60',
+      coffee_g: recipe.coffee_g,
+      grind_size: recipe.grind_size || '',
+      water_temp_c: recipe.water_temp_c,
+      steps: [...recipe.steps]
+    });
+    setEditingRecipeId(recipe.id);
+    setIsCreating(true);
+  };
+
+  const handleCancelForm = () => {
+    setIsCreating(false);
+    setEditingRecipeId(null);
+    setEditingStepIndex(null);
+    setNewRecipe({
+      name: '',
+      method: 'V60',
+      coffee_g: 15,
+      grind_size: '',
+      water_temp_c: 90,
+      steps: []
+    });
     setStepInput({ title: '', water_g: 0, duration_s: 30, instruction: '' });
   };
 
@@ -193,21 +282,18 @@ export default function App() {
       return;
     }
 
-    const created = {
-      ...newRecipe,
-      id: `custom-${Date.now()}`
-    };
-
-    setRecipes((prev) => [...prev, created]);
-    setIsCreating(false);
-    setNewRecipe({
-      name: '',
-      method: 'V60',
-      coffee_g: 15,
-      grind_size: '',
-      water_temp_c: 90,
-      steps: []
-    });
+    if (editingRecipeId) {
+      setRecipes((prev) => prev.map(r => r.id === editingRecipeId ? { ...newRecipe, id: editingRecipeId } : r));
+      alert("Receta actualizada correctamente.");
+    } else {
+      const created = {
+        ...newRecipe,
+        id: `custom-${Date.now()}`
+      };
+      setRecipes((prev) => [...prev, created]);
+      alert("Receta guardada correctamente.");
+    }
+    handleCancelForm();
   };
 
   const groupedRecipes = recipes.reduce((groups, recipe) => {
@@ -255,9 +341,12 @@ export default function App() {
         ) : isCreating ? (
           <div>
             <div className="flex justify-between items-center mb-4 border-b border-slate-200 dark:border-slate-800 pb-2">
-              <h2 className="text-lg font-bold text-slate-900 dark:text-white">Nueva Receta</h2>
+              <h2 className="text-lg font-bold text-slate-900 dark:text-white">
+                {editingRecipeId ? 'Editar Receta' : 'Nueva Receta'}
+              </h2>
               <button 
-                onClick={() => setIsCreating(false)} 
+                type="button"
+                onClick={handleCancelForm} 
                 className="text-slate-400 dark:text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-sm font-semibold cursor-pointer"
               >
                 Cancelar
@@ -335,15 +424,79 @@ export default function App() {
                 {newRecipe.steps.length > 0 && (
                   <ul className="mb-4 bg-slate-50 dark:bg-slate-800 rounded-lg p-2 divide-y divide-slate-200 dark:divide-slate-700 text-xs text-slate-600 dark:text-slate-300">
                     {newRecipe.steps.map((s, idx) => (
-                      <li key={idx} className="py-1 flex justify-between">
-                        <span>{s.step_number}. {s.title} ({s.duration_s}s | {s.water_g}g)</span>
+                      <li key={idx} className={`py-1.5 px-2 flex justify-between items-center rounded transition ${editingStepIndex === idx ? 'bg-amber-105/50 dark:bg-amber-900/20 border border-amber-500/50' : 'hover:bg-slate-100 dark:hover:bg-slate-800'}`}>
+                        <div 
+                          className="flex-1 cursor-pointer pr-2 select-none" 
+                          onClick={() => handleSelectStepToEdit(idx)}
+                          title="Haz clic para editar este paso"
+                        >
+                          <span className="font-semibold">{s.step_number}. {s.title}</span>
+                          <span className="text-[10px] text-slate-500 dark:text-slate-400 block">
+                            {s.duration_s}s | {s.water_g}g {s.instruction ? `• "${s.instruction}"` : ''}
+                          </span>
+                        </div>
+                        
+                        <div className="flex items-center gap-1">
+                          <button
+                            type="button"
+                            onClick={() => handleMoveStep(idx, 'up')}
+                            disabled={idx === 0}
+                            className="p-1 hover:bg-slate-200 dark:hover:bg-slate-750 disabled:opacity-20 rounded text-xs cursor-pointer font-bold"
+                            title="Mover arriba"
+                          >
+                            ▲
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleMoveStep(idx, 'down')}
+                            disabled={idx === newRecipe.steps.length - 1}
+                            className="p-1 hover:bg-slate-200 dark:hover:bg-slate-750 disabled:opacity-20 rounded text-xs cursor-pointer font-bold"
+                            title="Mover abajo"
+                          >
+                            ▼
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setNewRecipe(prev => {
+                                const updatedSteps = prev.steps.filter((_, i) => i !== idx).map((step, i) => ({
+                                  ...step,
+                                  step_number: i + 1
+                                }));
+                                return { ...prev, steps: updatedSteps };
+                              });
+                              if (editingStepIndex === idx) {
+                                handleCancelStepEdit();
+                              } else if (editingStepIndex > idx) {
+                                setEditingStepIndex(editingStepIndex - 1);
+                              }
+                            }}
+                            className="p-1 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 rounded font-bold text-xs cursor-pointer"
+                            title="Eliminar paso"
+                          >
+                            ✕
+                          </button>
+                        </div>
                       </li>
                     ))}
                   </ul>
                 )}
 
                 <div className="bg-amber-50/50 dark:bg-amber-950/10 p-3 rounded-lg space-y-2 border border-amber-100 dark:border-amber-900/20">
-                  <span className="text-xs font-bold text-amber-900 dark:text-amber-400 block">Formulario de Paso</span>
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs font-bold text-amber-900 dark:text-amber-400 block">
+                      {editingStepIndex !== null ? `Editando Paso ${editingStepIndex + 1}` : 'Formulario de Paso'}
+                    </span>
+                    {editingStepIndex !== null && (
+                      <button
+                        type="button"
+                        onClick={handleCancelStepEdit}
+                        className="text-[10px] text-slate-500 dark:text-slate-400 hover:underline cursor-pointer"
+                      >
+                        Cancelar edición
+                      </button>
+                    )}
+                  </div>
                   <div className="grid grid-cols-2 gap-2">
                     <input 
                       type="text" 
@@ -379,9 +532,9 @@ export default function App() {
                   <button 
                     type="button" 
                     onClick={handleAddStepToForm}
-                    className="w-full py-1.5 bg-amber-800 hover:bg-amber-900 text-white rounded text-xs font-semibold cursor-pointer"
+                    className={`w-full py-1.5 text-white rounded text-xs font-semibold cursor-pointer transition ${editingStepIndex !== null ? 'bg-emerald-700 hover:bg-emerald-800 dark:bg-emerald-650' : 'bg-amber-800 hover:bg-amber-900'}`}
                   >
-                    + Agregar Paso a la lista
+                    {editingStepIndex !== null ? '✓ Guardar Cambios en Paso' : '+ Agregar Paso a la lista'}
                   </button>
                 </div>
               </div>
@@ -454,7 +607,7 @@ export default function App() {
                                 </p>
                               </div>
                               
-                              <div className="flex gap-1.5 opacity-60 group-hover:opacity-100 transition">
+                              <div className="flex gap-1.5 opacity-80 group-hover:opacity-100 transition items-center">
                                 <button 
                                   onClick={(e) => { e.stopPropagation(); setSummaryRecipe(recipe); }}
                                   className="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded text-slate-600 dark:text-slate-200 font-bold cursor-pointer"
@@ -462,20 +615,47 @@ export default function App() {
                                 >
                                   📋
                                 </button>
-                                <button 
-                                  onClick={(e) => { e.stopPropagation(); handleExportJson(recipe); }}
-                                  className="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded text-slate-500 dark:text-slate-300 cursor-pointer"
-                                  title="Exportar Receta"
-                                >
-                                  📥
-                                </button>
-                                <button 
-                                  onClick={(e) => handleDeleteRecipe(recipe.id, e)}
-                                  className="p-1 hover:bg-red-50 dark:hover:bg-red-950/20 rounded text-red-500 dark:text-red-400 cursor-pointer"
-                                  title="Eliminar Receta"
-                                >
-                                  🗑️
-                                </button>
+                                
+                                <div className="relative">
+                                  <button 
+                                    onClick={(e) => { 
+                                      e.stopPropagation(); 
+                                      setMenuOpenRecipeId(menuOpenRecipeId === recipe.id ? null : recipe.id); 
+                                    }}
+                                    className="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded text-slate-500 dark:text-slate-300 font-bold cursor-pointer flex items-center justify-center w-6 h-6"
+                                    title="Más opciones"
+                                  >
+                                    •••
+                                  </button>
+                                  {menuOpenRecipeId === recipe.id && (
+                                    <>
+                                      <div 
+                                        className="fixed inset-0 z-10" 
+                                        onClick={(e) => { e.stopPropagation(); setMenuOpenRecipeId(null); }}
+                                      />
+                                      <div className="absolute right-0 mt-1 w-28 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-750 rounded-lg shadow-lg py-1 z-20 text-xs text-slate-700 dark:text-slate-200">
+                                        <button 
+                                          onClick={(e) => { e.stopPropagation(); handleEditRecipe(recipe); setMenuOpenRecipeId(null); }}
+                                          className="w-full px-3 py-1.5 text-left hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-1.5 cursor-pointer"
+                                        >
+                                          ✏️ Editar
+                                        </button>
+                                        <button 
+                                          onClick={(e) => { e.stopPropagation(); handleExportJson(recipe); setMenuOpenRecipeId(null); }}
+                                          className="w-full px-3 py-1.5 text-left hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-1.5 cursor-pointer"
+                                        >
+                                          📥 Exportar
+                                        </button>
+                                        <button 
+                                          onClick={(e) => { e.stopPropagation(); handleDeleteRecipe(recipe.id, e); setMenuOpenRecipeId(null); }}
+                                          className="w-full px-3 py-1.5 text-left hover:bg-red-50 dark:hover:bg-red-950/20 text-red-600 dark:text-red-400 flex items-center gap-1.5 cursor-pointer font-semibold"
+                                        >
+                                          🗑️ Eliminar
+                                        </button>
+                                      </div>
+                                    </>
+                                  )}
+                                </div>
                               </div>
                             </div>
                           ))}

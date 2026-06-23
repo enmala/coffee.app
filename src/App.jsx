@@ -312,22 +312,22 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 p-4 font-sans flex flex-col items-center transition-colors duration-300">
-      <header className="w-full max-w-md mb-6 mt-4 flex justify-between items-center px-1">
+    <div className="min-h-screen bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 p-3 md:p-4 font-sans flex flex-col items-center transition-colors duration-300">
+      <header className="w-full max-w-md mb-4 mt-2 md:mb-6 md:mt-4 flex justify-between items-center px-1">
         <div className="text-left">
-          <h1 className="text-3xl font-extrabold text-amber-900 dark:text-amber-500 tracking-tight">☕ Barista Timer</h1>
+          <h1 className="text-2xl md:text-3xl font-extrabold text-amber-900 dark:text-amber-500 tracking-tight">☕ Barista Timer</h1>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Administra tus recetas y tiempos de extracción</p>
         </div>
         <button
           onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-          className="p-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition cursor-pointer text-base"
+          className="p-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition cursor-pointer text-base"
           title={theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
         >
           {theme === 'dark' ? '☀️' : '🌙'}
         </button>
       </header>
 
-      <main className="w-full max-w-md bg-white dark:bg-slate-900 rounded-2xl shadow-md border border-slate-200 dark:border-slate-800 overflow-hidden p-6 relative transition-colors duration-300">
+      <main className="w-full max-w-md bg-white dark:bg-slate-900 rounded-2xl shadow-md border border-slate-200 dark:border-slate-800 overflow-hidden p-4 md:p-6 relative transition-colors duration-300">
         {activeRecipe ? (
           <div>
             <button 
@@ -377,6 +377,7 @@ export default function App() {
                     <option value="V60">V60</option>
                     <option value="Aeropress">Aeropress</option>
                     <option value="Chemex">Chemex</option>
+                    <option value="Hario Switch">Hario Switch</option>
                     <option value="Moka">Moka</option>
                     <option value="Origami">Origami</option>
                     <option value="Prensa Francesa">Prensa Francesa</option>
@@ -760,6 +761,7 @@ function TimerComponent({ recipe }) {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [timeLeft, setTimeLeft] = useState(recipe.steps[0].duration_s);
   const [isRunning, setIsRunning] = useState(false);
+  const [showFinishedModal, setShowFinishedModal] = useState(false);
   const currentStep = recipe.steps[currentStepIndex];
 
   useEffect(() => {
@@ -818,9 +820,7 @@ function TimerComponent({ recipe }) {
             if ('vibrate' in navigator) {
               navigator.vibrate(400);
             }
-            setTimeout(() => {
-              alert("¡Extracción finalizada con éxito!");
-            }, 100);
+            setShowFinishedModal(true);
             return 0;
           }
         });
@@ -865,47 +865,47 @@ function TimerComponent({ recipe }) {
     .reduce((sum, s) => sum + s.water_g, 0);
 
   return (
-    <div className="space-y-6 text-center">
+    <div className="space-y-4 text-center">
       <div>
-        <h3 className="text-xl font-bold text-slate-900 dark:text-white">{recipe.name}</h3>
+        <h3 className="text-lg font-bold text-slate-900 dark:text-white">{recipe.name}</h3>
         <span className="text-xs bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-350 px-2 py-0.5 rounded font-bold uppercase tracking-wider">{recipe.method}</span>
       </div>
 
-      <div className="grid grid-cols-3 gap-2 bg-slate-50 dark:bg-slate-800/40 p-3 rounded-xl text-xs text-slate-600 dark:text-slate-300 border border-slate-100 dark:border-slate-800">
+      <div className="grid grid-cols-3 gap-2 bg-slate-50 dark:bg-slate-800/40 p-2 rounded-xl text-[11px] text-slate-600 dark:text-slate-300 border border-slate-100 dark:border-slate-800">
         <div>
-          <span className="block text-slate-400 dark:text-slate-400 text-[10px] uppercase font-bold">Café</span>
-          <span className="font-semibold text-sm">{recipe.coffee_g}g</span>
+          <span className="block text-slate-450 dark:text-slate-400 text-[9px] uppercase font-bold">Café</span>
+          <span className="font-semibold text-xs">{recipe.coffee_g}g</span>
         </div>
         <div>
-          <span className="block text-slate-400 dark:text-slate-400 text-[10px] uppercase font-bold">Molienda</span>
-          <span className="font-semibold text-sm truncate block">{recipe.grind_size || 'N/D'}</span>
+          <span className="block text-slate-450 dark:text-slate-400 text-[9px] uppercase font-bold">Molienda</span>
+          <span className="font-semibold text-xs truncate block">{recipe.grind_size || 'N/D'}</span>
         </div>
         <div>
-          <span className="block text-slate-400 dark:text-slate-400 text-[10px] uppercase font-bold">Temp.</span>
-          <span className="font-semibold text-sm">{recipe.water_temp_c}°C</span>
+          <span className="block text-slate-450 dark:text-slate-400 text-[9px] uppercase font-bold">Temp.</span>
+          <span className="font-semibold text-xs">{recipe.water_temp_c}°C</span>
         </div>
       </div>
 
-      <div className="border-t border-b border-slate-100 dark:border-slate-800 py-4 bg-amber-50/20 dark:bg-amber-950/10 rounded-xl px-2">
-        <span className="text-[10px] font-bold text-amber-900 dark:text-amber-300 bg-amber-100 dark:bg-amber-900/30 px-2 py-1 rounded-full uppercase">
+      <div className="border-t border-b border-slate-100 dark:border-slate-800 py-3 bg-amber-50/20 dark:bg-amber-950/10 rounded-xl px-2">
+        <span className="text-[10px] font-bold text-amber-900 dark:text-amber-300 bg-amber-100 dark:bg-amber-900/30 px-2 py-0.5 rounded-full uppercase">
           Paso {currentStepIndex + 1} de {recipe.steps.length}
         </span>
-        <h4 className="text-lg font-bold text-slate-800 dark:text-slate-200 mt-2">{currentStep.title}</h4>
-        <p className="text-base text-slate-600 dark:text-slate-400 mt-1 min-h-[48px] px-4 flex items-center justify-center italic">
+        <h4 className="text-base font-bold text-slate-800 dark:text-slate-200 mt-1">{currentStep.title}</h4>
+        <p className="text-lg text-slate-600 dark:text-slate-400 mt-1 min-h-[48px] px-4 flex items-center justify-center italic font-semibold leading-relaxed">
           "{currentStep.instruction || 'Sin instrucciones adicionales'}"
         </p>
         
-        <div className="mt-2 text-xs">
+        <div className="mt-1 text-xs">
           <span className="text-slate-400 dark:text-slate-400">Verter en este paso: </span>
           <span className="font-bold text-amber-900 dark:text-amber-400">+{currentStep.water_g}g</span>
         </div>
-        <div className="text-sm text-slate-600 dark:text-slate-350 mt-1">
-          Agua acumulada: <span className="font-bold text-amber-900 dark:text-amber-400 text-lg">{cumulativeWater}g</span>
+        <div className="text-xs text-slate-600 dark:text-slate-350 mt-0.5">
+          Agua acumulada: <span className="font-bold text-amber-900 dark:text-amber-400 text-sm">{cumulativeWater}g</span>
         </div>
       </div>
 
-      <div className="py-2">
-        <div className="text-5xl font-mono font-bold text-slate-900 dark:text-white select-none tracking-tight">
+      <div className="py-1">
+        <div className="text-4xl font-mono font-bold text-slate-900 dark:text-white select-none tracking-tight">
           {formatTime(timeLeft)}
         </div>
       </div>
@@ -913,6 +913,7 @@ function TimerComponent({ recipe }) {
       <div className="space-y-3">
         <div className="flex justify-center items-center gap-4">
           <button 
+            type="button"
             onClick={handleSkipPrev} 
             disabled={currentStepIndex === 0}
             className="p-2 text-slate-400 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 disabled:opacity-30 disabled:hover:text-slate-400 dark:disabled:hover:text-slate-600 text-xl cursor-pointer"
@@ -922,8 +923,9 @@ function TimerComponent({ recipe }) {
           </button>
           
           <button 
+            type="button"
             onClick={() => setIsRunning(!isRunning)}
-            className={`w-32 py-3 rounded-full text-white font-bold shadow-md transition transform active:scale-95 cursor-pointer ${
+            className={`w-32 py-2.5 rounded-full text-white font-bold shadow-md transition transform active:scale-95 cursor-pointer text-sm ${
               isRunning ? 'bg-red-600 hover:bg-red-700' : 'bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-800'
             }`}
           >
@@ -931,6 +933,7 @@ function TimerComponent({ recipe }) {
           </button>
 
           <button 
+            type="button"
             onClick={handleSkipNext} 
             disabled={currentStepIndex === recipe.steps.length - 1}
             className="p-2 text-slate-400 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 disabled:opacity-30 disabled:hover:text-slate-400 dark:disabled:hover:text-slate-600 text-xl cursor-pointer"
@@ -942,13 +945,33 @@ function TimerComponent({ recipe }) {
 
         <div>
           <button 
+            type="button"
             onClick={handleReset}
-            className="text-xs text-slate-400 dark:text-slate-400 hover:text-slate-600 dark:hover:text-slate-350 underline cursor-pointer"
+            className="text-[11px] text-slate-400 dark:text-slate-400 hover:text-slate-600 dark:hover:text-slate-350 underline cursor-pointer"
           >
             Reiniciar cronómetro
           </button>
         </div>
       </div>
+
+      {showFinishedModal && (
+        <div className="fixed inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-sm w-full p-6 shadow-xl border border-slate-100 dark:border-slate-800 text-center space-y-4">
+            <div className="text-4xl">🎉</div>
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white">¡Preparación Completada!</h3>
+            <p className="text-sm text-slate-500 dark:text-slate-400">
+              Tu café está listo para disfrutar. ¡Que tengas una excelente taza!
+            </p>
+            <button 
+              type="button"
+              onClick={() => setShowFinishedModal(false)}
+              className="w-full py-2.5 bg-emerald-700 hover:bg-emerald-800 dark:bg-emerald-650 dark:hover:bg-emerald-700 text-white rounded-xl font-bold text-sm transition shadow-sm cursor-pointer"
+            >
+              Entendido
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

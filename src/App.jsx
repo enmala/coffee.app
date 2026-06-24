@@ -223,14 +223,29 @@ export default function App() {
           alert("El archivo JSON no tiene una estructura válida de receta.");
           return;
         }
+
+        const uniqueId = `imported-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+
+        let recipeName = imported.name.trim();
+        const nameExists = recipes.some((r) => r.name.toLowerCase() === recipeName.toLowerCase());
+        if (nameExists) {
+          let counter = 1;
+          while (recipes.some((r) => r.name.toLowerCase() === `${recipeName} (${counter})`.toLowerCase())) {
+            counter++;
+          }
+          recipeName = `${recipeName} (${counter})`;
+        }
+
         const updated = {
           ...imported,
-          id: imported.id || `imported-${Date.now()}`
+          id: uniqueId,
+          name: recipeName
         };
         setRecipes((prev) => [...prev, updated]);
-        alert("Receta importada correctamente.");
+        alert(`Receta importada correctamente como "${recipeName}".`);
       } catch (err) {
         console.error("Error al leer el archivo JSON:", err);
+        alert("Ocurrió un error al leer el archivo JSON.");
       }
     };
     reader.readAsText(file);

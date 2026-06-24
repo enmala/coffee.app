@@ -662,7 +662,7 @@ export default function App() {
               </div>
             </div>
 
-            <div className="space-y-5 max-h-[480px] overflow-y-auto pr-1">
+            <div className="space-y-5 max-h-[480px] overflow-y-auto pr-1 pb-16">
               {Object.keys(groupedRecipes).length === 0 ? (
                 <p className="text-sm text-slate-400 dark:text-slate-400 text-center py-8">No tienes recetas guardadas.</p>
               ) : (
@@ -685,74 +685,77 @@ export default function App() {
                       
                       {!isCollapsed && (
                         <div className="space-y-2">
-                          {groupedRecipes[method].map((recipe) => (
-                            <div 
-                              key={recipe.id}
-                              onClick={() => setActiveRecipe(recipe)}
-                              className="p-3 bg-slate-50 dark:bg-slate-800/30 hover:bg-amber-50/20 dark:hover:bg-amber-900/10 border border-slate-200 dark:border-slate-800 hover:border-amber-200 dark:hover:border-amber-800/30 rounded-xl cursor-pointer transition flex justify-between items-center group"
-                            >
-                              <div className="space-y-1">
-                                <span className="font-semibold text-slate-950 dark:text-slate-100 text-sm block">{recipe.name}</span>
-                                <p className="text-[11px] text-slate-500 dark:text-slate-300">
-                                  {recipe.coffee_g}g • {recipe.grind_size || 'Molienda N/D'} • {recipe.water_temp_c}°C
-                                </p>
-                                <p className="text-[10px] text-amber-800 dark:text-amber-400 font-medium">
-                                  {recipe.steps.length} pasos • {recipe.steps.reduce((acc, s) => acc + s.water_g, 0)}g agua
-                                </p>
-                              </div>
-                              
-                              <div className="flex gap-1.5 opacity-80 group-hover:opacity-100 transition items-center">
-                                <button 
-                                  onClick={(e) => { e.stopPropagation(); setSummaryRecipe(recipe); }}
-                                  className="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded text-slate-650 dark:text-slate-200 text-base md:text-lg cursor-pointer"
-                                  title="Ver Resumen"
-                                >
-                                  📋
-                                </button>
+                          {groupedRecipes[method].map((recipe, recipeIdx) => {
+                            const isLastInGroup = recipeIdx === groupedRecipes[method].length - 1;
+                            return (
+                              <div 
+                                key={recipe.id}
+                                onClick={() => setActiveRecipe(recipe)}
+                                className="p-3 bg-slate-50 dark:bg-slate-800/30 hover:bg-amber-50/20 dark:hover:bg-amber-900/10 border border-slate-200 dark:border-slate-800 hover:border-amber-200 dark:hover:border-amber-800/30 rounded-xl cursor-pointer transition flex justify-between items-center group"
+                              >
+                                <div className="space-y-1">
+                                  <span className="font-semibold text-slate-950 dark:text-slate-100 text-sm block">{recipe.name}</span>
+                                  <p className="text-[11px] text-slate-500 dark:text-slate-300">
+                                    {recipe.coffee_g}g • {recipe.grind_size || 'Molienda N/D'} • {recipe.water_temp_c}°C
+                                  </p>
+                                  <p className="text-[10px] text-amber-800 dark:text-amber-400 font-medium">
+                                    {recipe.steps.length} pasos • {recipe.steps.reduce((acc, s) => acc + s.water_g, 0)}g agua
+                                  </p>
+                                </div>
                                 
-                                <div className="relative">
+                                <div className="flex gap-1.5 opacity-80 group-hover:opacity-100 transition items-center">
                                   <button 
-                                    onClick={(e) => { 
-                                      e.stopPropagation(); 
-                                      setMenuOpenRecipeId(menuOpenRecipeId === recipe.id ? null : recipe.id); 
-                                    }}
-                                    className="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded text-slate-500 dark:text-slate-300 cursor-pointer flex items-center justify-center w-6 h-6 text-[9px] tracking-tighter font-semibold"
-                                    title="Más opciones"
+                                    onClick={(e) => { e.stopPropagation(); setSummaryRecipe(recipe); }}
+                                    className="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded text-slate-650 dark:text-slate-200 text-base md:text-lg cursor-pointer"
+                                    title="Ver Resumen"
                                   >
-                                    •••
+                                    📋
                                   </button>
-                                  {menuOpenRecipeId === recipe.id && (
-                                    <>
-                                      <div 
-                                        className="fixed inset-0 z-10" 
-                                        onClick={(e) => { e.stopPropagation(); setMenuOpenRecipeId(null); }}
-                                      />
-                                      <div className="absolute right-0 mt-1 w-28 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-750 rounded-lg shadow-lg py-1 z-20 text-xs text-slate-700 dark:text-slate-200">
-                                        <button 
-                                          onClick={(e) => { e.stopPropagation(); handleEditRecipe(recipe); setMenuOpenRecipeId(null); }}
-                                          className="w-full px-3 py-1.5 text-left hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-1.5 cursor-pointer"
-                                        >
-                                          ✏️ Editar
-                                        </button>
-                                        <button 
-                                          onClick={(e) => { e.stopPropagation(); handleExportJson(recipe); setMenuOpenRecipeId(null); }}
-                                          className="w-full px-3 py-1.5 text-left hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-1.5 cursor-pointer"
-                                        >
-                                          📥 Exportar
-                                        </button>
-                                        <button 
-                                          onClick={(e) => { e.stopPropagation(); handleDeleteRecipe(recipe.id, e); setMenuOpenRecipeId(null); }}
-                                          className="w-full px-3 py-1.5 text-left hover:bg-red-50 dark:hover:bg-red-950/20 text-red-600 dark:text-red-400 flex items-center gap-1.5 cursor-pointer font-semibold"
-                                        >
-                                          🗑️ Eliminar
-                                        </button>
-                                      </div>
-                                    </>
-                                  )}
+                                  
+                                  <div className="relative">
+                                    <button 
+                                      onClick={(e) => { 
+                                        e.stopPropagation(); 
+                                        setMenuOpenRecipeId(menuOpenRecipeId === recipe.id ? null : recipe.id); 
+                                      }}
+                                      className="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded text-slate-500 dark:text-slate-300 cursor-pointer flex items-center justify-center w-6 h-6 text-[9px] tracking-tighter font-semibold"
+                                      title="Más opciones"
+                                    >
+                                      •••
+                                    </button>
+                                    {menuOpenRecipeId === recipe.id && (
+                                      <>
+                                        <div 
+                                          className="fixed inset-0 z-10" 
+                                          onClick={(e) => { e.stopPropagation(); setMenuOpenRecipeId(null); }}
+                                        />
+                                        <div className={`absolute right-0 w-28 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-750 rounded-lg shadow-lg py-1 z-20 text-xs text-slate-700 dark:text-slate-200 ${isLastInGroup ? 'bottom-full mb-1.5' : 'top-full mt-1'}`}>
+                                          <button 
+                                            onClick={(e) => { e.stopPropagation(); handleEditRecipe(recipe); setMenuOpenRecipeId(null); }}
+                                            className="w-full px-3 py-1.5 text-left hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-1.5 cursor-pointer"
+                                          >
+                                            ✏️ Editar
+                                          </button>
+                                          <button 
+                                            onClick={(e) => { e.stopPropagation(); handleExportJson(recipe); setMenuOpenRecipeId(null); }}
+                                            className="w-full px-3 py-1.5 text-left hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-1.5 cursor-pointer"
+                                          >
+                                            📥 Exportar
+                                          </button>
+                                          <button 
+                                            onClick={(e) => { e.stopPropagation(); handleDeleteRecipe(recipe.id, e); setMenuOpenRecipeId(null); }}
+                                            className="w-full px-3 py-1.5 text-left hover:bg-red-50 dark:hover:bg-red-950/20 text-red-600 dark:text-red-400 flex items-center gap-1.5 cursor-pointer font-semibold"
+                                          >
+                                            🗑️ Eliminar
+                                          </button>
+                                        </div>
+                                      </>
+                                    )}
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                          ))}
+                            );
+                          })}
                         </div>
                       )}
                     </div>

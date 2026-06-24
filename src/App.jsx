@@ -662,7 +662,7 @@ export default function App() {
               </div>
             </div>
 
-            <div className="space-y-5 max-h-[480px] overflow-y-auto pr-1 pb-16">
+            <div className="space-y-5 max-h-[480px] overflow-y-auto pr-1 pb-24">
               {Object.keys(groupedRecipes).length === 0 ? (
                 <p className="text-sm text-slate-400 dark:text-slate-400 text-center py-8">No tienes recetas guardadas.</p>
               ) : (
@@ -685,9 +685,7 @@ export default function App() {
                       
                       {!isCollapsed && (
                         <div className="space-y-2">
-                          {groupedRecipes[method].map((recipe, recipeIdx) => {
-                            const isLastInGroup = recipeIdx === groupedRecipes[method].length - 1;
-                            return (
+                          {groupedRecipes[method].map((recipe) => (
                               <div 
                                 key={recipe.id}
                                 onClick={() => setActiveRecipe(recipe)}
@@ -729,7 +727,7 @@ export default function App() {
                                           className="fixed inset-0 z-10" 
                                           onClick={(e) => { e.stopPropagation(); setMenuOpenRecipeId(null); }}
                                         />
-                                        <div className={`absolute right-0 w-28 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-750 rounded-lg shadow-lg py-1 z-20 text-xs text-slate-700 dark:text-slate-200 ${isLastInGroup ? 'bottom-full mb-1.5' : 'top-full mt-1'}`}>
+                                        <div className="absolute right-0 top-full mt-1 w-28 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-750 rounded-lg shadow-lg py-1 z-20 text-xs text-slate-700 dark:text-slate-200">
                                           <button 
                                             onClick={(e) => { e.stopPropagation(); handleEditRecipe(recipe); setMenuOpenRecipeId(null); }}
                                             className="w-full px-3 py-1.5 text-left hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-1.5 cursor-pointer"
@@ -754,8 +752,7 @@ export default function App() {
                                   </div>
                                 </div>
                               </div>
-                            );
-                          })}
+                          ))}
                         </div>
                       )}
                     </div>

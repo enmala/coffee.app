@@ -57,6 +57,18 @@ const DEFAULT_RECIPES = [
   }
 ];
 
+const getMethodIcon = (method) => {
+  const m = method.toLowerCase();
+  if (m.includes('v60')) return '🔻';
+  if (m.includes('aeropress')) return '🚀';
+  if (m.includes('chemex')) return '⚗️';
+  if (m.includes('switch')) return '🎚️';
+  if (m.includes('moka')) return '☕';
+  if (m.includes('origami')) return '🏵️';
+  if (m.includes('prensa') || m.includes('french')) return '🫖';
+  return '☕';
+};
+
 export default function App() {
   const [recipes, setRecipes] = useState(() => {
     const saved = localStorage.getItem('coffee_recipes_v1');
@@ -584,7 +596,10 @@ export default function App() {
                         onClick={() => toggleMethodCollapse(method)}
                         className="text-xs font-extrabold text-slate-400 dark:text-slate-300 hover:text-amber-800 dark:hover:text-amber-500 uppercase tracking-wider pl-1 pt-1 flex justify-between items-center cursor-pointer select-none transition-colors duration-200"
                       >
-                        <span>{method} ({groupedRecipes[method].length})</span>
+                        <span className="flex items-center gap-1.5">
+                          <span className="text-sm select-none">{getMethodIcon(method)}</span>
+                          <span>{method} ({groupedRecipes[method].length})</span>
+                        </span>
                         <span className="text-[10px] transform transition-transform duration-200 mr-1">
                           {isCollapsed ? '▶' : '▼'}
                         </span>
@@ -611,7 +626,7 @@ export default function App() {
                               <div className="flex gap-1.5 opacity-80 group-hover:opacity-100 transition items-center">
                                 <button 
                                   onClick={(e) => { e.stopPropagation(); setSummaryRecipe(recipe); }}
-                                  className="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded text-slate-600 dark:text-slate-200 font-bold cursor-pointer"
+                                  className="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded text-slate-650 dark:text-slate-200 text-base md:text-lg cursor-pointer"
                                   title="Ver Resumen"
                                 >
                                   📋
@@ -623,7 +638,7 @@ export default function App() {
                                       e.stopPropagation(); 
                                       setMenuOpenRecipeId(menuOpenRecipeId === recipe.id ? null : recipe.id); 
                                     }}
-                                    className="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded text-slate-500 dark:text-slate-300 font-bold cursor-pointer flex items-center justify-center w-6 h-6"
+                                    className="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded text-slate-500 dark:text-slate-300 cursor-pointer flex items-center justify-center w-6 h-6 text-[9px] tracking-tighter font-semibold"
                                     title="Más opciones"
                                   >
                                     •••

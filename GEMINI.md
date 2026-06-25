@@ -9,9 +9,12 @@ Este archivo contiene el contexto técnico, la arquitectura y el estado actual d
 *   **Gestión Local:** Creación, edición, listado y eliminación de recetas guardadas directamente en el dispositivo (`localStorage`).
 *   **Agrupamiento por Métodos:** Clasificación visual y dinámica de las recetas de acuerdo con el método de preparación empleado.
 *   **Resumen de Receta:** Un modal de vista previa rápida de cada receta para verificar parámetros físicos (peso de café, molienda, temperatura del agua, tiempo total estimado) y la lista de pasos secuenciales antes de iniciar la preparación.
-*   **Temporizador Interactivo por Etapas:** Cronómetro secuencial con instrucciones paso a paso, visualización del agua acumulada sugerida, pitido de alerta sintetizado (usando Web Audio API para evitar dependencias externas) y soporte para vibración háptica en dispositivos móviles compatibles.
-*   **Importación y Exportación:** Herramienta para descargar cualquier receta local como archivo de estructura estructurada `.json` e importar nuevas recetas externas de manera nativa.
-*   **Capacidad PWA:** Configurado con un manifiesto web e iconos dedicados para permitir su instalación en dispositivos móviles y de escritorio (Android, iOS, Windows, macOS) y funcionamiento sin conexión a Internet.
+*   **Temporizador Interactivo por Etapas:** Cronómetro secuencial con instrucciones paso a paso, visualización del agua acumulada sugerida, pitido de alerta sintetizado (usando Web Audio API) y soporte para vibración háptica.
+*   **Historial de Preparaciones:** Un registro local que guarda la fecha, hora y receta de cada extracción completada, permitiendo al usuario guardar notas y habilitar/deshabilitar el registro automático.
+*   **Temas Visuales / Modo Oscuro:** Selector para alternar entre modo claro y modo oscuro para mejorar la legibilidad.
+*   **Importación y Exportación:** Herramienta para descargar y cargar recetas en formato estructurado `.json` con prevención de nombres duplicados y manejo de IDs únicos.
+*   **Capacidad PWA:** Configurado con un manifiesto web e iconos dedicados para permitir su instalación y funcionamiento offline.
+*   **Modularidad:** Código fuente refactorizado dividiendo componentes (`TimerComponent`) y utilidades comunes (`coffeeUtils`).
 
 ---
 
@@ -53,8 +56,9 @@ Las recetas se estructuran siguiendo este formato JSON:
 ## 4. Estructura de Archivos Clave
 
 - `vite.config.js` (Configuración de Vite y PWA)
-- `src/App.jsx` (Código Fuente Completo de la Aplicación)
-
+- `src/App.jsx` (Vista Principal, layouts de recetas e historial)
+- `src/components/TimerComponent.jsx` (Componente de temporizador interactivo por etapas)
+- `src/utils/coffeeUtils.jsx` (Utilidades comunes de pitido y mapeo de iconos SVG)
 
 ---
 

@@ -79,8 +79,21 @@ Las recetas se estructuran siguiendo este formato JSON:
 3. Una vez integrados los cambios en la rama principal la rama de trabajo de corta duración debe ser eliminada
 4. Seguir las recomendaciones de Conventional Commits [https://www.conventionalcommits.org/en/v1.0.0/]
 
+--- 
+
 ## 7. Versionamiento de la App
 *   El versionamiento de la app se realizará utilizando el formato SemVer (Semantic Versioning) [https://semver.org/]
 *   La versión de la app se guardará en el archivo `package.json`
 *   La versión de la app se mostrará en el footer de la app
 *   Cada vez que se realizen cambios en una nueva rama de trabajo se debe actualizar el versionamiento.
+
+## 8. Tests
+*   Los tests se realizarán utilizando Vitest
+*   Los tests se ejecutarán utilizando `npm test`
+*   Los tests se ejecutarán utilizando `npm run test:ui`
+*   Se debe crear un archivo `vitest.config.js` para configurar Vitest
+*   Los tests se deben guardar en el directorio `__tests__`
+*   Los tests se deben nombrar con el formato `<nombre>.test.js`
+*   Se debe conseguir un coverage mínimo del 80% de las funcionalidades implementadas
+*   Los tests deben ser capaces de ejecutarse de forma automatizada
+*   Cada nuevo feature o funcionalidad debe incluir su respectivo test

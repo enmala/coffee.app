@@ -191,6 +191,39 @@ export default function App() {
   const [menuOpenRecipeId, setMenuOpenRecipeId] = useState(null);
   const [summaryRecipe, setSummaryRecipe] = useState(null);
 
+  const [activeTab, setActiveTab] = useState('recipes'); // 'recipes' or 'history'
+  const [history, setHistory] = useState(() => {
+    const saved = localStorage.getItem('coffee_history_v1');
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [editingHistoryId, setEditingHistoryId] = useState(null);
+  const [editingHistoryNotes, setEditingHistoryNotes] = useState(null);
+
+  const [autoLogEnabled, setAutoLogEnabled] = useState(() => {
+    const saved = localStorage.getItem('auto_log_enabled');
+    return saved !== null ? JSON.parse(saved) : true;
+  });
+
+  useEffect(() => {
+    localStorage.setItem('coffee_history_v1', JSON.stringify(history));
+  }, [history]);
+
+  useEffect(() => {
+    localStorage.setItem('auto_log_enabled', JSON.stringify(autoLogEnabled));
+  }, [autoLogEnabled]);
+
+  const handleDeleteHistoryEntry = (id) => {
+    if (confirm("¿Estás seguro de que deseas eliminar este registro del historial?")) {
+      setHistory((prev) => prev.filter((item) => item.id !== id));
+    }
+  };
+
+  const handleUpdateHistoryNotes = (id, newNotes) => {
+    setHistory((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, notes: newNotes } : item))
+    );
+  };
+
   const [newRecipe, setNewRecipe] = useState({
     name: '',
     method: 'V60',
@@ -441,7 +474,27 @@ export default function App() {
             >
               ← Volver al listado
             </button>
-            <TimerComponent recipe={activeRecipe} />
+            <TimerComponent 
+              recipe={activeRecipe} 
+              onComplete={() => {
+                if (autoLogEnabled) {
+                  const totalWater = activeRecipe.steps.reduce((acc, s) => acc + s.water_g, 0);
+                  const newEntry = {
+                    id: `history-${Date.now()}`,
+                    recipeId: activeRecipe.id,
+                    recipeName: activeRecipe.name,
+                    method: activeRecipe.method,
+                    date: new Date().toISOString(),
+                    coffee_g: activeRecipe.coffee_g,
+                    water_g: totalWater,
+                    grind_size: activeRecipe.grind_size,
+                    notes: ''
+                  };
+                  setHistory((prev) => [newEntry, ...prev]);
+                }
+                setActiveRecipe(null);
+              }}
+            />
           </div>
         ) : isCreating ? (
           <div>
@@ -654,127 +707,275 @@ export default function App() {
             </form>
           </div>
         ) : (
-          <div className="space-y-6">
-            <div className="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-3">
-              <h2 className="text-xl font-bold text-slate-900 dark:text-white">Tus Recetas</h2>
-              
-              <div className="flex gap-2">
-                <label className="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold rounded-lg cursor-pointer transition flex items-center justify-center border border-slate-200 dark:border-slate-700">
-                  Importar
-                  <input 
-                    type="file" 
-                    accept=".json" 
-                    onChange={handleImportJson} 
-                    className="hidden" 
-                  />
-                </label>
-                <button 
-                  onClick={() => setIsCreating(true)}
-                  className="px-3 py-1.5 bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-800 text-white text-xs font-bold rounded-lg transition cursor-pointer"
-                >
-                  + Nueva Receta
-                </button>
-              </div>
+          <div className="space-y-4">
+            {/* Tab Selector */}
+            <div className="flex border-b border-slate-200 dark:border-slate-800">
+              <button
+                onClick={() => setActiveTab('recipes')}
+                className={`flex-1 pb-2.5 text-center font-bold text-sm border-b-2 transition cursor-pointer ${activeTab === 'recipes' ? 'border-amber-800 dark:border-amber-500 text-amber-900 dark:text-amber-500' : 'border-transparent text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'}`}
+              >
+                📋 Recetas
+              </button>
+              <button
+                onClick={() => setActiveTab('history')}
+                className={`flex-1 pb-2.5 text-center font-bold text-sm border-b-2 transition cursor-pointer ${activeTab === 'history' ? 'border-amber-800 dark:border-amber-500 text-amber-900 dark:text-amber-500' : 'border-transparent text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'}`}
+              >
+                📜 Historial
+              </button>
             </div>
 
-            <div className="space-y-5 max-h-[480px] overflow-y-auto pr-1 pb-24">
-              {Object.keys(groupedRecipes).length === 0 ? (
-                <p className="text-sm text-slate-400 dark:text-slate-400 text-center py-8">No tienes recetas guardadas.</p>
-              ) : (
-                Object.keys(groupedRecipes).map((method) => {
-                  const isCollapsed = !!collapsedMethods[method];
-                  return (
-                    <div key={method} className="space-y-2">
-                      <h3 
-                        onClick={() => toggleMethodCollapse(method)}
-                        className="text-xs font-extrabold text-slate-400 dark:text-slate-300 hover:text-amber-800 dark:hover:text-amber-500 uppercase tracking-wider pl-1 pt-1 flex justify-between items-center cursor-pointer select-none transition-colors duration-200"
-                      >
-                        <span className="flex items-center gap-1.5">
-                          <span className="text-sm select-none">{getMethodIcon(method)}</span>
-                          <span>{method} ({groupedRecipes[method].length})</span>
-                        </span>
-                        <span className="text-[10px] transform transition-transform duration-200 mr-1">
-                          {isCollapsed ? '▶' : '▼'}
-                        </span>
-                      </h3>
-                      
-                      {!isCollapsed && (
-                        <div className="space-y-2">
-                          {groupedRecipes[method].map((recipe) => (
-                              <div 
-                                key={recipe.id}
-                                onClick={() => setActiveRecipe(recipe)}
-                                className="p-3 bg-slate-50 dark:bg-slate-800/30 hover:bg-amber-50/20 dark:hover:bg-amber-900/10 border border-slate-200 dark:border-slate-800 hover:border-amber-200 dark:hover:border-amber-800/30 rounded-xl cursor-pointer transition flex justify-between items-center group"
-                              >
-                                <div className="space-y-1">
-                                  <span className="font-semibold text-slate-950 dark:text-slate-100 text-sm block">{recipe.name}</span>
-                                  <p className="text-[11px] text-slate-500 dark:text-slate-300">
-                                    {recipe.coffee_g}g • {recipe.grind_size || 'Molienda N/D'} • {recipe.water_temp_c}°C
-                                  </p>
-                                  <p className="text-[10px] text-amber-800 dark:text-amber-400 font-medium">
-                                    {recipe.steps.length} pasos • {recipe.steps.reduce((acc, s) => acc + s.water_g, 0)}g agua
-                                  </p>
-                                </div>
-                                
-                                <div className="flex gap-1.5 opacity-80 group-hover:opacity-100 transition items-center">
-                                  <button 
-                                    onClick={(e) => { e.stopPropagation(); setSummaryRecipe(recipe); }}
-                                    className="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded text-slate-650 dark:text-slate-200 text-base md:text-lg cursor-pointer"
-                                    title="Ver Resumen"
+            {activeTab === 'recipes' ? (
+              <div className="space-y-6">
+                <div className="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-3">
+                  <h2 className="text-xl font-bold text-slate-900 dark:text-white">Tus Recetas</h2>
+                  
+                  <div className="flex gap-2">
+                    <label className="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold rounded-lg cursor-pointer transition flex items-center justify-center border border-slate-200 dark:border-slate-700">
+                      Importar
+                      <input 
+                        type="file" 
+                        accept=".json" 
+                        onChange={handleImportJson} 
+                        className="hidden" 
+                      />
+                    </label>
+                    <button 
+                      onClick={() => setIsCreating(true)}
+                      className="px-3 py-1.5 bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-800 text-white text-xs font-bold rounded-lg transition cursor-pointer"
+                    >
+                      + Nueva Receta
+                    </button>
+                  </div>
+                </div>
+
+                <div className="space-y-5 max-h-[480px] overflow-y-auto pr-1 pb-24">
+                  {Object.keys(groupedRecipes).length === 0 ? (
+                    <p className="text-sm text-slate-400 dark:text-slate-400 text-center py-8">No tienes recetas guardadas.</p>
+                  ) : (
+                    Object.keys(groupedRecipes).map((method) => {
+                      const isCollapsed = !!collapsedMethods[method];
+                      return (
+                        <div key={method} className="space-y-2">
+                          <h3 
+                            onClick={() => toggleMethodCollapse(method)}
+                            className="text-xs font-extrabold text-slate-400 dark:text-slate-300 hover:text-amber-800 dark:hover:text-amber-500 uppercase tracking-wider pl-1 pt-1 flex justify-between items-center cursor-pointer select-none transition-colors duration-200"
+                          >
+                            <span className="flex items-center gap-1.5">
+                              <span className="text-sm select-none">{getMethodIcon(method)}</span>
+                              <span>{method} ({groupedRecipes[method].length})</span>
+                            </span>
+                            <span className="text-[10px] transform transition-transform duration-200 mr-1">
+                              {isCollapsed ? '▶' : '▼'}
+                            </span>
+                          </h3>
+                          
+                          {!isCollapsed && (
+                            <div className="space-y-2">
+                              {groupedRecipes[method].map((recipe) => (
+                                  <div 
+                                    key={recipe.id}
+                                    onClick={() => setActiveRecipe(recipe)}
+                                    className="p-3 bg-slate-50 dark:bg-slate-800/30 hover:bg-amber-50/20 dark:hover:bg-amber-900/10 border border-slate-200 dark:border-slate-800 hover:border-amber-200 dark:hover:border-amber-800/30 rounded-xl cursor-pointer transition flex justify-between items-center group"
                                   >
-                                    📋
-                                  </button>
-                                  
-                                  <div className="relative">
-                                    <button 
-                                      onClick={(e) => { 
-                                        e.stopPropagation(); 
-                                        setMenuOpenRecipeId(menuOpenRecipeId === recipe.id ? null : recipe.id); 
-                                      }}
-                                      className="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded text-slate-500 dark:text-slate-300 cursor-pointer flex items-center justify-center w-6 h-6 text-[9px] tracking-tighter font-semibold"
-                                      title="Más opciones"
-                                    >
-                                      •••
-                                    </button>
-                                    {menuOpenRecipeId === recipe.id && (
-                                      <>
-                                        <div 
-                                          className="fixed inset-0 z-10" 
-                                          onClick={(e) => { e.stopPropagation(); setMenuOpenRecipeId(null); }}
-                                        />
-                                        <div className="absolute right-0 top-full mt-1 w-28 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-750 rounded-lg shadow-lg py-1 z-20 text-xs text-slate-700 dark:text-slate-200">
-                                          <button 
-                                            onClick={(e) => { e.stopPropagation(); handleEditRecipe(recipe); setMenuOpenRecipeId(null); }}
-                                            className="w-full px-3 py-1.5 text-left hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-1.5 cursor-pointer"
-                                          >
-                                            ✏️ Editar
-                                          </button>
-                                          <button 
-                                            onClick={(e) => { e.stopPropagation(); handleExportJson(recipe); setMenuOpenRecipeId(null); }}
-                                            className="w-full px-3 py-1.5 text-left hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-1.5 cursor-pointer"
-                                          >
-                                            📥 Exportar
-                                          </button>
-                                          <button 
-                                            onClick={(e) => { e.stopPropagation(); handleDeleteRecipe(recipe.id, e); setMenuOpenRecipeId(null); }}
-                                            className="w-full px-3 py-1.5 text-left hover:bg-red-50 dark:hover:bg-red-950/20 text-red-600 dark:text-red-400 flex items-center gap-1.5 cursor-pointer font-semibold"
-                                          >
-                                            🗑️ Eliminar
-                                          </button>
-                                        </div>
-                                      </>
-                                    )}
+                                    <div className="space-y-1">
+                                      <span className="font-semibold text-slate-950 dark:text-slate-100 text-sm block">{recipe.name}</span>
+                                      <p className="text-[11px] text-slate-500 dark:text-slate-300">
+                                        {recipe.coffee_g}g • {recipe.grind_size || 'Molienda N/D'} • {recipe.water_temp_c}°C
+                                      </p>
+                                      <p className="text-[10px] text-amber-800 dark:text-amber-400 font-medium">
+                                        {recipe.steps.length} pasos • {recipe.steps.reduce((acc, s) => acc + s.water_g, 0)}g agua
+                                      </p>
+                                    </div>
+                                    
+                                    <div className="flex gap-1.5 opacity-80 group-hover:opacity-100 transition items-center">
+                                      <button 
+                                        onClick={(e) => { e.stopPropagation(); setSummaryRecipe(recipe); }}
+                                        className="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded text-slate-650 dark:text-slate-200 text-base md:text-lg cursor-pointer"
+                                        title="Ver Resumen"
+                                      >
+                                        📋
+                                      </button>
+                                      
+                                      <div className="relative">
+                                        <button 
+                                          onClick={(e) => { 
+                                            e.stopPropagation(); 
+                                            setMenuOpenRecipeId(menuOpenRecipeId === recipe.id ? null : recipe.id); 
+                                          }}
+                                          className="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded text-slate-500 dark:text-slate-300 cursor-pointer flex items-center justify-center w-6 h-6 text-[9px] tracking-tighter font-semibold"
+                                          title="Más opciones"
+                                        >
+                                          •••
+                                        </button>
+                                        {menuOpenRecipeId === recipe.id && (
+                                          <>
+                                            <div 
+                                              className="fixed inset-0 z-10" 
+                                              onClick={(e) => { e.stopPropagation(); setMenuOpenRecipeId(null); }}
+                                            />
+                                            <div className="absolute right-0 top-full mt-1 w-28 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-750 rounded-lg shadow-lg py-1 z-20 text-xs text-slate-700 dark:text-slate-200">
+                                              <button 
+                                                onClick={(e) => { e.stopPropagation(); handleEditRecipe(recipe); setMenuOpenRecipeId(null); }}
+                                                className="w-full px-3 py-1.5 text-left hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-1.5 cursor-pointer"
+                                              >
+                                                ✏️ Editar
+                                              </button>
+                                              <button 
+                                                onClick={(e) => { e.stopPropagation(); handleExportJson(recipe); setMenuOpenRecipeId(null); }}
+                                                className="w-full px-3 py-1.5 text-left hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-1.5 cursor-pointer"
+                                              >
+                                                📥 Exportar
+                                              </button>
+                                              <button 
+                                                onClick={(e) => { e.stopPropagation(); handleDeleteRecipe(recipe.id, e); setMenuOpenRecipeId(null); }}
+                                                className="w-full px-3 py-1.5 text-left hover:bg-red-50 dark:hover:bg-red-950/20 text-red-600 dark:text-red-400 flex items-center gap-1.5 cursor-pointer font-semibold"
+                                              >
+                                                🗑️ Eliminar
+                                              </button>
+                                            </div>
+                                          </>
+                                        )}
+                                      </div>
+                                    </div>
                                   </div>
-                                </div>
-                              </div>
-                          ))}
+                              ))}
+                            </div>
+                          )}
                         </div>
-                      )}
-                    </div>
-                  );
-                })
-              )}
-            </div>
+                      );
+                    })
+                  )}
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                <div className="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-3">
+                  <h2 className="text-xl font-bold text-slate-900 dark:text-white">Historial</h2>
+                  <div className="flex items-center gap-3">
+                    <label className="flex items-center gap-1.5 cursor-pointer text-xs text-slate-500 dark:text-slate-450 select-none font-medium">
+                      <input
+                        type="checkbox"
+                        checked={autoLogEnabled}
+                        onChange={(e) => setAutoLogEnabled(e.target.checked)}
+                        className="rounded border-slate-350 dark:border-slate-700 text-amber-800 focus:ring-amber-500 w-3.5 h-3.5"
+                      />
+                      Reg. Auto.
+                    </label>
+                    {history.length > 0 && (
+                      <button
+                        onClick={() => {
+                          if (confirm("¿Estás seguro de que deseas limpiar todo tu historial de preparaciones?")) {
+                            setHistory([]);
+                          }
+                        }}
+                        className="text-xs text-red-500 hover:text-red-700 dark:hover:text-red-400 underline cursor-pointer"
+                      >
+                        Limpiar todo
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                <div className="space-y-3 max-h-[480px] overflow-y-auto pr-1 pb-24">
+                  {history.length === 0 ? (
+                    <p className="text-sm text-slate-400 dark:text-slate-400 text-center py-8">
+                      No tienes preparaciones registradas aún. ¡Completa tu primer timer para inaugurar tu historial!
+                    </p>
+                  ) : (
+                    history.map((entry) => {
+                      const isEditingNote = editingHistoryId === entry.id;
+                      const dateFormatted = new Date(entry.date).toLocaleString([], {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      });
+                      
+                      return (
+                        <div key={entry.id} className="p-3 bg-slate-50 dark:bg-slate-800/30 border border-slate-200 dark:border-slate-800 rounded-xl space-y-2 relative group">
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <span className="text-[10px] text-slate-400 dark:text-slate-500 block font-semibold">{dateFormatted}</span>
+                              <span className="font-bold text-slate-950 dark:text-slate-100 text-sm flex items-center gap-1.5">
+                                <span className="w-5 h-5 flex items-center justify-center select-none">{getMethodIcon(entry.method)}</span>
+                                {entry.recipeName}
+                              </span>
+                              <p className="text-[11px] text-slate-500 dark:text-slate-350 mt-1">
+                                {entry.coffee_g}g • {entry.grind_size || 'Molienda N/D'} • {entry.water_g}g agua
+                              </p>
+                            </div>
+                            
+                            <div className="flex gap-1 opacity-60 group-hover:opacity-100 transition">
+                              <button
+                                onClick={() => {
+                                  setEditingHistoryId(entry.id);
+                                  setEditingHistoryNotes(entry.notes || '');
+                                }}
+                                className="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded text-slate-500 dark:text-slate-300 cursor-pointer"
+                                title="Editar observaciones"
+                              >
+                                ✏️
+                              </button>
+                              <button
+                                onClick={() => handleDeleteHistoryEntry(entry.id)}
+                                className="p-1 hover:bg-red-50 dark:hover:bg-red-950/20 rounded text-red-500 dark:text-red-400 cursor-pointer"
+                                title="Eliminar registro"
+                              >
+                                🗑️
+                              </button>
+                            </div>
+                          </div>
+
+                          {isEditingNote ? (
+                            <div className="space-y-1.5 pt-1">
+                              <textarea
+                                value={editingHistoryNotes}
+                                onChange={(e) => setEditingHistoryNotes(e.target.value)}
+                                placeholder="Ej: Salió un poco dulce, moler más fino la próxima vez..."
+                                className="w-full p-2 border border-slate-250 dark:border-slate-700 rounded bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:outline-none focus:ring-1 focus:ring-amber-500"
+                                rows="2"
+                              />
+                              <div className="flex gap-2 justify-end">
+                                <button
+                                  onClick={() => setEditingHistoryId(null)}
+                                  className="px-2 py-1 text-[10px] border border-slate-200 dark:border-slate-700 text-slate-550 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded font-semibold cursor-pointer"
+                                >
+                                  Cancelar
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    handleUpdateHistoryNotes(entry.id, editingHistoryNotes);
+                                    setEditingHistoryId(null);
+                                  }}
+                                  className="px-2 py-1 text-[10px] bg-emerald-700 hover:bg-emerald-800 text-white rounded font-semibold cursor-pointer"
+                                >
+                                  Guardar
+                                </button>
+                              </div>
+                            </div>
+                          ) : entry.notes ? (
+                            <div className="text-xs bg-amber-500/5 dark:bg-amber-500/10 border-l-2 border-amber-600/50 p-2 rounded-r text-slate-650 dark:text-slate-350 italic">
+                              "{entry.notes}"
+                            </div>
+                          ) : (
+                            <button
+                              onClick={() => {
+                                      setEditingHistoryId(entry.id);
+                                      setEditingHistoryNotes('');
+                                    }}
+                              className="text-[10px] text-slate-400 dark:text-slate-500 hover:text-amber-800 dark:hover:text-amber-500 italic block pl-1 hover:underline cursor-pointer"
+                            >
+                              + Añadir observaciones de la taza
+                            </button>
+                          )}
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -865,7 +1066,7 @@ export default function App() {
   );
 }
 
-function TimerComponent({ recipe }) {
+function TimerComponent({ recipe, onComplete }) {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [timeLeft, setTimeLeft] = useState(recipe.steps[0].duration_s);
   const [isRunning, setIsRunning] = useState(false);
@@ -1072,7 +1273,10 @@ function TimerComponent({ recipe }) {
             </p>
             <button 
               type="button"
-              onClick={() => setShowFinishedModal(false)}
+              onClick={() => {
+                setShowFinishedModal(false);
+                onComplete();
+              }}
               className="w-full py-2.5 bg-emerald-700 hover:bg-emerald-800 dark:bg-emerald-650 dark:hover:bg-emerald-700 text-white rounded-xl font-bold text-sm transition shadow-sm cursor-pointer"
             >
               Entendido

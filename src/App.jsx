@@ -199,9 +199,18 @@ export default function App() {
   const [editingHistoryId, setEditingHistoryId] = useState(null);
   const [editingHistoryNotes, setEditingHistoryNotes] = useState(null);
 
+  const [autoLogEnabled, setAutoLogEnabled] = useState(() => {
+    const saved = localStorage.getItem('auto_log_enabled');
+    return saved !== null ? JSON.parse(saved) : true;
+  });
+
   useEffect(() => {
     localStorage.setItem('coffee_history_v1', JSON.stringify(history));
   }, [history]);
+
+  useEffect(() => {
+    localStorage.setItem('auto_log_enabled', JSON.stringify(autoLogEnabled));
+  }, [autoLogEnabled]);
 
   const handleDeleteHistoryEntry = (id) => {
     if (confirm("¿Estás seguro de que deseas eliminar este registro del historial?")) {
@@ -467,22 +476,24 @@ export default function App() {
             </button>
             <TimerComponent 
               recipe={activeRecipe} 
-              onComplete={(notes) => {
-                const totalWater = activeRecipe.steps.reduce((acc, s) => acc + s.water_g, 0);
-                const newEntry = {
-                  id: `history-${Date.now()}`,
-                  recipeId: activeRecipe.id,
-                  recipeName: activeRecipe.name,
-                  method: activeRecipe.method,
-                  date: new Date().toISOString(),
-                  coffee_g: activeRecipe.coffee_g,
-                  water_g: totalWater,
-                  grind_size: activeRecipe.grind_size,
-                  notes: notes
-                };
-                setHistory((prev) => [newEntry, ...prev]);
+              onComplete={() => {
+                if (autoLogEnabled) {
+                  const totalWater = activeRecipe.steps.reduce((acc, s) => acc + s.water_g, 0);
+                  const newEntry = {
+                    id: `history-${Date.now()}`,
+                    recipeId: activeRecipe.id,
+                    recipeName: activeRecipe.name,
+                    method: activeRecipe.method,
+                    date: new Date().toISOString(),
+                    coffee_g: activeRecipe.coffee_g,
+                    water_g: totalWater,
+                    grind_size: activeRecipe.grind_size,
+                    notes: ''
+                  };
+                  setHistory((prev) => [newEntry, ...prev]);
+                  setActiveTab('history');
+                }
                 setActiveRecipe(null);
-                setActiveTab('history');
               }}
             />
           </div>
@@ -841,18 +852,29 @@ export default function App() {
               <div className="space-y-6">
                 <div className="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-3">
                   <h2 className="text-xl font-bold text-slate-900 dark:text-white">Historial</h2>
-                  {history.length > 0 && (
-                    <button
-                      onClick={() => {
-                        if (confirm("¿Estás seguro de que deseas limpiar todo tu historial de preparaciones?")) {
-                          setHistory([]);
-                        }
-                      }}
-                      className="text-xs text-red-500 hover:text-red-700 dark:hover:text-red-400 underline cursor-pointer"
-                    >
-                      Limpiar todo
-                    </button>
-                  )}
+                  <div className="flex items-center gap-3">
+                    <label className="flex items-center gap-1.5 cursor-pointer text-xs text-slate-500 dark:text-slate-450 select-none font-medium">
+                      <input
+                        type="checkbox"
+                        checked={autoLogEnabled}
+                        onChange={(e) => setAutoLogEnabled(e.target.checked)}
+                        className="rounded border-slate-350 dark:border-slate-700 text-amber-800 focus:ring-amber-500 w-3.5 h-3.5"
+                      />
+                      Reg. Auto.
+                    </label>
+                    {history.length > 0 && (
+                      <button
+                        onClick={() => {
+                          if (confirm("¿Estás seguro de que deseas limpiar todo tu historial de preparaciones?")) {
+                            setHistory([]);
+                          }
+                        }}
+                        className="text-xs text-red-500 hover:text-red-700 dark:hover:text-red-400 underline cursor-pointer"
+                      >
+                        Limpiar todo
+                      </button>
+                    )}
+                  </div>
                 </div>
 
                 <div className="space-y-3 max-h-[480px] overflow-y-auto pr-1 pb-24">
@@ -911,7 +933,7 @@ export default function App() {
                               <textarea
                                 value={editingHistoryNotes}
                                 onChange={(e) => setEditingHistoryNotes(e.target.value)}
-                                placeholder="Notas sobre el sabor, molienda, mejoras..."
+                                placeholder="Ej: Salió un poco dulce, moler más fino la próxima vez..."
                                 className="w-full p-2 border border-slate-250 dark:border-slate-700 rounded bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:outline-none focus:ring-1 focus:ring-amber-500"
                                 rows="2"
                               />
@@ -1050,7 +1072,6 @@ function TimerComponent({ recipe, onComplete }) {
   const [timeLeft, setTimeLeft] = useState(recipe.steps[0].duration_s);
   const [isRunning, setIsRunning] = useState(false);
   const [showFinishedModal, setShowFinishedModal] = useState(false);
-  const [brewNotes, setBrewNotes] = useState('');
   const currentStep = recipe.steps[currentStepIndex];
 
   useEffect(() => {
@@ -1251,38 +1272,16 @@ function TimerComponent({ recipe, onComplete }) {
             <p className="text-sm text-slate-500 dark:text-slate-400">
               Tu café está listo para disfrutar. ¡Que tengas una excelente taza!
             </p>
-            <div className="text-left space-y-1.5">
-              <label className="block text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400">Observaciones (opcional)</label>
-              <textarea
-                value={brewNotes}
-                onChange={(e) => setBrewNotes(e.target.value)}
-                placeholder="Ej: Salió un poco dulce, moler más fino la próxima vez..."
-                className="w-full p-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:outline-none focus:ring-2 focus:ring-amber-500"
-                rows="3"
-              />
-            </div>
-            <div className="flex gap-2">
-              <button 
-                type="button"
-                onClick={() => {
-                  setShowFinishedModal(false);
-                  onComplete('');
-                }}
-                className="w-1/2 py-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-650 dark:text-slate-300 rounded-xl font-bold text-xs transition cursor-pointer"
-              >
-                No guardar
-              </button>
-              <button 
-                type="button"
-                onClick={() => {
-                  setShowFinishedModal(false);
-                  onComplete(brewNotes);
-                }}
-                className="w-1/2 py-2.5 bg-emerald-700 hover:bg-emerald-800 dark:bg-emerald-650 dark:hover:bg-emerald-700 text-white rounded-xl font-bold text-xs transition shadow-sm cursor-pointer"
-              >
-                Guardar registro
-              </button>
-            </div>
+            <button 
+              type="button"
+              onClick={() => {
+                setShowFinishedModal(false);
+                onComplete();
+              }}
+              className="w-full py-2.5 bg-emerald-700 hover:bg-emerald-800 dark:bg-emerald-650 dark:hover:bg-emerald-700 text-white rounded-xl font-bold text-sm transition shadow-sm cursor-pointer"
+            >
+              Entendido
+            </button>
           </div>
         </div>
       )}

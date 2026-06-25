@@ -78,3 +78,9 @@ Las recetas se estructuran siguiendo este formato JSON:
 2. La integración de cambios a la rama principal siempre se realizará utilizando Pull Requests
 3. Una vez integrados los cambios en la rama principal la rama de trabajo de corta duración debe ser eliminada
 4. Seguir las recomendaciones de Conventional Commits [https://www.conventionalcommits.org/en/v1.0.0/]
+
+## 7. Versionamiento de la App
+*   El versionamiento de la app se realizará utilizando el formato SemVer (Semantic Versioning) [https://semver.org/]
+*   La versión de la app se guardará en el archivo `package.json`
+*   La versión de la app se mostrará en el footer de la app
+*   Cada vez que se realizen cambios en una nueva rama de trabajo se debe actualizar el versionamiento.

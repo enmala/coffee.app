@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { getMethodIcon } from './utils/coffeeUtils';
 import TimerComponent from './components/TimerComponent';
+import { version } from '../package.json';
 
 const DEFAULT_RECIPES = [
   {
@@ -42,6 +43,8 @@ export default function App() {
     return saved ? JSON.parse(saved) : DEFAULT_RECIPES;
   });
 
+  const [isAboutOpen, setIsAboutOpen] = useState(false);
+
   const [theme, setTheme] = useState(() => {
     const saved = localStorage.getItem('theme');
     if (saved) return saved;
@@ -56,7 +59,7 @@ export default function App() {
     }
     localStorage.setItem('theme', theme);
   }, [theme]);
-  
+
   const [collapsedMethods, setCollapsedMethods] = useState(() => {
     const saved = localStorage.getItem('collapsed_methods_v1');
     return saved ? JSON.parse(saved) : {};
@@ -171,7 +174,7 @@ export default function App() {
       }
     };
     reader.readAsText(file);
-    e.target.value = ''; 
+    e.target.value = '';
   };
 
   const handleExportJson = (recipe) => {
@@ -185,7 +188,7 @@ export default function App() {
   };
 
   const handleDeleteRecipe = (id, e) => {
-    e.stopPropagation(); 
+    e.stopPropagation();
     if (confirm("¿Estás seguro de que deseas eliminar esta receta?")) {
       setRecipes((prev) => prev.filter(r => r.id !== id));
     }
@@ -345,26 +348,35 @@ export default function App() {
           <h1 className="text-2xl md:text-3xl font-extrabold text-amber-900 dark:text-amber-500 tracking-tight">☕ Barista Timer</h1>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Administra tus recetas y tiempos de extracción</p>
         </div>
-        <button
-          onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-          className="p-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition cursor-pointer text-base"
-          title={theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
-        >
-          {theme === 'dark' ? '☀️' : '🌙'}
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setIsAboutOpen(true)}
+            className="p-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition cursor-pointer text-base"
+            title="Acerca de Barista Timer"
+          >
+            ℹ️
+          </button>
+          <button
+            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+            className="p-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition cursor-pointer text-base"
+            title={theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
+          >
+            {theme === 'dark' ? '☀️' : '🌙'}
+          </button>
+        </div>
       </header>
 
       <main className="w-full max-w-md bg-white dark:bg-slate-900 rounded-2xl shadow-md border border-slate-200 dark:border-slate-800 overflow-hidden p-4 md:p-6 relative transition-colors duration-300">
         {activeRecipe ? (
           <div>
-            <button 
-              onClick={() => setActiveRecipe(null)} 
+            <button
+              onClick={() => setActiveRecipe(null)}
               className="mb-4 text-amber-800 dark:text-amber-500 hover:text-amber-950 dark:hover:text-amber-400 font-semibold text-sm flex items-center gap-1 cursor-pointer"
             >
               ← Volver al listado
             </button>
-            <TimerComponent 
-              recipe={activeRecipe} 
+            <TimerComponent
+              recipe={activeRecipe}
               onComplete={() => {
                 if (autoLogEnabled) {
                   const totalWater = activeRecipe.steps.reduce((acc, s) => acc + s.water_g, 0);
@@ -391,23 +403,23 @@ export default function App() {
               <h2 className="text-lg font-bold text-slate-900 dark:text-white">
                 {editingRecipeId ? 'Editar Receta' : 'Nueva Receta'}
               </h2>
-              <button 
+              <button
                 type="button"
-                onClick={handleCancelForm} 
+                onClick={handleCancelForm}
                 className="text-slate-400 dark:text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-sm font-semibold cursor-pointer"
               >
                 Cancelar
               </button>
             </div>
 
-             <form onSubmit={handleSaveRecipe} className="space-y-4">
+            <form onSubmit={handleSaveRecipe} className="space-y-4">
               <div>
                 <label className="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Nombre de la receta</label>
-                <input 
-                  type="text" 
-                  value={newRecipe.name} 
-                  onChange={(e) => setNewRecipe({...newRecipe, name: e.target.value})}
-                  className="w-full p-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm" 
+                <input
+                  type="text"
+                  value={newRecipe.name}
+                  onChange={(e) => setNewRecipe({ ...newRecipe, name: e.target.value })}
+                  className="w-full p-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm"
                   placeholder="Ej: Mi V60 Balanceado"
                   required
                 />
@@ -416,9 +428,9 @@ export default function App() {
               <div className="grid grid-cols-2 gap-2">
                 <div>
                   <label className="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Método</label>
-                  <select 
-                    value={newRecipe.method} 
-                    onChange={(e) => setNewRecipe({...newRecipe, method: e.target.value})}
+                  <select
+                    value={newRecipe.method}
+                    onChange={(e) => setNewRecipe({ ...newRecipe, method: e.target.value })}
                     className="w-full p-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
                   >
                     <option value="V60">V60</option>
@@ -433,11 +445,11 @@ export default function App() {
                 </div>
                 <div>
                   <label className="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Molienda</label>
-                  <input 
-                    type="text" 
-                    value={newRecipe.grind_size} 
-                    onChange={(e) => setNewRecipe({...newRecipe, grind_size: e.target.value})}
-                    className="w-full p-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500" 
+                  <input
+                    type="text"
+                    value={newRecipe.grind_size}
+                    onChange={(e) => setNewRecipe({ ...newRecipe, grind_size: e.target.value })}
+                    className="w-full p-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
                     placeholder="Ej: Fina, Media, 15 clicks"
                   />
                 </div>
@@ -446,22 +458,22 @@ export default function App() {
               <div className="grid grid-cols-2 gap-2">
                 <div>
                   <label className="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Café Inicial (g)</label>
-                  <input 
-                    type="number" 
-                    value={newRecipe.coffee_g} 
-                    onChange={(e) => setNewRecipe({...newRecipe, coffee_g: parseFloat(e.target.value) || 0})}
-                    className="w-full p-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500" 
+                  <input
+                    type="number"
+                    value={newRecipe.coffee_g}
+                    onChange={(e) => setNewRecipe({ ...newRecipe, coffee_g: parseFloat(e.target.value) || 0 })}
+                    className="w-full p-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
                     min="1"
                     step="0.1"
                   />
                 </div>
                 <div>
                   <label className="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Temperatura (°C)</label>
-                  <input 
-                    type="number" 
-                    value={newRecipe.water_temp_c} 
-                    onChange={(e) => setNewRecipe({...newRecipe, water_temp_c: parseInt(e.target.value) || 0})}
-                    className="w-full p-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500" 
+                  <input
+                    type="number"
+                    value={newRecipe.water_temp_c}
+                    onChange={(e) => setNewRecipe({ ...newRecipe, water_temp_c: parseInt(e.target.value) || 0 })}
+                    className="w-full p-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
                     min="1"
                   />
                 </div>
@@ -473,8 +485,8 @@ export default function App() {
                   <ul className="mb-4 bg-slate-50 dark:bg-slate-800 rounded-lg p-2 divide-y divide-slate-200 dark:divide-slate-700 text-xs text-slate-600 dark:text-slate-300">
                     {newRecipe.steps.map((s, idx) => (
                       <li key={idx} className={`py-1.5 px-2 flex justify-between items-center rounded transition ${editingStepIndex === idx ? 'bg-amber-105/50 dark:bg-amber-900/20 border border-amber-500/50' : 'hover:bg-slate-100 dark:hover:bg-slate-800'}`}>
-                        <div 
-                          className="flex-1 cursor-pointer pr-2 select-none" 
+                        <div
+                          className="flex-1 cursor-pointer pr-2 select-none"
                           onClick={() => handleSelectStepToEdit(idx)}
                           title="Haz clic para editar este paso"
                         >
@@ -483,7 +495,7 @@ export default function App() {
                             {s.duration_s}s | {s.water_g}g {s.instruction ? `• "${s.instruction}"` : ''}
                           </span>
                         </div>
-                        
+
                         <div className="flex items-center gap-1">
                           <button
                             type="button"
@@ -546,39 +558,39 @@ export default function App() {
                     )}
                   </div>
                   <div className="grid grid-cols-2 gap-2">
-                    <input 
-                      type="text" 
-                      placeholder="Título del paso" 
+                    <input
+                      type="text"
+                      placeholder="Título del paso"
                       value={stepInput.title}
-                      onChange={(e) => setStepInput({...stepInput, title: e.target.value})}
+                      onChange={(e) => setStepInput({ ...stepInput, title: e.target.value })}
                       className="p-1.5 border border-slate-200 dark:border-slate-700 rounded bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:outline-none"
                     />
                     <div className="flex gap-1">
-                      <input 
-                        type="number" 
-                        placeholder="Agua (g)" 
+                      <input
+                        type="number"
+                        placeholder="Agua (g)"
                         value={stepInput.water_g || ''}
-                        onChange={(e) => setStepInput({...stepInput, water_g: parseFloat(e.target.value) || 0})}
+                        onChange={(e) => setStepInput({ ...stepInput, water_g: parseFloat(e.target.value) || 0 })}
                         className="w-1/2 p-1.5 border border-slate-200 dark:border-slate-700 rounded bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:outline-none"
                       />
-                      <input 
-                        type="number" 
-                        placeholder="Tiempo (s)" 
+                      <input
+                        type="number"
+                        placeholder="Tiempo (s)"
                         value={stepInput.duration_s || ''}
-                        onChange={(e) => setStepInput({...stepInput, duration_s: parseInt(e.target.value) || 0})}
+                        onChange={(e) => setStepInput({ ...stepInput, duration_s: parseInt(e.target.value) || 0 })}
                         className="w-1/2 p-1.5 border border-slate-200 dark:border-slate-700 rounded bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:outline-none"
                       />
                     </div>
                   </div>
-                  <input 
-                    type="text" 
-                    placeholder="Instrucción corta" 
+                  <input
+                    type="text"
+                    placeholder="Instrucción corta"
                     value={stepInput.instruction}
-                    onChange={(e) => setStepInput({...stepInput, instruction: e.target.value})}
+                    onChange={(e) => setStepInput({ ...stepInput, instruction: e.target.value })}
                     className="w-full p-1.5 border border-slate-200 dark:border-slate-700 rounded bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:outline-none"
                   />
-                  <button 
-                    type="button" 
+                  <button
+                    type="button"
                     onClick={handleAddStepToForm}
                     className={`w-full py-1.5 text-white rounded text-xs font-semibold cursor-pointer transition ${editingStepIndex !== null ? 'bg-emerald-700 hover:bg-emerald-800 dark:bg-emerald-650' : 'bg-amber-800 hover:bg-amber-900'}`}
                   >
@@ -587,8 +599,8 @@ export default function App() {
                 </div>
               </div>
 
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 className="w-full py-2.5 bg-emerald-700 hover:bg-emerald-800 dark:bg-emerald-600 dark:hover:bg-emerald-700 text-white font-bold rounded-xl text-sm transition shadow-sm cursor-pointer"
               >
                 Guardar Receta Completa
@@ -617,18 +629,18 @@ export default function App() {
               <div className="space-y-6">
                 <div className="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-3">
                   <h2 className="text-xl font-bold text-slate-900 dark:text-white">Tus Recetas</h2>
-                  
+
                   <div className="flex gap-2">
                     <label className="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold rounded-lg cursor-pointer transition flex items-center justify-center border border-slate-200 dark:border-slate-700">
                       Importar
-                      <input 
-                        type="file" 
-                        accept=".json" 
-                        onChange={handleImportJson} 
-                        className="hidden" 
+                      <input
+                        type="file"
+                        accept=".json"
+                        onChange={handleImportJson}
+                        className="hidden"
                       />
                     </label>
-                    <button 
+                    <button
                       onClick={() => setIsCreating(true)}
                       className="px-3 py-1.5 bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-800 text-white text-xs font-bold rounded-lg transition cursor-pointer"
                     >
@@ -645,7 +657,7 @@ export default function App() {
                       const isCollapsed = !!collapsedMethods[method];
                       return (
                         <div key={method} className="space-y-2">
-                          <h3 
+                          <h3
                             onClick={() => toggleMethodCollapse(method)}
                             className="text-xs font-extrabold text-slate-400 dark:text-slate-300 hover:text-amber-800 dark:hover:text-amber-500 uppercase tracking-wider pl-1 pt-1 flex justify-between items-center cursor-pointer select-none transition-colors duration-200"
                           >
@@ -657,76 +669,76 @@ export default function App() {
                               {isCollapsed ? '▶' : '▼'}
                             </span>
                           </h3>
-                          
+
                           {!isCollapsed && (
                             <div className="space-y-2">
                               {groupedRecipes[method].map((recipe) => (
-                                  <div 
-                                    key={recipe.id}
-                                    onClick={() => setActiveRecipe(recipe)}
-                                    className="p-3 bg-slate-50 dark:bg-slate-800/30 hover:bg-amber-50/20 dark:hover:bg-amber-900/10 border border-slate-200 dark:border-slate-800 hover:border-amber-200 dark:hover:border-amber-800/30 rounded-xl cursor-pointer transition flex justify-between items-center group"
-                                  >
-                                    <div className="space-y-1">
-                                      <span className="font-semibold text-slate-950 dark:text-slate-100 text-sm block">{recipe.name}</span>
-                                      <p className="text-[11px] text-slate-500 dark:text-slate-300">
-                                        {recipe.coffee_g}g • {recipe.grind_size || 'Molienda N/D'} • {recipe.water_temp_c}°C
-                                      </p>
-                                      <p className="text-[10px] text-amber-800 dark:text-amber-400 font-medium">
-                                        {recipe.steps.length} pasos • {recipe.steps.reduce((acc, s) => acc + s.water_g, 0)}g agua
-                                      </p>
-                                    </div>
-                                    
-                                    <div className="flex gap-1.5 opacity-80 group-hover:opacity-100 transition items-center">
-                                      <button 
-                                        onClick={(e) => { e.stopPropagation(); setSummaryRecipe(recipe); }}
-                                        className="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded text-slate-650 dark:text-slate-200 text-base md:text-lg cursor-pointer"
-                                        title="Ver Resumen"
+                                <div
+                                  key={recipe.id}
+                                  onClick={() => setActiveRecipe(recipe)}
+                                  className="p-3 bg-slate-50 dark:bg-slate-800/30 hover:bg-amber-50/20 dark:hover:bg-amber-900/10 border border-slate-200 dark:border-slate-800 hover:border-amber-200 dark:hover:border-amber-800/30 rounded-xl cursor-pointer transition flex justify-between items-center group"
+                                >
+                                  <div className="space-y-1">
+                                    <span className="font-semibold text-slate-950 dark:text-slate-100 text-sm block">{recipe.name}</span>
+                                    <p className="text-[11px] text-slate-500 dark:text-slate-300">
+                                      {recipe.coffee_g}g • {recipe.grind_size || 'Molienda N/D'} • {recipe.water_temp_c}°C
+                                    </p>
+                                    <p className="text-[10px] text-amber-800 dark:text-amber-400 font-medium">
+                                      {recipe.steps.length} pasos • {recipe.steps.reduce((acc, s) => acc + s.water_g, 0)}g agua
+                                    </p>
+                                  </div>
+
+                                  <div className="flex gap-1.5 opacity-80 group-hover:opacity-100 transition items-center">
+                                    <button
+                                      onClick={(e) => { e.stopPropagation(); setSummaryRecipe(recipe); }}
+                                      className="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded text-slate-650 dark:text-slate-200 text-base md:text-lg cursor-pointer"
+                                      title="Ver Resumen"
+                                    >
+                                      📋
+                                    </button>
+
+                                    <div className="relative">
+                                      <button
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          setMenuOpenRecipeId(menuOpenRecipeId === recipe.id ? null : recipe.id);
+                                        }}
+                                        className="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded text-slate-500 dark:text-slate-300 cursor-pointer flex items-center justify-center w-6 h-6 text-[9px] tracking-tighter font-semibold"
+                                        title="Más opciones"
                                       >
-                                        📋
+                                        •••
                                       </button>
-                                      
-                                      <div className="relative">
-                                        <button 
-                                          onClick={(e) => { 
-                                            e.stopPropagation(); 
-                                            setMenuOpenRecipeId(menuOpenRecipeId === recipe.id ? null : recipe.id); 
-                                          }}
-                                          className="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded text-slate-500 dark:text-slate-300 cursor-pointer flex items-center justify-center w-6 h-6 text-[9px] tracking-tighter font-semibold"
-                                          title="Más opciones"
-                                        >
-                                          •••
-                                        </button>
-                                        {menuOpenRecipeId === recipe.id && (
-                                          <>
-                                            <div 
-                                              className="fixed inset-0 z-10" 
-                                              onClick={(e) => { e.stopPropagation(); setMenuOpenRecipeId(null); }}
-                                            />
-                                            <div className="absolute right-0 top-full mt-1 w-28 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-750 rounded-lg shadow-lg py-1 z-20 text-xs text-slate-700 dark:text-slate-200">
-                                              <button 
-                                                onClick={(e) => { e.stopPropagation(); handleEditRecipe(recipe); setMenuOpenRecipeId(null); }}
-                                                className="w-full px-3 py-1.5 text-left hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-1.5 cursor-pointer"
-                                              >
-                                                ✏️ Editar
-                                              </button>
-                                              <button 
-                                                onClick={(e) => { e.stopPropagation(); handleExportJson(recipe); setMenuOpenRecipeId(null); }}
-                                                className="w-full px-3 py-1.5 text-left hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-1.5 cursor-pointer"
-                                              >
-                                                📥 Exportar
-                                              </button>
-                                              <button 
-                                                onClick={(e) => { e.stopPropagation(); handleDeleteRecipe(recipe.id, e); setMenuOpenRecipeId(null); }}
-                                                className="w-full px-3 py-1.5 text-left hover:bg-red-50 dark:hover:bg-red-950/20 text-red-600 dark:text-red-400 flex items-center gap-1.5 cursor-pointer font-semibold"
-                                              >
-                                                🗑️ Eliminar
-                                              </button>
-                                            </div>
-                                          </>
-                                        )}
-                                      </div>
+                                      {menuOpenRecipeId === recipe.id && (
+                                        <>
+                                          <div
+                                            className="fixed inset-0 z-10"
+                                            onClick={(e) => { e.stopPropagation(); setMenuOpenRecipeId(null); }}
+                                          />
+                                          <div className="absolute right-0 top-full mt-1 w-28 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-750 rounded-lg shadow-lg py-1 z-20 text-xs text-slate-700 dark:text-slate-200">
+                                            <button
+                                              onClick={(e) => { e.stopPropagation(); handleEditRecipe(recipe); setMenuOpenRecipeId(null); }}
+                                              className="w-full px-3 py-1.5 text-left hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-1.5 cursor-pointer"
+                                            >
+                                              ✏️ Editar
+                                            </button>
+                                            <button
+                                              onClick={(e) => { e.stopPropagation(); handleExportJson(recipe); setMenuOpenRecipeId(null); }}
+                                              className="w-full px-3 py-1.5 text-left hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-1.5 cursor-pointer"
+                                            >
+                                              📥 Exportar
+                                            </button>
+                                            <button
+                                              onClick={(e) => { e.stopPropagation(); handleDeleteRecipe(recipe.id, e); setMenuOpenRecipeId(null); }}
+                                              className="w-full px-3 py-1.5 text-left hover:bg-red-50 dark:hover:bg-red-950/20 text-red-600 dark:text-red-400 flex items-center gap-1.5 cursor-pointer font-semibold"
+                                            >
+                                              🗑️ Eliminar
+                                            </button>
+                                          </div>
+                                        </>
+                                      )}
                                     </div>
                                   </div>
+                                </div>
                               ))}
                             </div>
                           )}
@@ -780,7 +792,7 @@ export default function App() {
                         hour: '2-digit',
                         minute: '2-digit'
                       });
-                      
+
                       return (
                         <div key={entry.id} className="p-3 bg-slate-50 dark:bg-slate-800/30 border border-slate-200 dark:border-slate-800 rounded-xl space-y-2 relative group">
                           <div className="flex justify-between items-start">
@@ -794,7 +806,7 @@ export default function App() {
                                 {entry.coffee_g}g • {entry.grind_size || 'Molienda N/D'} • {entry.water_g}g agua
                               </p>
                             </div>
-                            
+
                             <div className="flex gap-1 opacity-60 group-hover:opacity-100 transition">
                               <button
                                 onClick={() => {
@@ -850,9 +862,9 @@ export default function App() {
                           ) : (
                             <button
                               onClick={() => {
-                                      setEditingHistoryId(entry.id);
-                                      setEditingHistoryNotes('');
-                                    }}
+                                setEditingHistoryId(entry.id);
+                                setEditingHistoryNotes('');
+                              }}
                               className="text-[10px] text-slate-400 dark:text-slate-500 hover:text-amber-800 dark:hover:text-amber-500 italic block pl-1 hover:underline cursor-pointer"
                             >
                               + Añadir observaciones de la taza
@@ -876,7 +888,7 @@ export default function App() {
                   <h3 className="text-lg font-bold text-slate-900 dark:text-white pr-4">{summaryRecipe.name}</h3>
                   <span className="inline-block text-[10px] bg-amber-50 dark:bg-amber-950/20 text-amber-900 dark:text-amber-300 border border-amber-200 dark:border-amber-900/30 px-2 py-0.5 rounded font-bold uppercase tracking-wider mt-1">{summaryRecipe.method}</span>
                 </div>
-                <button 
+                <button
                   onClick={() => setSummaryRecipe(null)}
                   className="text-slate-400 dark:text-slate-300 hover:text-slate-600 dark:hover:text-slate-200 text-xl font-bold leading-none cursor-pointer"
                 >
@@ -931,13 +943,13 @@ export default function App() {
               </div>
 
               <div className="flex gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
-                <button 
+                <button
                   onClick={() => setSummaryRecipe(null)}
-                  className="w-1/2 py-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl font-bold text-xs transition cursor-pointer"
+                  className="w-1/2 py-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-650 dark:text-slate-300 rounded-xl font-bold text-xs transition cursor-pointer"
                 >
                   Cerrar
                 </button>
-                <button 
+                <button
                   onClick={() => {
                     setActiveRecipe(summaryRecipe);
                     setSummaryRecipe(null);
@@ -945,6 +957,69 @@ export default function App() {
                   className="w-1/2 py-2 bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-800 text-white rounded-xl font-bold text-xs transition shadow-sm cursor-pointer"
                 >
                   Iniciar Timer
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {isAboutOpen && (
+          <div className="fixed inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
+            <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-sm w-full p-6 shadow-xl max-h-[85vh] overflow-y-auto space-y-5 border border-slate-100 dark:border-slate-800 flex flex-col">
+              <div className="flex justify-between items-start border-b border-slate-200 dark:border-slate-800 pb-3">
+                <div className="text-left">
+                  <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                    <span>☕</span> Barista Timer
+                  </h3>
+                  <span className="inline-block text-[10px] bg-amber-50 dark:bg-amber-950/20 text-amber-900 dark:text-amber-300 border border-amber-200 dark:border-amber-900/30 px-2 py-0.5 rounded font-bold uppercase tracking-wider mt-1">v{version}</span>
+                </div>
+                <button
+                  onClick={() => setIsAboutOpen(false)}
+                  className="text-slate-400 dark:text-slate-300 hover:text-slate-600 dark:hover:text-slate-200 text-xl font-bold leading-none cursor-pointer"
+                >
+                  &times;
+                </button>
+              </div>
+
+              <div className="space-y-3 text-sm text-slate-600 dark:text-slate-350 text-left">
+                <p>
+                  <strong>Barista Timer</strong> es una aplicación web interactiva diseñada para asistir a los amantes del café de especialidad a cronometrar y seguir sus recetas de extracción paso a paso.
+                </p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  Desarrollado por <a href="https://github.com/enmala" target="_blank" rel="noopener noreferrer" className="text-amber-800 dark:text-amber-550 dark:hover:text-amber-405 hover:underline font-semibold">EnMalA</a>
+                </p>
+              </div>
+
+              <div className="space-y-3 pt-2">
+                <a
+                  href="https://github.com/enmala/coffee.app"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 w-full py-2.5 bg-slate-900 hover:bg-slate-950 dark:bg-slate-800 dark:hover:bg-slate-700 text-white rounded-xl font-bold text-xs transition shadow-sm cursor-pointer"
+                >
+                  <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+                  </svg>
+                  <span>Repositorio en GitHub</span>
+                </a>
+
+                <a
+                  href="https://ko-fi.com/enmala"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 w-full py-2.5 bg-rose-500 hover:bg-rose-600 text-white rounded-xl font-bold text-xs transition shadow-sm cursor-pointer"
+                >
+                  <span>☕</span>
+                  <span>Apoya el proyecto en Ko-fi</span>
+                </a>
+              </div>
+
+              <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
+                <button
+                  onClick={() => setIsAboutOpen(false)}
+                  className="w-full py-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-650 dark:text-slate-300 rounded-xl font-bold text-xs transition cursor-pointer"
+                >
+                  Cerrar
                 </button>
               </div>
             </div>

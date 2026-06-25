@@ -491,7 +491,6 @@ export default function App() {
                     notes: ''
                   };
                   setHistory((prev) => [newEntry, ...prev]);
-                  setActiveTab('history');
                 }
                 setActiveRecipe(null);
               }}

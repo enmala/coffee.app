@@ -1016,27 +1016,10 @@ export default function App() {
                   </div>
                   <button
                     onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                    className="p-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition cursor-pointer text-base flex items-center gap-1"
+                    className="px-3 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition cursor-pointer text-xs font-bold flex items-center gap-1"
                     title={theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
                   >
                     <span>{theme === 'dark' ? '☀️ Claro' : '🌙 Oscuro'}</span>
-                  </button>
-                </div>
-
-                {/* About button */}
-                <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-800/60">
-                  <div className="text-left">
-                    <span className="text-sm font-bold text-slate-800 dark:text-slate-200 block">Información</span>
-                    <span className="text-xs text-slate-500 dark:text-slate-400">Acerca de la app y créditos</span>
-                  </div>
-                  <button
-                    onClick={() => {
-                      setIsSettingsOpen(false);
-                      setIsAboutOpen(true);
-                    }}
-                    className="px-3 py-1.5 bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-800 text-white text-xs font-bold rounded-lg transition cursor-pointer"
-                  >
-                    Ver Acerca de
                   </button>
                 </div>
 
@@ -1052,7 +1035,7 @@ export default function App() {
                     className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
                       soundEnabled 
                         ? 'bg-amber-800 text-white hover:bg-amber-900' 
-                        : 'bg-slate-200 dark:bg-slate-750 text-slate-600 dark:text-slate-400 hover:bg-slate-300 dark:hover:bg-slate-700'
+                        : 'bg-slate-200 dark:bg-slate-750 text-slate-650 dark:text-slate-400 hover:bg-slate-300 dark:hover:bg-slate-700'
                     }`}
                   >
                     {soundEnabled ? 'Activado' : 'Desactivado'}
@@ -1072,7 +1055,7 @@ export default function App() {
                       className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
                         vibrationEnabled 
                           ? 'bg-amber-800 text-white hover:bg-amber-900' 
-                          : 'bg-slate-200 dark:bg-slate-750 text-slate-600 dark:text-slate-400 hover:bg-slate-300 dark:hover:bg-slate-700'
+                          : 'bg-slate-200 dark:bg-slate-750 text-slate-650 dark:text-slate-400 hover:bg-slate-300 dark:hover:bg-slate-700'
                       }`}
                     >
                       {vibrationEnabled ? 'Activado' : 'Desactivado'}
@@ -1093,6 +1076,23 @@ export default function App() {
                       </select>
                     </div>
                   )}
+                </div>
+
+                {/* About button */}
+                <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-800/60">
+                  <div className="text-left">
+                    <span className="text-sm font-bold text-slate-800 dark:text-slate-200 block">Información</span>
+                    <span className="text-xs text-slate-500 dark:text-slate-400">Acerca de la app y créditos</span>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setIsSettingsOpen(false);
+                      setIsAboutOpen(true);
+                    }}
+                    className="px-3 py-1.5 bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-800 text-white text-xs font-bold rounded-lg transition cursor-pointer"
+                  >
+                    Ver Acerca de
+                  </button>
                 </div>
               </div>
 

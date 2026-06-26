@@ -1,6 +1,15 @@
 import { describe, test, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import TimerComponent from '../src/components/TimerComponent';
+import { playBeep } from '../src/utils/coffeeUtils';
+
+vi.mock('../src/utils/coffeeUtils', async (importOriginal) => {
+  const actual = await importOriginal();
+  return {
+    ...actual,
+    playBeep: vi.fn(),
+  };
+});
 
 const mockRecipe = {
   id: 'v60-test',
@@ -261,5 +270,91 @@ describe('TimerComponent', () => {
     unmount();
 
     navigator.wakeLock.request = originalRequest;
+  });
+
+  test('respects soundEnabled={false} configuration', () => {
+    render(
+      <TimerComponent 
+        recipe={mockRecipe} 
+        onComplete={onCompleteMock} 
+        soundEnabled={false} 
+      />
+    );
+    
+    fireEvent.click(screen.getByText('INICIAR'));
+    
+    // Advance 3 seconds to complete step 1
+    act(() => {
+      vi.advanceTimersByTime(3000);
+    });
+    
+    expect(playBeep).not.toHaveBeenCalled();
+  });
+
+  test('respects vibrationEnabled={false} configuration', () => {
+    render(
+      <TimerComponent 
+        recipe={mockRecipe} 
+        onComplete={onCompleteMock} 
+        vibrationEnabled={false} 
+      />
+    );
+    
+    fireEvent.click(screen.getByText('INICIAR'));
+    
+    // Advance 3 seconds to complete step 1
+    act(() => {
+      vi.advanceTimersByTime(3000);
+    });
+    
+    expect(navigator.vibrate).not.toHaveBeenCalled();
+  });
+
+  test('uses short vibration pattern when vibrationType="short"', () => {
+    render(
+      <TimerComponent 
+        recipe={mockRecipe} 
+        onComplete={onCompleteMock} 
+        vibrationType="short" 
+      />
+    );
+    
+    fireEvent.click(screen.getByText('INICIAR'));
+    
+    // Advance 3s (completes step 1) -> triggers transition vibration
+    act(() => {
+      vi.advanceTimersByTime(3000);
+    });
+    expect(navigator.vibrate).toHaveBeenLastCalledWith([75, 50, 75]);
+    
+    // Advance 5s (completes recipe) -> triggers completion vibration
+    act(() => {
+      vi.advanceTimersByTime(5000);
+    });
+    expect(navigator.vibrate).toHaveBeenLastCalledWith(200);
+  });
+
+  test('uses long vibration pattern when vibrationType="long"', () => {
+    render(
+      <TimerComponent 
+        recipe={mockRecipe} 
+        onComplete={onCompleteMock} 
+        vibrationType="long" 
+      />
+    );
+    
+    fireEvent.click(screen.getByText('INICIAR'));
+    
+    // Advance 3s (completes step 1) -> triggers transition vibration
+    act(() => {
+      vi.advanceTimersByTime(3000);
+    });
+    expect(navigator.vibrate).toHaveBeenLastCalledWith([300, 150, 300]);
+    
+    // Advance 5s (completes recipe) -> triggers completion vibration
+    act(() => {
+      vi.advanceTimersByTime(5000);
+    });
+    expect(navigator.vibrate).toHaveBeenLastCalledWith(800);
   });
 });

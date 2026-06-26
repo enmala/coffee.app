@@ -959,4 +959,55 @@ describe('App Component', () => {
     fireEvent.click(closeXBtn);
     expect(screen.queryByText('Personaliza tu experiencia de preparación')).not.toBeInTheDocument();
   });
+
+  test('modifies sound and vibration settings in settings modal and saves to localStorage', () => {
+    render(<App />);
+
+    // Open settings modal
+    fireEvent.click(screen.getByTitle('Configuración'));
+    expect(screen.getByText('Personaliza tu experiencia de preparación')).toBeInTheDocument();
+
+    // Locators for toggles
+    const soundToggle = screen.getByText('Alertas de Sonido').parentElement.parentElement.querySelector('button');
+    const vibrationToggle = screen.getByText('Vibración Háptica').parentElement.parentElement.querySelector('button');
+
+    // Default values check
+    expect(soundToggle).toHaveTextContent('Activado');
+    expect(vibrationToggle).toHaveTextContent('Activado');
+    expect(screen.getByText('Duración:')).toBeInTheDocument();
+    
+    const vibrationSelect = screen.getByText('Duración:').parentElement.querySelector('select');
+    expect(vibrationSelect).toHaveValue('normal');
+
+    // Click sound toggle -> disable
+    fireEvent.click(soundToggle);
+    expect(soundToggle).toHaveTextContent('Desactivado');
+    expect(localStorage.getItem('coffee_sound_enabled')).toBe('false');
+
+    // Change vibration duration type to 'long'
+    fireEvent.change(vibrationSelect, { target: { value: 'long' } });
+    expect(localStorage.getItem('coffee_vibration_type')).toBe('long');
+
+    // Click vibration toggle -> disable
+    fireEvent.click(vibrationToggle);
+    expect(vibrationToggle).toHaveTextContent('Desactivado');
+    expect(localStorage.getItem('coffee_vibration_enabled')).toBe('false');
+    
+    // Select should not be visible anymore
+    expect(screen.queryByText('Duración:')).not.toBeInTheDocument();
+
+    // Click sound toggle -> enable
+    fireEvent.click(soundToggle);
+    expect(soundToggle).toHaveTextContent('Activado');
+    expect(localStorage.getItem('coffee_sound_enabled')).toBe('true');
+
+    // Click vibration toggle -> enable
+    fireEvent.click(vibrationToggle);
+    expect(vibrationToggle).toHaveTextContent('Activado');
+    expect(localStorage.getItem('coffee_vibration_enabled')).toBe('true');
+    expect(screen.getByText('Duración:')).toBeInTheDocument();
+
+    const vibrationSelectAfter = screen.getByText('Duración:').parentElement.querySelector('select');
+    expect(vibrationSelectAfter).toHaveValue('long'); // should keep the saved value
+  });
 });

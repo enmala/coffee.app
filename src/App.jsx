@@ -46,6 +46,33 @@ export default function App() {
   const [isAboutOpen, setIsAboutOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
+  const [soundEnabled, setSoundEnabled] = useState(() => {
+    const saved = localStorage.getItem('coffee_sound_enabled');
+    return saved !== null ? JSON.parse(saved) : true;
+  });
+
+  const [vibrationEnabled, setVibrationEnabled] = useState(() => {
+    const saved = localStorage.getItem('coffee_vibration_enabled');
+    return saved !== null ? JSON.parse(saved) : true;
+  });
+
+  const [vibrationType, setVibrationType] = useState(() => {
+    const saved = localStorage.getItem('coffee_vibration_type');
+    return saved || 'normal';
+  });
+
+  useEffect(() => {
+    localStorage.setItem('coffee_sound_enabled', JSON.stringify(soundEnabled));
+  }, [soundEnabled]);
+
+  useEffect(() => {
+    localStorage.setItem('coffee_vibration_enabled', JSON.stringify(vibrationEnabled));
+  }, [vibrationEnabled]);
+
+  useEffect(() => {
+    localStorage.setItem('coffee_vibration_type', vibrationType);
+  }, [vibrationType]);
+
   const [theme, setTheme] = useState(() => {
     const saved = localStorage.getItem('theme');
     if (saved) return saved;
@@ -374,6 +401,9 @@ export default function App() {
             </button>
             <TimerComponent
               recipe={activeRecipe}
+              soundEnabled={soundEnabled}
+              vibrationEnabled={vibrationEnabled}
+              vibrationType={vibrationType}
               onComplete={() => {
                 if (autoLogEnabled) {
                   const totalWater = activeRecipe.steps.reduce((acc, s) => acc + s.water_g, 0);
@@ -1010,12 +1040,59 @@ export default function App() {
                   </button>
                 </div>
 
-                {/* Placeholder for future configurations (sound alerts / vibration settings) */}
-                <div className="p-3 bg-slate-50/50 dark:bg-slate-800/20 rounded-xl border border-dashed border-slate-200 dark:border-slate-800 opacity-60">
+                {/* Sound Alerts */}
+                <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-800/60">
                   <div className="text-left">
-                    <span className="text-xs font-bold text-slate-450 dark:text-slate-500 uppercase tracking-wider block mb-1">Próximos Ajustes</span>
-                    <span className="text-xs text-slate-500 dark:text-slate-400 block">Configuración de alertas de sonido y vibración háptica.</span>
+                    <span className="text-sm font-bold text-slate-800 dark:text-slate-200 block">Alertas de Sonido</span>
+                    <span className="text-xs text-slate-500 dark:text-slate-400">Sonido al cambiar de paso</span>
                   </div>
+                  <button
+                    type="button"
+                    onClick={() => setSoundEnabled(!soundEnabled)}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
+                      soundEnabled 
+                        ? 'bg-amber-800 text-white hover:bg-amber-900' 
+                        : 'bg-slate-200 dark:bg-slate-750 text-slate-600 dark:text-slate-400 hover:bg-slate-300 dark:hover:bg-slate-700'
+                    }`}
+                  >
+                    {soundEnabled ? 'Activado' : 'Desactivado'}
+                  </button>
+                </div>
+
+                {/* Vibration Alerts */}
+                <div className="space-y-2.5 p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-800/60">
+                  <div className="flex items-center justify-between">
+                    <div className="text-left">
+                      <span className="text-sm font-bold text-slate-800 dark:text-slate-200 block">Vibración Háptica</span>
+                      <span className="text-xs text-slate-500 dark:text-slate-400">Vibrar en transiciones</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setVibrationEnabled(!vibrationEnabled)}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
+                        vibrationEnabled 
+                          ? 'bg-amber-800 text-white hover:bg-amber-900' 
+                          : 'bg-slate-200 dark:bg-slate-750 text-slate-600 dark:text-slate-400 hover:bg-slate-300 dark:hover:bg-slate-700'
+                      }`}
+                    >
+                      {vibrationEnabled ? 'Activado' : 'Desactivado'}
+                    </button>
+                  </div>
+                  
+                  {vibrationEnabled && (
+                    <div className="pt-2 border-t border-slate-200/50 dark:border-slate-700/50 flex items-center justify-between gap-2">
+                      <label className="text-xs text-slate-600 dark:text-slate-400 font-semibold">Duración:</label>
+                      <select
+                        value={vibrationType}
+                        onChange={(e) => setVibrationType(e.target.value)}
+                        className="p-1 border border-slate-200 dark:border-slate-700 rounded bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 text-xs focus:outline-none"
+                      >
+                        <option value="short">Corta</option>
+                        <option value="normal">Normal</option>
+                        <option value="long">Larga</option>
+                      </select>
+                    </div>
+                  )}
                 </div>
               </div>
 

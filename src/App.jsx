@@ -44,6 +44,7 @@ export default function App() {
   });
 
   const [isAboutOpen, setIsAboutOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   const [theme, setTheme] = useState(() => {
     const saved = localStorage.getItem('theme');
@@ -350,18 +351,14 @@ export default function App() {
         </div>
         <div className="flex gap-2">
           <button
-            onClick={() => setIsAboutOpen(true)}
-            className="p-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition cursor-pointer text-base"
-            title="Acerca de Barista Timer"
+            onClick={() => setIsSettingsOpen(true)}
+            className="p-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition cursor-pointer text-slate-650 dark:text-slate-200 flex items-center justify-center"
+            title="Configuración"
           >
-            ℹ️
-          </button>
-          <button
-            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-            className="p-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition cursor-pointer text-base"
-            title={theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
-          >
-            {theme === 'dark' ? '☀️' : '🌙'}
+            <svg className="w-5 h-5 transition-transform duration-300 hover:rotate-45" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="3" />
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+            </svg>
           </button>
         </div>
       </header>
@@ -957,6 +954,77 @@ export default function App() {
                   className="w-1/2 py-2 bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-800 text-white rounded-xl font-bold text-xs transition shadow-sm cursor-pointer"
                 >
                   Iniciar Timer
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+        {isSettingsOpen && (
+          <div className="fixed inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
+            <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-sm w-full p-6 shadow-xl max-h-[85vh] overflow-y-auto space-y-5 border border-slate-100 dark:border-slate-800 flex flex-col">
+              <div className="flex justify-between items-start border-b border-slate-200 dark:border-slate-800 pb-3">
+                <div className="text-left">
+                  <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                    <span>⚙️</span> Configuración
+                  </h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Personaliza tu experiencia de preparación</p>
+                </div>
+                <button
+                  onClick={() => setIsSettingsOpen(false)}
+                  className="text-slate-400 dark:text-slate-350 hover:text-slate-600 dark:hover:text-slate-200 text-xl font-bold leading-none cursor-pointer"
+                >
+                  &times;
+                </button>
+              </div>
+
+              <div className="space-y-4 py-2">
+                {/* Theme selector */}
+                <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-800/60">
+                  <div className="text-left">
+                    <span className="text-sm font-bold text-slate-800 dark:text-slate-200 block">Tema Visual</span>
+                    <span className="text-xs text-slate-500 dark:text-slate-400">Alterna entre modo claro y oscuro</span>
+                  </div>
+                  <button
+                    onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                    className="p-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition cursor-pointer text-base flex items-center gap-1"
+                    title={theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
+                  >
+                    <span>{theme === 'dark' ? '☀️ Claro' : '🌙 Oscuro'}</span>
+                  </button>
+                </div>
+
+                {/* About button */}
+                <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-800/60">
+                  <div className="text-left">
+                    <span className="text-sm font-bold text-slate-800 dark:text-slate-200 block">Información</span>
+                    <span className="text-xs text-slate-500 dark:text-slate-400">Acerca de la app y créditos</span>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setIsSettingsOpen(false);
+                      setIsAboutOpen(true);
+                    }}
+                    className="px-3 py-1.5 bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-800 text-white text-xs font-bold rounded-lg transition cursor-pointer"
+                  >
+                    Ver Acerca de
+                  </button>
+                </div>
+
+                {/* Placeholder for future configurations (sound alerts / vibration settings) */}
+                <div className="p-3 bg-slate-50/50 dark:bg-slate-800/20 rounded-xl border border-dashed border-slate-200 dark:border-slate-800 opacity-60">
+                  <div className="text-left">
+                    <span className="text-xs font-bold text-slate-450 dark:text-slate-500 uppercase tracking-wider block mb-1">Próximos Ajustes</span>
+                    <span className="text-xs text-slate-500 dark:text-slate-400 block">Configuración de alertas de sonido y vibración háptica.</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
+                <button
+                  onClick={() => setIsSettingsOpen(false)}
+                  className="w-full py-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-650 dark:text-slate-300 rounded-xl font-bold text-xs transition cursor-pointer"
+                >
+                  Cerrar
                 </button>
               </div>
             </div>

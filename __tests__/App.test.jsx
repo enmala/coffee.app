@@ -51,6 +51,11 @@ describe('App Component', () => {
 
   test('toggles theme between light and dark', () => {
     render(<App />);
+    
+    // Open settings modal first
+    const settingsBtn = screen.getByTitle('Configuración');
+    fireEvent.click(settingsBtn);
+    
     const themeBtn = screen.queryByTitle('Cambiar a modo claro') || screen.getByTitle('Cambiar a modo oscuro');
     
     // Initially light or dark depending on system preference in setup.js, toggle it:
@@ -68,10 +73,15 @@ describe('App Component', () => {
 
   test('opens and closes the About modal', () => {
     render(<App />);
-    const infoBtn = screen.getByTitle('Acerca de Barista Timer');
     
-    // Open modal
-    fireEvent.click(infoBtn);
+    // Open settings modal first
+    const settingsBtn = screen.getByTitle('Configuración');
+    fireEvent.click(settingsBtn);
+    
+    // Click About button inside settings
+    const aboutBtn = screen.getByText('Ver Acerca de');
+    fireEvent.click(aboutBtn);
+    
     expect(screen.getByText('EnMalA')).toBeInTheDocument();
     expect(screen.getByText(`v${version}`)).toBeInTheDocument();
     expect(screen.getByText('Repositorio en GitHub')).toBeInTheDocument();
@@ -361,7 +371,8 @@ describe('App Component', () => {
 
   test('closes About modal with header close button', () => {
     render(<App />);
-    fireEvent.click(screen.getByTitle('Acerca de Barista Timer'));
+    fireEvent.click(screen.getByTitle('Configuración'));
+    fireEvent.click(screen.getByText('Ver Acerca de'));
     
     // Click top &times; button
     const closeXBtn = screen.getByText('×');
@@ -922,5 +933,30 @@ describe('App Component', () => {
     fireEvent.click(screen.getByTitle('Editar observaciones'));
     expect(screen.getByPlaceholderText(/Ej: Salió un poco dulce/i)).toHaveValue('');
     fireEvent.click(screen.getByText('Cancelar'));
+  });
+
+  test('opens and closes the Settings modal', () => {
+    render(<App />);
+    
+    // Settings modal should not be visible initially
+    expect(screen.queryByText('Personaliza tu experiencia de preparación')).not.toBeInTheDocument();
+    
+    // Open settings modal
+    fireEvent.click(screen.getByTitle('Configuración'));
+    expect(screen.getByText('Personaliza tu experiencia de preparación')).toBeInTheDocument();
+    
+    // Close settings modal using "Cerrar" button
+    const closeBtn = screen.getAllByText('Cerrar').find(btn => btn.tagName === 'BUTTON');
+    fireEvent.click(closeBtn);
+    expect(screen.queryByText('Personaliza tu experiencia de preparación')).not.toBeInTheDocument();
+
+    // Open settings modal again
+    fireEvent.click(screen.getByTitle('Configuración'));
+    expect(screen.getByText('Personaliza tu experiencia de preparación')).toBeInTheDocument();
+
+    // Close settings modal using header Close (times) button
+    const closeXBtn = screen.getByText('×');
+    fireEvent.click(closeXBtn);
+    expect(screen.queryByText('Personaliza tu experiencia de preparación')).not.toBeInTheDocument();
   });
 });

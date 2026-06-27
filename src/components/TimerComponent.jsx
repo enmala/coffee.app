@@ -1,16 +1,11 @@
 import { useState, useEffect } from 'react';
-import { playBeep, COFFEE_DESCRIPTORS } from '../utils/coffeeUtils';
+import { playBeep } from '../utils/coffeeUtils';
 
 export default function TimerComponent({ recipe, onComplete, soundEnabled = true, vibrationEnabled = true, vibrationType = 'normal' }) {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [timeLeft, setTimeLeft] = useState(recipe.steps[0].duration_s);
   const [isRunning, setIsRunning] = useState(false);
   const [showFinishedModal, setShowFinishedModal] = useState(false);
-  
-  // States for coffee cup rating and tasting descriptors in the Finished Modal
-  const [rating, setRating] = useState(0);
-  const [notes, setNotes] = useState('');
-  const [selectedDescriptors, setSelectedDescriptors] = useState([]);
 
   const currentStep = recipe.steps[currentStepIndex];
 
@@ -98,9 +93,6 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
     setIsRunning(false);
     setCurrentStepIndex(0);
     setTimeLeft(recipe.steps[0].duration_s);
-    setRating(0);
-    setNotes('');
-    setSelectedDescriptors([]);
   };
 
   const handleSkipNext = () => {
@@ -258,80 +250,20 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
             <div className="text-4xl animate-bounce">🎉</div>
             <div>
               <h3 className="text-lg font-bold text-slate-900 dark:text-white">¡Preparación Completada!</h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                ¿Cómo salió tu taza? Regístralo a continuación (opcional)
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                ¡Buen provecho! Tu café está listo para servir.
               </p>
-            </div>
-
-            {/* Star Rating */}
-            <div className="space-y-1">
-              <span className="text-xs font-bold text-slate-500 dark:text-slate-400 block">Puntuación:</span>
-              <div className="flex justify-center gap-1.5">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <button
-                    key={star}
-                    type="button"
-                    onClick={() => setRating(star)}
-                    className="text-2xl focus:outline-none cursor-pointer transition transform active:scale-125 hover:scale-110"
-                    title={`Puntuar ${star} estrella${star > 1 ? 's' : ''}`}
-                  >
-                    <span className={star <= rating ? 'text-amber-500' : 'text-slate-300 dark:text-slate-700'}>
-                      ★
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Flavor tags descriptors */}
-            <div className="space-y-1 text-left">
-              <span className="text-xs font-bold text-slate-500 dark:text-slate-400 block text-center">Notas de sabor detectadas:</span>
-              <div className="flex flex-wrap justify-center gap-1.5 pt-1">
-                {COFFEE_DESCRIPTORS.map((desc) => {
-                  const isSelected = selectedDescriptors.includes(desc);
-                  return (
-                    <button
-                      key={desc}
-                      type="button"
-                      onClick={() => {
-                        setSelectedDescriptors(prev =>
-                          prev.includes(desc) ? prev.filter(d => d !== desc) : [...prev, desc]
-                        );
-                      }}
-                      className={`px-2.5 py-1 rounded-full text-[10px] font-bold border transition cursor-pointer ${
-                        isSelected
-                          ? 'bg-amber-100 dark:bg-amber-950/40 border-amber-300 dark:border-amber-900/60 text-amber-900 dark:text-amber-300'
-                          : 'bg-slate-50 dark:bg-slate-800/60 border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-750'
-                      }`}
-                    >
-                      {desc}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Notes textarea */}
-            <div className="space-y-1 text-left">
-              <span className="text-xs font-bold text-slate-500 dark:text-slate-400 block text-center">Observaciones de la taza:</span>
-              <textarea
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                placeholder="Ej: Quedó con buen dulzor, notas florales muy marcadas..."
-                className="w-full p-2 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:outline-none focus:ring-2 focus:ring-amber-500/50"
-                rows="2"
-              />
             </div>
 
             <button 
               type="button"
               onClick={() => {
                 setShowFinishedModal(false);
-                onComplete(rating, notes, selectedDescriptors);
+                onComplete();
               }}
               className="w-full py-2.5 bg-emerald-700 hover:bg-emerald-800 dark:bg-emerald-650 dark:hover:bg-emerald-700 text-white rounded-xl font-bold text-sm transition shadow-sm cursor-pointer"
             >
-              Guardar Registro
+              Entendido
             </button>
           </div>
         </div>

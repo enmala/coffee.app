@@ -259,7 +259,7 @@ describe('App Component', () => {
     });
     
     // Done button inside completion modal
-    const doneBtn = screen.getByText('Guardar Registro');
+    const doneBtn = screen.getByText('Entendido');
     fireEvent.click(doneBtn);
     
     // Switch to history tab to verify entry exists

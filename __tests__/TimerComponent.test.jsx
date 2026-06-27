@@ -357,4 +357,13 @@ describe('TimerComponent', () => {
     });
     expect(navigator.vibrate).toHaveBeenLastCalledWith(800);
   });
+
+  test('renders circular progress SVG ring', () => {
+    render(<TimerComponent recipe={mockRecipe} onComplete={onCompleteMock} />);
+    const svgEl = screen.getByText('Preinfusión').closest('div').parentElement.querySelector('svg');
+    expect(svgEl).toBeInTheDocument();
+    expect(svgEl).toHaveClass('w-52');
+    const circles = svgEl.querySelectorAll('circle');
+    expect(circles).toHaveLength(2);
+  });
 });

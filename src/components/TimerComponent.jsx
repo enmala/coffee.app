@@ -6,6 +6,7 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
   const [timeLeft, setTimeLeft] = useState(recipe.steps[0].duration_s);
   const [isRunning, setIsRunning] = useState(false);
   const [showFinishedModal, setShowFinishedModal] = useState(false);
+
   const currentStep = recipe.steps[currentStepIndex];
 
   useEffect(() => {
@@ -142,27 +143,60 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
         </div>
       </div>
 
-      <div className="border-t border-b border-slate-100 dark:border-slate-800 py-3 bg-amber-50/20 dark:bg-amber-950/10 rounded-xl px-2">
-        <span className="text-[10px] font-bold text-amber-900 dark:text-amber-300 bg-amber-100 dark:bg-amber-900/30 px-2 py-0.5 rounded-full uppercase">
-          Paso {currentStepIndex + 1} de {recipe.steps.length}
-        </span>
-        <h4 className="text-base font-bold text-slate-800 dark:text-slate-200 mt-1">{currentStep.title}</h4>
-        <p className="text-lg text-slate-600 dark:text-slate-400 mt-1 min-h-[48px] px-4 flex items-center justify-center italic font-semibold leading-relaxed">
-          "{currentStep.instruction || 'Sin instrucciones adicionales'}"
-        </p>
-        
-        <div className="mt-1 text-xs">
-          <span className="text-slate-400 dark:text-slate-400">Verter en este paso: </span>
-          <span className="font-bold text-amber-900 dark:text-amber-400">+{currentStep.water_g}g</span>
-        </div>
-        <div className="text-xs text-slate-600 dark:text-slate-350 mt-0.5">
-          Agua acumulada: <span className="font-bold text-amber-900 dark:text-amber-400 text-sm">{cumulativeWater}g</span>
+      {/* Progress circular SVG */}
+      <div className="relative flex justify-center items-center my-6">
+        <svg className="w-52 h-52 transform -rotate-90">
+          {/* Circle background */}
+          <circle
+            cx="104"
+            cy="104"
+            r="88"
+            className="stroke-slate-100 dark:stroke-slate-800/80"
+            strokeWidth="8"
+            fill="transparent"
+          />
+          {/* Progress circle */}
+          <circle
+            cx="104"
+            cy="104"
+            r="88"
+            className="stroke-amber-800 dark:stroke-amber-500 transition-all duration-1000 ease-linear"
+            strokeWidth="8"
+            fill="transparent"
+            strokeDasharray={2 * Math.PI * 88}
+            strokeDashoffset={2 * Math.PI * 88 * (1 - (timeLeft / (currentStep.duration_s || 1)))}
+            strokeLinecap="round"
+          />
+        </svg>
+        {/* Inner details */}
+        <div className="absolute flex flex-col items-center justify-center space-y-1">
+          <span className="text-[10px] text-slate-450 dark:text-slate-500 uppercase font-bold tracking-widest max-w-[130px] truncate">
+            {currentStep.title}
+          </span>
+          <span className="text-4xl font-mono font-bold text-slate-900 dark:text-white select-none tracking-tight">
+            {formatTime(timeLeft)}
+          </span>
+          <span className="text-[10px] text-amber-905 dark:text-amber-300 font-bold bg-amber-50 dark:bg-amber-950/30 px-2.5 py-0.5 rounded-full uppercase">
+            Paso {currentStepIndex + 1} de {recipe.steps.length}
+          </span>
         </div>
       </div>
 
-      <div className="py-1">
-        <div className="text-4xl font-mono font-bold text-slate-900 dark:text-white select-none tracking-tight">
-          {formatTime(timeLeft)}
+      {/* Step instructions and pour guide */}
+      <div className="p-4 bg-slate-50 dark:bg-slate-800/30 border border-slate-150 dark:border-slate-800/80 rounded-xl space-y-2.5 text-center">
+        <p className="text-sm text-slate-650 dark:text-slate-355 min-h-[40px] flex items-center justify-center italic font-medium px-2 leading-relaxed">
+          "{currentStep.instruction || 'Sin instrucciones adicionales'}"
+        </p>
+        
+        <div className="pt-2 border-t border-slate-200/50 dark:border-slate-700/50 grid grid-cols-2 gap-2 text-xs">
+          <div>
+            <span className="text-slate-450 dark:text-slate-450 block text-[9px] uppercase font-bold">Verter ahora</span>
+            <span className="font-bold text-amber-900 dark:text-amber-400 text-sm">+{currentStep.water_g}g</span>
+          </div>
+          <div>
+            <span className="text-slate-450 dark:text-slate-450 block text-[9px] uppercase font-bold">Agua acumulada</span>
+            <span className="font-bold text-amber-900 dark:text-amber-400 text-sm">{cumulativeWater}g</span>
+          </div>
         </div>
       </div>
 
@@ -212,12 +246,15 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
 
       {showFinishedModal && (
         <div className="fixed inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
-          <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-sm w-full p-6 shadow-xl border border-slate-100 dark:border-slate-800 text-center space-y-4">
-            <div className="text-4xl">🎉</div>
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white">¡Preparación Completada!</h3>
-            <p className="text-sm text-slate-500 dark:text-slate-400">
-              Tu café está listo para disfrutar. ¡Que tengas una excelente taza!
-            </p>
+          <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-sm w-full p-5 md:p-6 shadow-xl border border-slate-100 dark:border-slate-800 text-center space-y-4 max-h-[90vh] overflow-y-auto">
+            <div className="text-4xl animate-bounce">🎉</div>
+            <div>
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white">¡Preparación Completada!</h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                ¡Buen provecho! Tu café está listo para servir.
+              </p>
+            </div>
+
             <button 
               type="button"
               onClick={() => {

@@ -39,6 +39,7 @@ describe('App Component', () => {
   });
 
   afterEach(() => {
+    vi.useRealTimers();
     vi.clearAllMocks();
   });
 
@@ -269,7 +270,7 @@ describe('App Component', () => {
     expect(screen.getByText('Método 4:6 (Tetsu Kasuya)')).toBeInTheDocument();
     
     // Edit notes via the placeholder button
-    const addNotesBtn = screen.getByText('+ Añadir observaciones de la taza');
+    const addNotesBtn = screen.getByText('+ Registrar catación (puntuación y descriptores)');
     fireEvent.click(addNotesBtn);
     
     const notesTextarea = screen.getByPlaceholderText(/Ej: Salió un poco dulce/i);
@@ -1009,5 +1010,65 @@ describe('App Component', () => {
 
     const vibrationSelectAfter = screen.getByText('Duración:').parentElement.querySelector('select');
     expect(vibrationSelectAfter).toHaveValue('long'); // should keep the saved value
+  });
+
+  test('allows editing coffee cup rating and tasting descriptors in the history log', () => {
+    localStorage.setItem('coffee_history_v1', JSON.stringify([
+      {
+        id: 'hist-edit-rating',
+        recipeId: 'aeropress-standard',
+        recipeName: 'Aeropress Tradicional',
+        method: 'Aeropress',
+        date: new Date().toISOString(),
+        coffee_g: 15,
+        water_g: 220,
+        grind_size: 'Fine',
+        notes: 'Sabor amargo',
+        rating: 2,
+        descriptors: ['Amargo']
+      }
+    ]));
+
+    render(<App />);
+    
+    // Switch to history
+    fireEvent.click(screen.getByText('📜 Historial'));
+    expect(screen.getByText('Aeropress Tradicional')).toBeInTheDocument();
+    
+    // Edit notes via the edit pencil button
+    const editBtn = screen.getByTitle('Editar observaciones');
+    fireEvent.click(editBtn);
+    
+    // Choose rating star 5
+    const starBtn = screen.getByTitle('Puntuar 5 estrellas');
+    fireEvent.click(starBtn);
+    
+    // Toggle descriptors: remove 'Amargo', add 'Dulce' and 'Cuerpo'
+    const amargoBtn = screen.getByRole('button', { name: 'Amargo' });
+    const dulceBtn = screen.getByRole('button', { name: 'Dulce' });
+    const cuerpoBtn = screen.getByRole('button', { name: 'Cuerpo' });
+    fireEvent.click(amargoBtn); // Deselect
+    fireEvent.click(dulceBtn);  // Select
+    fireEvent.click(cuerpoBtn); // Select
+    
+    // Change notes
+    const textarea = screen.getByPlaceholderText(/Ej: Salió un poco dulce/i);
+    fireEvent.change(textarea, { target: { value: 'Increíble taza dulce y equilibrada!' } });
+    
+    // Click Save
+    const saveBtn = screen.getByText('Guardar');
+    fireEvent.click(saveBtn);
+    
+    // Verify updated details
+    expect(screen.getByText('"Increíble taza dulce y equilibrada!"')).toBeInTheDocument();
+    expect(screen.getByText('Dulce')).toBeInTheDocument();
+    expect(screen.getByText('Cuerpo')).toBeInTheDocument();
+    expect(screen.queryByText('Amargo')).not.toBeInTheDocument();
+    
+    // Verify changes are written to localStorage
+    const savedHistory = JSON.parse(localStorage.getItem('coffee_history_v1'));
+    expect(savedHistory[0].rating).toBe(5);
+    expect(savedHistory[0].descriptors).toEqual(['Dulce', 'Cuerpo']);
+    expect(savedHistory[0].notes).toBe('Increíble taza dulce y equilibrada!');
   });
 });

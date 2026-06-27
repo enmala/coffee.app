@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getMethodIcon } from './utils/coffeeUtils';
+import { getMethodIcon, COFFEE_DESCRIPTORS } from './utils/coffeeUtils';
 import TimerComponent from './components/TimerComponent';
 import { version } from '../package.json';
 
@@ -32,19 +32,6 @@ const DEFAULT_RECIPES = [
       { step_number: 3, title: 'Prensado', water_g: 0, duration_s: 30, instruction: 'Presiona el émbolo suavemente hacia abajo durante 30 segundos.' }
     ]
   }
-];
-
-export const COFFEE_DESCRIPTORS = [
-  'Dulce',
-  'Ácido',
-  'Amargo',
-  'Cuerpo',
-  'Balanceado',
-  'Floral',
-  'Frutal',
-  'Cítrico',
-  'Chocolatoso',
-  'Nuez'
 ];
 
 
@@ -131,6 +118,8 @@ export default function App() {
   });
   const [editingHistoryId, setEditingHistoryId] = useState(null);
   const [editingHistoryNotes, setEditingHistoryNotes] = useState(null);
+  const [editingHistoryRating, setEditingHistoryRating] = useState(0);
+  const [editingHistoryDescriptors, setEditingHistoryDescriptors] = useState([]);
 
   const [autoLogEnabled, setAutoLogEnabled] = useState(() => {
     const saved = localStorage.getItem('auto_log_enabled');
@@ -151,9 +140,9 @@ export default function App() {
     }
   };
 
-  const handleUpdateHistoryNotes = (id, newNotes) => {
+  const handleUpdateHistoryEntry = (id, newNotes, newRating, newDescriptors) => {
     setHistory((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, notes: newNotes } : item))
+      prev.map((item) => (item.id === id ? { ...item, notes: newNotes, rating: newRating, descriptors: newDescriptors } : item))
     );
   };
 
@@ -417,7 +406,7 @@ export default function App() {
               soundEnabled={soundEnabled}
               vibrationEnabled={vibrationEnabled}
               vibrationType={vibrationType}
-              onComplete={() => {
+              onComplete={(rating = 0, notes = '', descriptors = []) => {
                 if (autoLogEnabled) {
                   const totalWater = activeRecipe.steps.reduce((acc, s) => acc + s.water_g, 0);
                   const newEntry = {
@@ -429,7 +418,9 @@ export default function App() {
                     coffee_g: activeRecipe.coffee_g,
                     water_g: totalWater,
                     grind_size: activeRecipe.grind_size,
-                    notes: ''
+                    notes,
+                    rating,
+                    descriptors
                   };
                   setHistory((prev) => [newEntry, ...prev]);
                 }
@@ -816,7 +807,6 @@ export default function App() {
                     )}
                   </div>
                 </div>
-
                 <div className="space-y-3 max-h-[480px] overflow-y-auto pr-1 pb-24">
                   {history.length === 0 ? (
                     <p className="text-sm text-slate-400 dark:text-slate-400 text-center py-8">
@@ -836,15 +826,34 @@ export default function App() {
                       return (
                         <div key={entry.id} className="p-3 bg-slate-50 dark:bg-slate-800/30 border border-slate-200 dark:border-slate-800 rounded-xl space-y-2 relative group">
                           <div className="flex justify-between items-start">
-                            <div>
+                            <div className="text-left">
                               <span className="text-[10px] text-slate-400 dark:text-slate-500 block font-semibold">{dateFormatted}</span>
                               <span className="font-bold text-slate-950 dark:text-slate-100 text-sm flex items-center gap-1.5">
                                 <span className="w-5 h-5 flex items-center justify-center select-none">{getMethodIcon(entry.method)}</span>
                                 {entry.recipeName}
                               </span>
-                              <p className="text-[11px] text-slate-500 dark:text-slate-350 mt-1">
+
+                              {/* Display Star Rating */}
+                              {entry.rating > 0 && (
+                                <div className="flex items-center gap-0.5 text-amber-500 text-xs mt-0.5" title={`Puntuación: ${entry.rating}/5`}>
+                                  {'★'.repeat(entry.rating)}{'☆'.repeat(5 - entry.rating)}
+                                </div>
+                              )}
+
+                              <p className="text-[11px] text-slate-505 dark:text-slate-350 mt-1">
                                 {entry.coffee_g}g • {entry.grind_size || 'Molienda N/D'} • {entry.water_g}g agua
                               </p>
+
+                              {/* Display Flavor Tags */}
+                              {entry.descriptors && entry.descriptors.length > 0 && (
+                                <div className="flex flex-wrap gap-1 mt-1.5">
+                                  {entry.descriptors.map((desc) => (
+                                    <span key={desc} className="px-1.5 py-0.5 bg-amber-50 dark:bg-amber-950/20 text-amber-805 dark:text-amber-300 border border-amber-100 dark:border-amber-900/20 rounded-full text-[9px] font-bold font-sans">
+                                      {desc}
+                                    </span>
+                                  ))}
+                                </div>
+                              )}
                             </div>
 
                             <div className="flex gap-1 opacity-60 group-hover:opacity-100 transition">
@@ -852,6 +861,8 @@ export default function App() {
                                 onClick={() => {
                                   setEditingHistoryId(entry.id);
                                   setEditingHistoryNotes(entry.notes || '');
+                                  setEditingHistoryRating(entry.rating || 0);
+                                  setEditingHistoryDescriptors(entry.descriptors || []);
                                 }}
                                 className="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded text-slate-500 dark:text-slate-300 cursor-pointer"
                                 title="Editar observaciones"
@@ -869,14 +880,67 @@ export default function App() {
                           </div>
 
                           {isEditingNote ? (
-                            <div className="space-y-1.5 pt-1">
-                              <textarea
-                                value={editingHistoryNotes}
-                                onChange={(e) => setEditingHistoryNotes(e.target.value)}
-                                placeholder="Ej: Salió un poco dulce, moler más fino la próxima vez..."
-                                className="w-full p-2 border border-slate-250 dark:border-slate-700 rounded bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:outline-none focus:ring-1 focus:ring-amber-500"
-                                rows="2"
-                              />
+                            <div className="space-y-3 pt-1 text-left">
+                              {/* Edit Rating */}
+                              <div className="flex items-center gap-1.5">
+                                <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Puntuación:</span>
+                                <div className="flex gap-1">
+                                  {[1, 2, 3, 4, 5].map((star) => (
+                                    <button
+                                      key={star}
+                                      type="button"
+                                      onClick={() => setEditingHistoryRating(star)}
+                                      className="text-lg focus:outline-none cursor-pointer transition transform active:scale-125"
+                                      title={`Puntuar ${star} estrella${star > 1 ? 's' : ''}`}
+                                    >
+                                      <span className={star <= editingHistoryRating ? 'text-amber-500' : 'text-slate-300 dark:text-slate-700'}>
+                                        ★
+                                      </span>
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+
+                              {/* Edit Flavor Tags */}
+                              <div className="space-y-1">
+                                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 block">Descriptores de sabor:</span>
+                                <div className="flex flex-wrap gap-1">
+                                  {COFFEE_DESCRIPTORS.map((desc) => {
+                                    const isSelected = editingHistoryDescriptors.includes(desc);
+                                    return (
+                                      <button
+                                        key={desc}
+                                        type="button"
+                                        onClick={() => {
+                                          setEditingHistoryDescriptors(prev =>
+                                            prev.includes(desc) ? prev.filter(d => d !== desc) : [...prev, desc]
+                                          );
+                                        }}
+                                        className={`px-2 py-0.5 rounded-full text-[9px] font-bold border transition cursor-pointer ${
+                                          isSelected
+                                            ? 'bg-amber-100 dark:bg-amber-950/40 border-amber-300 dark:border-amber-900/60 text-amber-900 dark:text-amber-300'
+                                            : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-750'
+                                        }`}
+                                      >
+                                        {desc}
+                                      </button>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+
+                              {/* Edit Notes */}
+                              <div className="space-y-1">
+                                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 block">Observaciones:</span>
+                                <textarea
+                                  value={editingHistoryNotes}
+                                  onChange={(e) => setEditingHistoryNotes(e.target.value)}
+                                  placeholder="Ej: Salió un poco dulce, moler más fino la próxima vez..."
+                                  className="w-full p-2 border border-slate-250 dark:border-slate-700 rounded bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:outline-none focus:ring-1 focus:ring-amber-500"
+                                  rows="2"
+                                />
+                              </div>
+
                               <div className="flex gap-2 justify-end">
                                 <button
                                   onClick={() => setEditingHistoryId(null)}
@@ -886,7 +950,7 @@ export default function App() {
                                 </button>
                                 <button
                                   onClick={() => {
-                                    handleUpdateHistoryNotes(entry.id, editingHistoryNotes);
+                                    handleUpdateHistoryEntry(entry.id, editingHistoryNotes, editingHistoryRating, editingHistoryDescriptors);
                                     setEditingHistoryId(null);
                                   }}
                                   className="px-2 py-1 text-[10px] bg-emerald-700 hover:bg-emerald-800 text-white rounded font-semibold cursor-pointer"
@@ -895,19 +959,25 @@ export default function App() {
                                 </button>
                               </div>
                             </div>
-                          ) : entry.notes ? (
-                            <div className="text-xs bg-amber-500/5 dark:bg-amber-500/10 border-l-2 border-amber-600/50 p-2 rounded-r text-slate-650 dark:text-slate-350 italic">
-                              "{entry.notes}"
+                          ) : entry.notes || entry.rating || (entry.descriptors && entry.descriptors.length > 0) ? (
+                            <div className="space-y-1 bg-amber-500/5 dark:bg-amber-500/10 border-l-2 border-amber-600/50 p-2 rounded-r text-left">
+                              {entry.notes && (
+                                <p className="text-xs text-slate-650 dark:text-slate-350 italic">
+                                  "{entry.notes}"
+                                </p>
+                              )}
                             </div>
                           ) : (
                             <button
                               onClick={() => {
                                 setEditingHistoryId(entry.id);
                                 setEditingHistoryNotes('');
+                                setEditingHistoryRating(entry.rating || 0);
+                                setEditingHistoryDescriptors(entry.descriptors || []);
                               }}
-                              className="text-[10px] text-slate-400 dark:text-slate-500 hover:text-amber-800 dark:hover:text-amber-500 italic block pl-1 hover:underline cursor-pointer"
+                              className="text-[10px] text-slate-400 dark:text-slate-500 hover:text-amber-800 dark:hover:text-amber-500 italic block pl-1 hover:underline cursor-pointer text-left"
                             >
-                              + Añadir observaciones de la taza
+                              + Registrar catación (puntuación y descriptores)
                             </button>
                           )}
                         </div>

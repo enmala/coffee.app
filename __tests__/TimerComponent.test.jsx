@@ -131,7 +131,7 @@ describe('TimerComponent', () => {
     
     expect(screen.getByText('¡Preparación Completada!')).toBeInTheDocument();
     
-    const doneBtn = screen.getByText('Entendido');
+    const doneBtn = screen.getByText('Guardar Registro');
     fireEvent.click(doneBtn);
     
     expect(onCompleteMock).toHaveBeenCalledTimes(1);
@@ -356,5 +356,50 @@ describe('TimerComponent', () => {
       vi.advanceTimersByTime(5000);
     });
     expect(navigator.vibrate).toHaveBeenLastCalledWith(800);
+  });
+
+  test('renders circular progress SVG ring', () => {
+    render(<TimerComponent recipe={mockRecipe} onComplete={onCompleteMock} />);
+    const svgEl = screen.getByText('Preinfusión').closest('div').parentElement.querySelector('svg');
+    expect(svgEl).toBeInTheDocument();
+    expect(svgEl).toHaveClass('w-52');
+    const circles = svgEl.querySelectorAll('circle');
+    expect(circles).toHaveLength(2);
+  });
+
+  test('submits rating, notes, and descriptors upon recipe completion', () => {
+    render(<TimerComponent recipe={mockRecipe} onComplete={onCompleteMock} />);
+    
+    fireEvent.click(screen.getByText('INICIAR'));
+    
+    // Complete steps
+    act(() => {
+      vi.advanceTimersByTime(3000); // Step 1
+    });
+    act(() => {
+      vi.advanceTimersByTime(5000); // Step 2 -> Completes
+    });
+    
+    expect(screen.getByText('¡Preparación Completada!')).toBeInTheDocument();
+    
+    // Choose rating star 4
+    const starBtn = screen.getByTitle('Puntuar 4 estrellas');
+    fireEvent.click(starBtn);
+    
+    // Toggle descriptors
+    const dulceBtn = screen.getByText('Dulce');
+    const frutalBtn = screen.getByText('Frutal');
+    fireEvent.click(dulceBtn);
+    fireEvent.click(frutalBtn);
+    
+    // Input notes
+    const notesTextarea = screen.getByPlaceholderText(/Ej: Quedó con buen dulzor/i);
+    fireEvent.change(notesTextarea, { target: { value: 'Deliciosa extracción' } });
+    
+    // Click submit button
+    const doneBtn = screen.getByText('Guardar Registro');
+    fireEvent.click(doneBtn);
+    
+    expect(onCompleteMock).toHaveBeenCalledWith(4, 'Deliciosa extracción', ['Dulce', 'Frutal']);
   });
 });

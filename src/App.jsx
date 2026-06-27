@@ -34,6 +34,19 @@ const DEFAULT_RECIPES = [
   }
 ];
 
+export const COFFEE_DESCRIPTORS = [
+  'Dulce',
+  'Ácido',
+  'Amargo',
+  'Cuerpo',
+  'Balanceado',
+  'Floral',
+  'Frutal',
+  'Cítrico',
+  'Chocolatoso',
+  'Nuez'
+];
+
 
 
 

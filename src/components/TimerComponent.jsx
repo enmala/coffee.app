@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { playBeep } from '../utils/coffeeUtils';
 
-export default function TimerComponent({ recipe, onComplete }) {
+export default function TimerComponent({ recipe, onComplete, soundEnabled = true, vibrationEnabled = true, vibrationType = 'normal' }) {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [timeLeft, setTimeLeft] = useState(recipe.steps[0].duration_s);
   const [isRunning, setIsRunning] = useState(false);
@@ -49,20 +49,32 @@ export default function TimerComponent({ recipe, onComplete }) {
             return prevTime - 1;
           }
 
-          playBeep();
+          if (soundEnabled) {
+            playBeep();
+          }
 
           if (currentStepIndex < recipe.steps.length - 1) {
             const nextIndex = currentStepIndex + 1;
             setCurrentStepIndex(nextIndex);
             
-            if ('vibrate' in navigator) {
-              navigator.vibrate([150, 100, 150]);
+            if (vibrationEnabled && 'vibrate' in navigator) {
+              const pattern = vibrationType === 'short'
+                ? [75, 50, 75]
+                : vibrationType === 'long'
+                ? [300, 150, 300]
+                : [150, 100, 150];
+              navigator.vibrate(pattern);
             }
             return recipe.steps[nextIndex].duration_s;
           } else {
             setIsRunning(false);
-            if ('vibrate' in navigator) {
-              navigator.vibrate(400);
+            if (vibrationEnabled && 'vibrate' in navigator) {
+              const duration = vibrationType === 'short'
+                ? 200
+                : vibrationType === 'long'
+                ? 800
+                : 400;
+              navigator.vibrate(duration);
             }
             setShowFinishedModal(true);
             return 0;
@@ -74,7 +86,7 @@ export default function TimerComponent({ recipe, onComplete }) {
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [isRunning, currentStepIndex, recipe.steps]);
+  }, [isRunning, currentStepIndex, recipe.steps, soundEnabled, vibrationEnabled, vibrationType]);
 
   const handleReset = () => {
     setIsRunning(false);

@@ -9,8 +9,9 @@ export default defineConfig({
     tailwindcss(), // <-- Añade el plugin aquí
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
+      includeAssets: ['favicon.svg', 'icons.svg'],
       manifest: {
+        id: '/?source=pwa',
         name: 'Barista Timer',
         short_name: 'BaristaTimer',
         description: 'Recetario y temporizador para café de especialidad',
@@ -28,6 +29,22 @@ export default defineConfig({
             src: 'pwa-512x512.png',
             sizes: '512x512',
             type: 'image/png'
+          }
+        ],
+        screenshots: [
+          {
+            src: 'screenshot-mobile.png',
+            sizes: '390x844',
+            type: 'image/png',
+            form_factor: 'narrow',
+            label: 'Vista del temporizador y pasos de preparación en móvil'
+          },
+          {
+            src: 'screenshot-desktop.png',
+            sizes: '1280x800',
+            type: 'image/png',
+            form_factor: 'wide',
+            label: 'Vista general del recetario en pantalla de escritorio'
           }
         ]
       }

@@ -61,6 +61,11 @@ export default function App() {
     return saved || 'normal';
   });
 
+  const [voiceGuidanceEnabled, setVoiceGuidanceEnabled] = useState(() => {
+    const saved = localStorage.getItem('coffee_voice_guidance_enabled');
+    return saved !== null ? JSON.parse(saved) : false;
+  });
+
   useEffect(() => {
     localStorage.setItem('coffee_sound_enabled', JSON.stringify(soundEnabled));
   }, [soundEnabled]);
@@ -72,6 +77,10 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('coffee_vibration_type', vibrationType);
   }, [vibrationType]);
+
+  useEffect(() => {
+    localStorage.setItem('coffee_voice_guidance_enabled', JSON.stringify(voiceGuidanceEnabled));
+  }, [voiceGuidanceEnabled]);
 
   const [theme, setTheme] = useState(() => {
     const saved = localStorage.getItem('theme');
@@ -406,6 +415,7 @@ export default function App() {
               soundEnabled={soundEnabled}
               vibrationEnabled={vibrationEnabled}
               vibrationType={vibrationType}
+              voiceGuidanceEnabled={voiceGuidanceEnabled}
               onComplete={(rating = 0, notes = '', descriptors = []) => {
                 if (autoLogEnabled) {
                   const totalWater = activeRecipe.steps.reduce((acc, s) => acc + s.water_g, 0);
@@ -1106,6 +1116,27 @@ export default function App() {
                   </button>
                 </div>
 
+                {/* Modo manos libres */}
+                <div className="space-y-2.5 p-3 bg-amber-50 dark:bg-amber-950/20 rounded-xl border border-amber-200 dark:border-amber-500/20">
+                  <div className="flex items-center justify-between">
+                    <div className="text-left">
+                      <span className="text-sm font-bold text-slate-800 dark:text-slate-200 block">Modo Manos Libres</span>
+                      <span className="text-xs text-slate-500 dark:text-slate-400">Activa narración de pasos mientras el timer corre.</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setVoiceGuidanceEnabled(!voiceGuidanceEnabled)}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
+                        voiceGuidanceEnabled
+                          ? 'bg-amber-800 text-white hover:bg-amber-900'
+                          : 'bg-slate-200 dark:bg-slate-750 text-slate-650 dark:text-slate-400 hover:bg-slate-300 dark:hover:bg-slate-700'
+                      }`}
+                    >
+                      {voiceGuidanceEnabled ? 'Activado' : 'Desactivado'}
+                    </button>
+                  </div>
+                </div>
+
                 {/* Sound Alerts */}
                 <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-800/60">
                   <div className="text-left">
@@ -1125,7 +1156,6 @@ export default function App() {
                   </button>
                 </div>
 
-                {/* Vibration Alerts */}
                 <div className="space-y-2.5 p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-800/60">
                   <div className="flex items-center justify-between">
                     <div className="text-left">

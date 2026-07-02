@@ -24,6 +24,24 @@ export const playBeep = () => {
   }
 };
 
+export const speakText = (message) => {
+  try {
+    if (typeof window === 'undefined') return;
+    const synth = window.speechSynthesis;
+    if (!synth || typeof SpeechSynthesisUtterance === 'undefined') return;
+
+    synth.cancel();
+    const utterance = new SpeechSynthesisUtterance(message);
+    utterance.lang = 'es-ES';
+    utterance.volume = 1;
+    utterance.rate = 1;
+    utterance.pitch = 1;
+    synth.speak(utterance);
+  } catch (err) {
+    console.warn('La narración por voz falló:', err);
+  }
+};
+
 // Iconos SVG en formato de glifos minimalistas
 export const getMethodIcon = (method) => {
   const m = method.toLowerCase();

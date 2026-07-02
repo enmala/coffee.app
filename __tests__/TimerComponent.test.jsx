@@ -1,13 +1,14 @@
 import { describe, test, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import TimerComponent from '../src/components/TimerComponent';
-import { playBeep } from '../src/utils/coffeeUtils';
+import { playBeep, speakText } from '../src/utils/coffeeUtils';
 
 vi.mock('../src/utils/coffeeUtils', async (importOriginal) => {
   const actual = await importOriginal();
   return {
     ...actual,
     playBeep: vi.fn(),
+    speakText: vi.fn(),
   };
 });
 
@@ -289,6 +290,40 @@ describe('TimerComponent', () => {
     });
     
     expect(playBeep).not.toHaveBeenCalled();
+  });
+
+  test('speaks current step when voice guidance is enabled and timer starts', () => {
+    render(
+      <TimerComponent 
+        recipe={mockRecipe} 
+        onComplete={onCompleteMock} 
+        voiceGuidanceEnabled={true} 
+      />
+    );
+
+    fireEvent.click(screen.getByText('INICIAR'));
+
+    expect(speakText).toHaveBeenCalledWith(expect.stringContaining('Paso 1 de 2'));
+  });
+
+  test('speaks completion message when voice guidance is enabled and recipe finishes', () => {
+    render(
+      <TimerComponent 
+        recipe={mockRecipe} 
+        onComplete={onCompleteMock} 
+        voiceGuidanceEnabled={true} 
+      />
+    );
+
+    fireEvent.click(screen.getByText('INICIAR'));
+    act(() => {
+      vi.advanceTimersByTime(3000);
+    });
+    act(() => {
+      vi.advanceTimersByTime(5000);
+    });
+
+    expect(speakText).toHaveBeenCalledWith('¡Preparación completada! Tu café está listo.');
   });
 
   test('respects vibrationEnabled={false} configuration', () => {

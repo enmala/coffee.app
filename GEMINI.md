@@ -68,7 +68,7 @@ Las recetas se estructuran siguiendo este formato JSON:
 2.  **Calculadora Dinámica de Ratios:** Permitir al usuario modificar la cantidad de café inicial (`coffee_g`) en tiempo de ejecución (por ejemplo, desde el resumen o antes de iniciar el timer) y que la aplicación recalcule y escale proporcionalmente la cantidad de agua necesaria para cada paso individual basándose en la relación (ratio) original.
 3.  ~~**Historial de Preparaciones:** Crear un registro local que guarde la fecha, hora y receta de cada extracción completada exitosamente, permitiendo al usuario añadir notas sobre el resultado de su taza (ej: "Salió un poco amargo, moler más grueso la próxima vez").~~
 4.  ~~**Temas Visuales / Modo Oscuro:** Añadir un selector para alternar entre modo claro y modo oscuro para mejorar la visibilidad de madrugada o en ambientes con iluminación tenue.~~
-5.  **Ajuste de Alertas:** Permitir al usuario habilitar/deshabilitar los pitidos de audio de cambio de etapa y configurar la duración o frecuencia de la vibración.
+5.  ~~**Ajuste de Alertas:** Permitir al usuario habilitar/deshabilitar los pitidos de audio de cambio de etapa y configurar la duración o frecuencia de la vibración.~~
 
 ---
 

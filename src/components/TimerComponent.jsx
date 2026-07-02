@@ -1,13 +1,28 @@
 import { useState, useEffect } from 'react';
-import { playBeep } from '../utils/coffeeUtils';
+import { playBeep, speakText } from '../utils/coffeeUtils';
 
-export default function TimerComponent({ recipe, onComplete, soundEnabled = true, vibrationEnabled = true, vibrationType = 'normal' }) {
+export default function TimerComponent({ recipe, onComplete, soundEnabled = true, vibrationEnabled = true, vibrationType = 'normal', voiceGuidanceEnabled = false }) {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [timeLeft, setTimeLeft] = useState(recipe.steps[0].duration_s);
   const [isRunning, setIsRunning] = useState(false);
   const [showFinishedModal, setShowFinishedModal] = useState(false);
 
   const currentStep = recipe.steps[currentStepIndex];
+
+  const getStepMessage = (step, index, total) => {
+    const minutes = Math.floor(step.duration_s / 60);
+    const seconds = step.duration_s % 60;
+    const durationText = minutes > 0
+      ? `${minutes} minutos y ${seconds} segundos`
+      : `${seconds} segundos`;
+    const instructionText = step.instruction ? `${step.instruction}.` : '';
+    return `Paso ${index + 1} de ${total}: ${step.title}. ${instructionText} Tiempo estimado ${durationText}.`;
+  };
+
+  useEffect(() => {
+    if (!voiceGuidanceEnabled || !isRunning) return;
+    speakText(getStepMessage(currentStep, currentStepIndex, recipe.steps.length));
+  }, [voiceGuidanceEnabled, isRunning, currentStepIndex, currentStep, recipe.steps.length]);
 
   useEffect(() => {
     let lock = null;
@@ -76,6 +91,9 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
                 ? 800
                 : 400;
               navigator.vibrate(duration);
+            }
+            if (voiceGuidanceEnabled) {
+              speakText('¡Preparación completada! Tu café está listo.');
             }
             setShowFinishedModal(true);
             return 0;

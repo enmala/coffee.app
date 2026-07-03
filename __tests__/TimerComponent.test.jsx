@@ -48,7 +48,7 @@ describe('TimerComponent', () => {
     expect(screen.getByText('92°C')).toBeInTheDocument();
     expect(screen.getByText('Paso 1 de 2')).toBeInTheDocument();
     expect(screen.getByText('Preinfusión')).toBeInTheDocument();
-    expect(screen.getByText('"Vierte 50g de agua lentamente."')).toBeInTheDocument();
+    expect(screen.getByText('Vierte 50g de agua lentamente.')).toBeInTheDocument();
     expect(screen.getByText('0:03')).toBeInTheDocument();
   });
 
@@ -78,11 +78,11 @@ describe('TimerComponent', () => {
   test('toggles timer execution (start/pause) and counts down', () => {
     render(<TimerComponent recipe={mockRecipe} onComplete={onCompleteMock} />);
     
-    const actionBtn = screen.getByText('INICIAR');
+    const actionBtn = screen.getByText('Iniciar');
     
     // Start timer
     fireEvent.click(actionBtn);
-    expect(screen.getByText('PAUSAR')).toBeInTheDocument();
+    expect(screen.getByText('Pausar')).toBeInTheDocument();
     
     // Advance 1 second
     act(() => {
@@ -91,8 +91,8 @@ describe('TimerComponent', () => {
     expect(screen.getByText('0:02')).toBeInTheDocument();
     
     // Pause timer
-    fireEvent.click(screen.getByText('PAUSAR'));
-    expect(screen.getByText('INICIAR')).toBeInTheDocument();
+    fireEvent.click(screen.getByText('Pausar'));
+    expect(screen.getByText('Iniciar')).toBeInTheDocument();
     
     // Advance 1 second while paused (should not change)
     act(() => {
@@ -104,7 +104,7 @@ describe('TimerComponent', () => {
   test('advances to next step automatically when timer reaches zero', () => {
     render(<TimerComponent recipe={mockRecipe} onComplete={onCompleteMock} />);
     
-    fireEvent.click(screen.getByText('INICIAR'));
+    fireEvent.click(screen.getByText('Iniciar'));
     
     // Advance 3 seconds to complete step 1
     act(() => {
@@ -119,7 +119,7 @@ describe('TimerComponent', () => {
   test('shows completion modal and calls onComplete when all steps finish', () => {
     render(<TimerComponent recipe={mockRecipe} onComplete={onCompleteMock} />);
     
-    fireEvent.click(screen.getByText('INICIAR'));
+    fireEvent.click(screen.getByText('Iniciar'));
     
     // Advance step 1 duration (3s)
     act(() => {
@@ -141,7 +141,7 @@ describe('TimerComponent', () => {
   test('resets timer when reset button is clicked', () => {
     render(<TimerComponent recipe={mockRecipe} onComplete={onCompleteMock} />);
     
-    fireEvent.click(screen.getByText('INICIAR'));
+    fireEvent.click(screen.getByText('Iniciar'));
     
     act(() => {
       vi.advanceTimersByTime(2000);
@@ -151,7 +151,7 @@ describe('TimerComponent', () => {
     const resetBtn = screen.getByText('Reiniciar cronómetro');
     fireEvent.click(resetBtn);
     
-    expect(screen.getByText('INICIAR')).toBeInTheDocument();
+    expect(screen.getByText('Iniciar')).toBeInTheDocument();
     expect(screen.getByText('Paso 1 de 2')).toBeInTheDocument();
     expect(screen.getByText('0:03')).toBeInTheDocument();
   });
@@ -161,7 +161,7 @@ describe('TimerComponent', () => {
     
     render(<TimerComponent recipe={mockRecipe} onComplete={onCompleteMock} />);
     
-    fireEvent.click(screen.getByText('INICIAR'));
+    fireEvent.click(screen.getByText('Iniciar'));
     act(() => {
       vi.advanceTimersByTime(3000);
     });
@@ -184,13 +184,13 @@ describe('TimerComponent', () => {
     };
     render(<TimerComponent recipe={poorRecipe} onComplete={onCompleteMock} />);
     expect(screen.getByText('N/D')).toBeInTheDocument();
-    expect(screen.getByText('"Sin instrucciones adicionales"')).toBeInTheDocument();
+    expect(screen.getByText('No hay instrucciones para este paso.')).toBeInTheDocument();
   });
 
   test('handles visibilitychange events', () => {
     render(<TimerComponent recipe={mockRecipe} onComplete={onCompleteMock} />);
     
-    fireEvent.click(screen.getByText('INICIAR'));
+    fireEvent.click(screen.getByText('Iniciar'));
     
     // Test visible branch
     Object.defineProperty(document, 'visibilityState', {
@@ -215,7 +215,7 @@ describe('TimerComponent', () => {
     navigator.wakeLock.request = vi.fn().mockRejectedValue(new Error('Wake lock failed'));
     
     render(<TimerComponent recipe={mockRecipe} onComplete={onCompleteMock} />);
-    fireEvent.click(screen.getByText('INICIAR'));
+    fireEvent.click(screen.getByText('Iniciar'));
     
     await act(async () => {
       await Promise.resolve();
@@ -260,7 +260,7 @@ describe('TimerComponent', () => {
     const { unmount } = render(<TimerComponent recipe={mockRecipe} onComplete={onCompleteMock} />);
     
     // Start timer to request wake lock
-    fireEvent.click(screen.getByText('INICIAR'));
+    fireEvent.click(screen.getByText('Iniciar'));
     
     // Wait for promise resolution and state update
     await act(async () => {
@@ -282,7 +282,7 @@ describe('TimerComponent', () => {
       />
     );
     
-    fireEvent.click(screen.getByText('INICIAR'));
+    fireEvent.click(screen.getByText('Iniciar'));
     
     // Advance 3 seconds to complete step 1
     act(() => {
@@ -301,7 +301,7 @@ describe('TimerComponent', () => {
       />
     );
 
-    fireEvent.click(screen.getByText('INICIAR'));
+    fireEvent.click(screen.getByText('Iniciar'));
 
     expect(speakText).toHaveBeenCalledWith(expect.stringContaining('Paso 1 de 2'));
   });
@@ -315,7 +315,7 @@ describe('TimerComponent', () => {
       />
     );
 
-    fireEvent.click(screen.getByText('INICIAR'));
+    fireEvent.click(screen.getByText('Iniciar'));
     act(() => {
       vi.advanceTimersByTime(3000);
     });
@@ -335,7 +335,7 @@ describe('TimerComponent', () => {
       />
     );
     
-    fireEvent.click(screen.getByText('INICIAR'));
+    fireEvent.click(screen.getByText('Iniciar'));
     
     // Advance 3 seconds to complete step 1
     act(() => {
@@ -354,7 +354,7 @@ describe('TimerComponent', () => {
       />
     );
     
-    fireEvent.click(screen.getByText('INICIAR'));
+    fireEvent.click(screen.getByText('Iniciar'));
     
     // Advance 3s (completes step 1) -> triggers transition vibration
     act(() => {
@@ -378,7 +378,7 @@ describe('TimerComponent', () => {
       />
     );
     
-    fireEvent.click(screen.getByText('INICIAR'));
+    fireEvent.click(screen.getByText('Iniciar'));
     
     // Advance 3s (completes step 1) -> triggers transition vibration
     act(() => {

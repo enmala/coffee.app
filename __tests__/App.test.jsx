@@ -122,7 +122,7 @@ describe('App Component', () => {
     
     // Verify TimerComponent is rendered
     expect(screen.getByText(/Volver al listado/i)).toBeInTheDocument();
-    expect(screen.getByText('INICIAR')).toBeInTheDocument();
+    expect(screen.getByText('Iniciar')).toBeInTheDocument();
   });
 
   test('creates a new recipe with steps', () => {
@@ -240,7 +240,7 @@ describe('App Component', () => {
     // Render the TimerComponent, run it immediately to completion
     // The recipe has 5 steps of 45s, 45s, 30s, 30s, 30s. Total: 180s.
     vi.useFakeTimers();
-    fireEvent.click(screen.getByText('INICIAR'));
+    fireEvent.click(screen.getByText('Iniciar'));
     
     act(() => {
       vi.advanceTimersByTime(45000);

@@ -144,3 +144,99 @@ export const COFFEE_DESCRIPTORS = [
   'Chocolatoso',
   'Nuez'
 ];
+
+// Codifica una receta a una cadena Base64 URL-safe comprimida nativamente con Deflate
+export const compressRecipe = async (recipe) => {
+  const minified = {
+    n: recipe.name,
+    m: recipe.method,
+    c: recipe.coffee_g,
+    g: recipe.grind_size,
+    t: recipe.water_temp_c,
+    s: recipe.steps.map(step => ({
+      i: step.title,
+      w: step.water_g,
+      d: step.duration_s,
+      x: step.instruction || ''
+    }))
+  };
+
+  const jsonStr = JSON.stringify(minified);
+
+  try {
+    if (typeof CompressionStream !== 'undefined') {
+      const stream = new Blob([jsonStr]).stream();
+      const compressedStream = stream.pipeThrough(new CompressionStream('deflate'));
+      const response = new Response(compressedStream);
+      const blob = await response.blob();
+      const arrayBuffer = await blob.arrayBuffer();
+      const uint8Array = new Uint8Array(arrayBuffer);
+      const binString = Array.from(uint8Array, (byte) => String.fromCharCode(byte)).join("");
+      const base64 = btoa(binString);
+      return 'c1_' + base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    }
+  } catch (err) {
+    console.warn("Fallo al comprimir nativamente, usando fallback sin compresión:", err);
+  }
+
+  // Fallback: URL-safe base64 de JSON minificado
+  const bytes = new TextEncoder().encode(jsonStr);
+  const binString = Array.from(bytes, (byte) => String.fromCharCode(byte)).join("");
+  const base64 = btoa(binString);
+  return 'r1_' + base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+};
+
+// Decodifica una receta a partir de una cadena Base64 URL-safe comprimida o cruda
+export const decompressRecipe = async (encodedStr) => {
+  if (!encodedStr) throw new Error("Cadena vacía");
+
+  const type = encodedStr.substring(0, 3);
+  const actualPayload = encodedStr.substring(3);
+
+  let base64 = (type === 'c1_' || type === 'r1_') ? actualPayload : encodedStr;
+  base64 = base64.replace(/-/g, '+').replace(/_/g, '/');
+  while (base64.length % 4) {
+    base64 += '=';
+  }
+
+  let jsonStr;
+  try {
+    if (type === 'c1_' && typeof DecompressionStream !== 'undefined') {
+      const binString = atob(base64);
+      const bytes = Uint8Array.from(binString, (char) => char.charCodeAt(0));
+      const stream = new Blob([bytes]).stream();
+      const decompressedStream = stream.pipeThrough(new DecompressionStream('deflate'));
+      const response = new Response(decompressedStream);
+      jsonStr = await response.text();
+    } else {
+      // r1_ o formato directo sin prefijo
+      const binString = atob(base64);
+      const bytes = Uint8Array.from(binString, (char) => char.charCodeAt(0));
+      jsonStr = new TextDecoder().decode(bytes);
+    }
+  } catch (err) {
+    console.error("Error al decodificar receta:", err);
+    throw new Error("No se pudo descifrar la receta compartida. Asegúrate de que el enlace esté completo.");
+  }
+
+  const minified = JSON.parse(jsonStr);
+
+  if (!minified.n || !minified.s || !Array.isArray(minified.s)) {
+    throw new Error("Estructura de receta inválida");
+  }
+
+  return {
+    name: minified.n,
+    method: minified.m || 'V60',
+    coffee_g: Number(minified.c) || 0,
+    grind_size: minified.g || '',
+    water_temp_c: Number(minified.t) || 0,
+    steps: minified.s.map((step, idx) => ({
+      step_number: idx + 1,
+      title: step.i || `Paso ${idx + 1}`,
+      water_g: Number(step.w) || 0,
+      duration_s: Number(step.d) || 0,
+      instruction: step.x || ''
+    }))
+  };
+};

@@ -193,6 +193,9 @@ describe('App Component', () => {
     const file = new File(['{}'], 'recipe.json', { type: 'application/json' });
     fireEvent.change(importInput, { target: { files: [file] } });
     
+    const confirmBtn = await screen.findByText('Guardar Receta');
+    fireEvent.click(confirmBtn);
+    
     await waitFor(() => {
       expect(window.alert).toHaveBeenCalledWith(expect.stringContaining('Receta importada correctamente'));
     });
@@ -477,6 +480,10 @@ describe('App Component', () => {
     }
     window.FileReader = DuplicateFileReaderMock;
     fireEvent.change(importInput, { target: { files: [file] } });
+    
+    const confirmBtn = await screen.findByText('Guardar Receta');
+    fireEvent.click(confirmBtn);
+
     await waitFor(() => {
       expect(window.alert).toHaveBeenCalledWith(expect.stringContaining('Receta importada correctamente como "Aeropress Tradicional (1)"'));
     });
@@ -664,6 +671,9 @@ describe('App Component', () => {
     
     const file = new File(['{}'], 'recipe.json', { type: 'application/json' });
     fireEvent.change(importInput, { target: { files: [file] } });
+    
+    const confirmBtn = await screen.findByText('Guardar Receta');
+    fireEvent.click(confirmBtn);
     
     await waitFor(() => {
       // It should increment to (2) because (1) is already in the list
@@ -1070,5 +1080,22 @@ describe('App Component', () => {
     expect(savedHistory[0].rating).toBe(5);
     expect(savedHistory[0].descriptors).toEqual(['Dulce', 'Cuerpo']);
     expect(savedHistory[0].notes).toBe('Increíble taza dulce y equilibrada!');
+  });
+
+  test('imports a recipe from URL query parameter on mount', async () => {
+    const originalLocation = window.location;
+    delete window.location;
+    // URL with valid r1_ prefix containing: {"n":"Receta URL","m":"V60","s":[{"i":"Paso 1","w":50,"d":30}]}
+    window.location = new URL('http://localhost/?recipe=r1_eyJuIjoiUmVjZXRhIFVSTCIsIm0iOiJWNjAiLCJzIjpbeyJpIjoiUGFzbyAxIiwidyI6NTAsImQiOjMwfV19');
+    
+    render(<App />);
+    
+    expect(await screen.findByText('Importar Receta')).toBeInTheDocument();
+    expect(screen.getByText('Receta URL')).toBeInTheDocument();
+    
+    fireEvent.click(screen.getByText('Cancelar'));
+    expect(screen.queryByText('Importar Receta')).not.toBeInTheDocument();
+    
+    window.location = originalLocation;
   });
 });

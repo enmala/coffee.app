@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
-import { getMethodIcon, COFFEE_DESCRIPTORS } from './utils/coffeeUtils';
+import { getMethodIcon, COFFEE_DESCRIPTORS, decompressRecipe } from './utils/coffeeUtils';
 import TimerComponent from './components/TimerComponent';
+import ShareModal from './components/ShareModal';
+import ImportConfirmationModal from './components/ImportConfirmationModal';
 import { version } from '../package.json';
 
 const DEFAULT_RECIPES = [
@@ -119,6 +121,33 @@ export default function App() {
   const [editingStepIndex, setEditingStepIndex] = useState(null);
   const [menuOpenRecipeId, setMenuOpenRecipeId] = useState(null);
   const [summaryRecipe, setSummaryRecipe] = useState(null);
+  const [recipeToShare, setRecipeToShare] = useState(null);
+  const [recipeToImport, setRecipeToImport] = useState(null);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const recipeParam = params.get('recipe');
+    if (recipeParam) {
+      async function decodeUrlRecipe() {
+        try {
+          const decodedRecipe = await decompressRecipe(recipeParam);
+          setRecipeToImport(decodedRecipe);
+          
+          const url = new URL(window.location.href);
+          url.searchParams.delete('recipe');
+          window.history.replaceState({}, '', url.pathname + url.search);
+        } catch (err) {
+          console.error("Error al decodificar la receta de la URL:", err);
+          alert(err.message || "No se pudo importar la receta desde la URL.");
+          
+          const url = new URL(window.location.href);
+          url.searchParams.delete('recipe');
+          window.history.replaceState({}, '', url.pathname + url.search);
+        }
+      }
+      decodeUrlRecipe();
+    }
+  }, []);
 
   const [activeTab, setActiveTab] = useState('recipes'); // 'recipes' or 'history'
   const [history, setHistory] = useState(() => {
@@ -188,25 +217,7 @@ export default function App() {
           return;
         }
 
-        const uniqueId = `imported-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
-
-        let recipeName = imported.name.trim();
-        const nameExists = recipes.some((r) => r.name.toLowerCase() === recipeName.toLowerCase());
-        if (nameExists) {
-          let counter = 1;
-          while (recipes.some((r) => r.name.toLowerCase() === `${recipeName} (${counter})`.toLowerCase())) {
-            counter++;
-          }
-          recipeName = `${recipeName} (${counter})`;
-        }
-
-        const updated = {
-          ...imported,
-          id: uniqueId,
-          name: recipeName
-        };
-        setRecipes((prev) => [...prev, updated]);
-        alert(`Receta importada correctamente como "${recipeName}".`);
+        setRecipeToImport(imported);
       } catch (err) {
         console.error("Error al leer el archivo JSON:", err);
         alert("Ocurrió un error al leer el archivo JSON.");
@@ -214,6 +225,32 @@ export default function App() {
     };
     reader.readAsText(file);
     e.target.value = '';
+  };
+
+  const confirmImportRecipe = () => {
+    if (!recipeToImport) return;
+
+    const uniqueId = `imported-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+    let recipeName = recipeToImport.name.trim();
+
+    const nameExists = recipes.some((r) => r.name.toLowerCase() === recipeName.toLowerCase());
+    if (nameExists) {
+      let counter = 1;
+      while (recipes.some((r) => r.name.toLowerCase() === `${recipeName} (${counter})`.toLowerCase())) {
+        counter++;
+      }
+      recipeName = `${recipeName} (${counter})`;
+    }
+
+    const updated = {
+      ...recipeToImport,
+      id: uniqueId,
+      name: recipeName
+    };
+
+    setRecipes((prev) => [...prev, updated]);
+    alert(`Receta importada correctamente como "${recipeName}".`);
+    setRecipeToImport(null);
   };
 
   const handleExportJson = (recipe) => {
@@ -763,6 +800,12 @@ export default function App() {
                                               ✏️ Editar
                                             </button>
                                             <button
+                                              onClick={(e) => { e.stopPropagation(); setRecipeToShare(recipe); setMenuOpenRecipeId(null); }}
+                                              className="w-full px-3 py-1.5 text-left hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-1.5 cursor-pointer"
+                                            >
+                                              🔗 Compartir
+                                            </button>
+                                            <button
                                               onClick={(e) => { e.stopPropagation(); handleExportJson(recipe); setMenuOpenRecipeId(null); }}
                                               className="w-full px-3 py-1.5 text-left hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-1.5 cursor-pointer"
                                             >
@@ -1064,8 +1107,15 @@ export default function App() {
 
               <div className="flex gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
                 <button
+                  onClick={() => setRecipeToShare(summaryRecipe)}
+                  className="py-2 px-3 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-650 dark:text-slate-300 rounded-xl font-bold text-xs transition cursor-pointer flex items-center justify-center gap-1.5"
+                  title="Compartir receta"
+                >
+                  🔗 Compartir
+                </button>
+                <button
                   onClick={() => setSummaryRecipe(null)}
-                  className="w-1/2 py-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-650 dark:text-slate-300 rounded-xl font-bold text-xs transition cursor-pointer"
+                  className="flex-1 py-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-650 dark:text-slate-300 rounded-xl font-bold text-xs transition cursor-pointer"
                 >
                   Cerrar
                 </button>
@@ -1074,7 +1124,7 @@ export default function App() {
                     setActiveRecipe(summaryRecipe);
                     setSummaryRecipe(null);
                   }}
-                  className="w-1/2 py-2 bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-800 text-white rounded-xl font-bold text-xs transition shadow-sm cursor-pointer"
+                  className="flex-1 py-2 bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-800 text-white rounded-xl font-bold text-xs transition shadow-sm cursor-pointer"
                 >
                   Iniciar Timer
                 </button>
@@ -1282,6 +1332,22 @@ export default function App() {
               </div>
             </div>
           </div>
+        )}
+
+        {recipeToShare && (
+          <ShareModal
+            recipe={recipeToShare}
+            onClose={() => setRecipeToShare(null)}
+          />
+        )}
+
+        {recipeToImport && (
+          <ImportConfirmationModal
+            recipe={recipeToImport}
+            existingRecipes={recipes}
+            onConfirm={confirmImportRecipe}
+            onCancel={() => setRecipeToImport(null)}
+          />
         )}
       </main>
     </div>

@@ -202,8 +202,11 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
 
       {/* Step instructions and pour guide */}
       <div className="p-4 bg-slate-50 dark:bg-slate-800/30 border border-slate-150 dark:border-slate-800/80 rounded-xl space-y-2.5 text-center">
-        <p className="text-sm text-slate-650 dark:text-slate-355 min-h-[40px] flex items-center justify-center italic font-medium px-2 leading-relaxed">
-          "{currentStep.instruction || 'Sin instrucciones adicionales'}"
+        <p
+          className="text-sm text-slate-650 dark:text-slate-355 min-h-[40px] flex items-center justify-center italic font-medium px-2 leading-relaxed"
+          aria-live="polite"
+        >
+          {currentStep.instruction || 'No hay instrucciones para este paso.'}
         </p>
         
         <div className="pt-2 border-t border-slate-200/50 dark:border-slate-700/50 grid grid-cols-2 gap-2 text-xs">
@@ -224,8 +227,9 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
             type="button"
             onClick={handleSkipPrev} 
             disabled={currentStepIndex === 0}
-            className="p-2 text-slate-400 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 disabled:opacity-30 disabled:hover:text-slate-400 dark:disabled:hover:text-slate-600 text-xl cursor-pointer"
+            className="p-2 text-slate-400 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 disabled:opacity-30 disabled:hover:text-slate-400 dark:disabled:hover:text-slate-600 text-xl cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-500 dark:focus:ring-amber-400 focus:ring-offset-2"
             title="Paso anterior"
+            aria-label="Paso anterior"
           >
             ⏮️
           </button>
@@ -235,17 +239,20 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
             onClick={() => setIsRunning(!isRunning)}
             className={`w-32 py-2.5 rounded-full text-white font-bold shadow-md transition transform active:scale-95 cursor-pointer text-sm ${
               isRunning ? 'bg-red-600 hover:bg-red-700' : 'bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-800'
-            }`}
+            } focus:outline-none focus:ring-2 focus:ring-amber-500 dark:focus:ring-amber-400 focus:ring-offset-2`}
+            aria-pressed={isRunning}
+            aria-label={isRunning ? 'Pausar cronómetro' : 'Iniciar cronómetro'}
           >
-            {isRunning ? 'PAUSAR' : 'INICIAR'}
+            {isRunning ? 'Pausar' : 'Iniciar'}
           </button>
 
           <button 
             type="button"
             onClick={handleSkipNext} 
             disabled={currentStepIndex === recipe.steps.length - 1}
-            className="p-2 text-slate-400 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 disabled:opacity-30 disabled:hover:text-slate-400 dark:disabled:hover:text-slate-600 text-xl cursor-pointer"
+            className="p-2 text-slate-400 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 disabled:opacity-30 disabled:hover:text-slate-400 dark:disabled:hover:text-slate-600 text-xl cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-500 dark:focus:ring-amber-400 focus:ring-offset-2"
             title="Siguiente paso"
+            aria-label="Siguiente paso"
           >
             ⏭️
           </button>
@@ -255,7 +262,8 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
           <button 
             type="button"
             onClick={handleReset}
-            className="text-[11px] text-slate-400 dark:text-slate-400 hover:text-slate-600 dark:hover:text-slate-350 underline cursor-pointer"
+            className="text-[11px] text-slate-400 dark:text-slate-400 hover:text-slate-600 dark:hover:text-slate-350 underline cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-500 dark:focus:ring-amber-400 focus:ring-offset-2"
+            aria-label="Reiniciar cronómetro"
           >
             Reiniciar cronómetro
           </button>

@@ -64,12 +64,13 @@ Las recetas se estructuran siguiendo este formato JSON:
 
 ## 5. Próximas Características y Mejoras Pendientes (Backlog de Desarrollo)
 
-1.  ~~**Edición de Recetas Existentes:** Implementar una interfaz para permitir modificar los parámetros y los pasos de una receta ya guardada en `localStorage` (actualmente solo se pueden crear y eliminar).~~
-2.  **Calculadora Dinámica de Ratios:** Permitir al usuario modificar la cantidad de café inicial (`coffee_g`) en tiempo de ejecución (por ejemplo, desde el resumen o antes de iniciar el timer) y que la aplicación recalcule y escale proporcionalmente la cantidad de agua necesaria para cada paso individual basándose en la relación (ratio) original.
-3.  ~~**Historial de Preparaciones:** Crear un registro local que guarde la fecha, hora y receta de cada extracción completada exitosamente, permitiendo al usuario añadir notas sobre el resultado de su taza (ej: "Salió un poco amargo, moler más grueso la próxima vez").~~
-4.  ~~**Temas Visuales / Modo Oscuro:** Añadir un selector para alternar entre modo claro y modo oscuro para mejorar la visibilidad de madrugada o en ambientes con iluminación tenue.~~
-5.  ~~**Ajuste de Alertas:** Permitir al usuario habilitar/deshabilitar los pitidos de audio de cambio de etapa y configurar la duración o frecuencia de la vibración.~~
-
+1.  **Calculadora Dinámica de Ratios:** Permitir al usuario modificar la cantidad de café inicial (`coffee_g`) en tiempo de ejecución (por ejemplo, desde el resumen o antes de iniciar el timer) y que la aplicación recalcule y escale proporcionalmente la cantidad de agua necesaria para cada paso individual basándose en la relación (ratio) original. Pendiente por definir estrategia de calculo teniendo en cuenta que no solamente se debe aumentar la cantidad de agua sino que ajustar los tiempos por cada etapa del proceso.
+2. **Internacionalización:** Ajuste de los mensajes y textos de la aplicación en multiples idiomas según la configuración del dispositivo o la selección del usuario. Al menos se debería soportar, ademas del español, ingles, portugues, aleman, frances y italiano.
+3. **Disponibilidad en tiendas de aplicaciones:** Publicar la PWA en Google Play Store (como TWA) y en Microsoft Store.
+4. **Gestión de granos de café:** Permitir un registro de granos de café con sus caracteristicas (origen, variadad, proceso, tostaduría, nivel de tueste, etc.) y que se pueda asociar un grano de café a una receta.
+5. **Mejoras en el registro historico:** Al realizar una evaluación del resultado de una preparación, dependiendo de la puntuación (estrellas) y los descriptores de sabor seleccionados se pueda sugerir ajustes a la receta para la próxima preparación.
+6. **Opciones para compartir recetas:** Permitir compartir recetas con otros usuarios a traves de un codigo QR que permita importar la receta en la app o enviado el archivo .json directamente por whatsapp, telegram, etc. para su importación en la app. La App debería permitir importar directamente el json al abrirlo, con una previsualización antes de guardar la receta.
+7. **Sincronización en la nube:** Como alternativa al almacenamiento puramente local (localStorage), permitir hacer un respaldo y sincronización automáticos de recetas e historial usando las cuentas personales del usuario en la nube sin necesidad de montar una infraestructura de backend compleja.
 ---
 
 ## 6. Reglas de trabajo en el repositorio

@@ -3,32 +3,38 @@
 **Barista Timer** es una aplicación web interactiva y responsiva diseñada para entusiastas del café de especialidad. Permite administrar recetas personalizadas y guiar el proceso de extracción paso a paso mediante un cronómetro automatizado con alertas sonoras, vibración y control de bloqueo de pantalla.
 
 ![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![Tailwind CSS v4](https://img.shields.io/badge/Tailwind_CSS_v4-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)
+![PWA](https://img.shields.io/badge/PWA-Progressive%20Web%20App-0070f3?style=for-the-badge&logo=progressive-web-apps&logoColor=white)
+![Vitest](https://img.shields.io/badge/Vitest-3f3f3f?style=for-the-badge&logo=vitest&logoColor=FCC72B)
 
 ---
 
 ## ✨ Características Principales
 
 * **⏱️ Cronómetro Inteligente por Pasos:** Guía visual detallada que calcula el tiempo restante por etapa, el agua a verter en cada vertido y el agua total acumulada en tiempo real.
-* **💾 Gestión Completa de Recetas:** * Viene con recetas preconfiguradas (Método 4:6 de Tetsu Kasuya para V60 y Aeropress Tradicional).
-    * Creador de recetas personalizadas (molienda, temperatura, peso de café y múltiples pasos dinámicos).
-    * Organización y colapso de recetas agrupadas por método (V60, Aeropress, Chemex, Prensa Francesa, etc.).
-* **📥 Importación y Exportación JSON:** Copia de seguridad o intercambio de tus recetas favoritas mediante archivos JSON con un solo clic.
-* **🌓 Modo Oscuro Nativo:** Interfaz adaptativa que respeta las preferencias del sistema operativo o permite el cambio manual.
-* **📱 Experiencia Mobile Optimizada:**
-    * **Screen Wake Lock API:** Evita que la pantalla de tu teléfono se apague automáticamente en pleno vertido.
-    * **Vibration API:** Feedback táctil al cambiar de paso o finalizar la extracción (en dispositivos compatibles).
-    * **Audio Sintetizado:** Alertas auditivas nítidas generadas mediante la *Web Audio API* nativa sin necesidad de cargar archivos de audio pesados.
-* **🔒 Persistencia Local:** Todas tus recetas y configuraciones visuales se guardan automáticamente en el navegador vía `localStorage`.
+* **🗣️ Modo Manos Libres:** Narración por voz en tiempo real de las instrucciones y pasos de preparación utilizando la *Web Speech API* nativa, permitiendo concentrarse en el vertido sin tener que mirar la pantalla constantemente.
+* **📱 Experiencia PWA e Instalación Offline:** Configuración completa como Aplicación Web Progresiva (PWA). Es instalable en dispositivos móviles y de escritorio, y funciona sin conexión a Internet gracias al Service Worker autogenerado.
+* **💾 Gestión Completa de Recetas:**
+    * Recetas preconfiguradas de fábrica (como el Método 4:6 de Tetsu Kasuya para V60 y Aeropress Tradicional).
+    * Creador y **editor** de recetas personalizadas (ajustando molienda, temperatura, café y pasos ilimitados).
+    * Clasificación y agrupación visual dinámica de las recetas según el método de preparación (V60, Aeropress, Chemex, Moka, Origami, etc.).
+* **📓 Historial de Preparaciones (Coffee Journal):** Registro local que almacena la fecha, hora y receta empleada en cada preparación exitosa, permitiendo calificar con estrellas, seleccionar descriptores de sabor (ej. afrutado, amargo, balanceado) y guardar notas sobre el resultado.
+* **📥 Importación y Exportación JSON:** Exportación e importación de recetas mediante archivos estructurados `.json`, con validación de IDs únicos y prevención de nombres duplicados.
+* **⚙️ Ajuste y Personalización de Alertas:** Panel de configuración para activar/desactivar alertas sonoras y configurar la duración o el tipo de vibración háptica (para dispositivos móviles compatibles).
+* **🌓 Modo Claro / Oscuro:** Selector manual y soporte adaptativo automático que respeta el tema preferido del sistema operativo.
+* **🔒 Persistencia Local:** Resguardo seguro y automático de todas las recetas, el historial y los ajustes del usuario a través de `localStorage`.
 
 ---
 
 ## 🛠️ Tecnologías Utilizadas
 
-* **Framework:** [React](https://react.dev/) (Hooks: `useState`, `useEffect`, composición de componentes).
-* **Estilos:** [Tailwind CSS](https://tailwindcss.com/) (Diseño responsivo, transiciones suaves y soporte estricto de modo oscuro).
-* **APIs del Navegador:** Web Audio API, Web Vibration API, Screen Wake Lock API y FileReader API.
+* **Entorno & Compilación:** [Vite](https://vite.dev/) y Node.js (versión 20+).
+* **Frontend:** [React](https://react.dev/) (React 19+, Hooks avanzados y modularidad en componentes como `TimerComponent`).
+* **Estilos:** [Tailwind CSS v4](https://tailwindcss.com/) (utilizando el nuevo compilador integrado con Vite para un rendimiento y diseño responsivo óptimos).
+* **PWA & Offline:** `vite-plugin-pwa` para el registro del Service Worker y generación del manifiesto de la aplicación.
+* **Pruebas:** [Vitest](https://vitest.dev/) y React Testing Library para la suite de pruebas unitarias.
+* **APIs Web Nativas:** Web Audio API (para síntesis de pitidos de cambio de etapa sin archivos externos), Web Vibration API (hápticos), Screen Wake Lock API (mantener pantalla encendida) y FileReader API (importación de JSON).
 
 ---
 
@@ -53,6 +59,29 @@ Este proyecto fue estructurado usando **Vite**. Sigue estos pasos para ejecutarl
     ```
 
 4.  **Abre el navegador:** Visita `http://localhost:5173` para ver la aplicación en acción.
+
+---
+
+## 🧪 Pruebas Unitarias
+
+El proyecto cuenta con una sólida suite de pruebas unitarias implementada con **Vitest** y **React Testing Library**, alcanzando una cobertura de código superior al **80%** en componentes, utilidades y lógica del temporizador.
+
+Puedes ejecutar los siguientes comandos para interactuar con las pruebas:
+
+*   **Ejecutar todas las pruebas:**
+    ```bash
+    npm test
+    ```
+*   **Iniciar el panel interactivo (UI de Vitest):**
+    ```bash
+    npm run test:ui
+    ```
+*   **Generar reporte de cobertura de código:**
+    ```bash
+    npm run test:coverage
+    ```
+
+Los archivos de prueba se ubican dentro de la carpeta `__tests__/` y validan el correcto comportamiento de la app, el flujo del temporizador, la persistencia en `localStorage`, la importación/exportación de JSON y la configuración del usuario.
 
 ---
 

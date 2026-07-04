@@ -216,7 +216,7 @@ export const decompressRecipe = async (encodedStr) => {
     }
   } catch (err) {
     console.error("Error al decodificar receta:", err);
-    throw new Error("No se pudo descifrar la receta compartida. Asegúrate de que el enlace esté completo.");
+    throw new Error("No se pudo descifrar la receta compartida. Asegúrate de que el enlace esté completo.", { cause: err });
   }
 
   const minified = JSON.parse(jsonStr);

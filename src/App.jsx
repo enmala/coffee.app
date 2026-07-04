@@ -36,14 +36,42 @@ const DEFAULT_RECIPES = [
   }
 ];
 
+const DEFAULT_BEANS = [
+  {
+    id: 'bean-example-ethiopia',
+    name: 'Etiopía Sidamo',
+    roaster: 'Tostaduría Artesanal',
+    origin: 'Etiopía (Sidama)',
+    process: 'Lavado',
+    variety: 'Heirloom',
+    roast_level: 'Claro',
+    roast_date: '2026-06-15',
+    sca_score: 86.5,
+    altitude: '1900 msnm',
+    tasting_notes: ['Cítrico', 'Floral', 'Miel'],
+    notes: 'Café muy floral y dulce con notas a jazmín y té negro.'
+  }
+];
 
-
+const DEFAULT_TASTING_NOTES = [
+  'Frutos rojos', 'Cítrico', 'Chocolate', 'Cacao', 'Caramelo', 
+  'Panela', 'Miel', 'Vainilla', 'Floral', 'Frutos secos', 'Especias', 'Herbal'
+];
 
 export default function App() {
   const [recipes, setRecipes] = useState(() => {
     const saved = localStorage.getItem('coffee_recipes_v1');
     return saved ? JSON.parse(saved) : DEFAULT_RECIPES;
   });
+
+  const [beans, setBeans] = useState(() => {
+    const saved = localStorage.getItem('coffee_beans_v1');
+    return saved ? JSON.parse(saved) : DEFAULT_BEANS;
+  });
+
+  useEffect(() => {
+    localStorage.setItem('coffee_beans_v1', JSON.stringify(beans));
+  }, [beans]);
 
   const [isAboutOpen, setIsAboutOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -149,7 +177,7 @@ export default function App() {
     }
   }, []);
 
-  const [activeTab, setActiveTab] = useState('recipes'); // 'recipes' or 'history'
+  const [activeTab, setActiveTab] = useState('recipes'); // 'recipes', 'beans', or 'history'
   const [history, setHistory] = useState(() => {
     const saved = localStorage.getItem('coffee_history_v1');
     return saved ? JSON.parse(saved) : [];
@@ -158,6 +186,26 @@ export default function App() {
   const [editingHistoryNotes, setEditingHistoryNotes] = useState(null);
   const [editingHistoryRating, setEditingHistoryRating] = useState(0);
   const [editingHistoryDescriptors, setEditingHistoryDescriptors] = useState([]);
+
+  // Estados para gestión de granos
+  const [isEditingBean, setIsEditingBean] = useState(false);
+  const [editingBeanId, setEditingBeanId] = useState(null);
+  const [newBean, setNewBean] = useState({
+    name: '',
+    roaster: '',
+    origin: '',
+    process: 'Lavado',
+    variety: '',
+    roast_level: 'Medio',
+    roast_date: '',
+    sca_score: '',
+    altitude: '',
+    tasting_notes: [],
+    notes: ''
+  });
+  const [customTastingNote, setCustomTastingNote] = useState('');
+  const [beanSearchQuery, setBeanSearchQuery] = useState('');
+  const [beanToDelete, setBeanToDelete] = useState(null);
 
   const [autoLogEnabled, setAutoLogEnabled] = useState(() => {
     const saved = localStorage.getItem('auto_log_enabled');
@@ -171,6 +219,110 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('auto_log_enabled', JSON.stringify(autoLogEnabled));
   }, [autoLogEnabled]);
+
+  const handleAddTastingNote = (note) => {
+    const trimmed = note.trim();
+    if (!trimmed) return;
+    if (!newBean.tasting_notes.includes(trimmed)) {
+      setNewBean(prev => ({
+        ...prev,
+        tasting_notes: [...prev.tasting_notes, trimmed]
+      }));
+    }
+    setCustomTastingNote('');
+  };
+
+  const handleRemoveTastingNote = (note) => {
+    setNewBean(prev => ({
+      ...prev,
+      tasting_notes: prev.tasting_notes.filter(t => t !== note)
+    }));
+  };
+
+  const handleSaveBean = (e) => {
+    e.preventDefault();
+    if (!newBean.name.trim()) {
+      alert("El nombre del grano es obligatorio.");
+      return;
+    }
+
+    const beanData = {
+      ...newBean,
+      name: newBean.name.trim(),
+      roaster: newBean.roaster.trim(),
+      origin: newBean.origin.trim(),
+      variety: newBean.variety.trim(),
+      sca_score: newBean.sca_score ? parseFloat(newBean.sca_score) : null,
+      altitude: newBean.altitude.trim(),
+      notes: newBean.notes.trim()
+    };
+
+    if (editingBeanId) {
+      setBeans(prev => prev.map(b => b.id === editingBeanId ? { ...beanData, id: editingBeanId } : b));
+      alert("Grano de café actualizado correctamente.");
+    } else {
+      const addedBean = {
+        ...beanData,
+        id: `bean-${Date.now()}`
+      };
+      setBeans(prev => [addedBean, ...prev]);
+      alert("Grano de café guardado correctamente.");
+    }
+
+    // Reset bean form
+    setNewBean({
+      name: '',
+      roaster: '',
+      origin: '',
+      process: 'Lavado',
+      variety: '',
+      roast_level: 'Medio',
+      roast_date: '',
+      sca_score: '',
+      altitude: '',
+      tasting_notes: [],
+      notes: ''
+    });
+    setEditingBeanId(null);
+    setIsEditingBean(false);
+  };
+
+  const handleStartEditBean = (bean) => {
+    setNewBean({
+      name: bean.name,
+      roaster: bean.roaster || '',
+      origin: bean.origin || '',
+      process: bean.process || 'Lavado',
+      variety: bean.variety || '',
+      roast_level: bean.roast_level || 'Medio',
+      roast_date: bean.roast_date || '',
+      sca_score: bean.sca_score || '',
+      altitude: bean.altitude || '',
+      tasting_notes: bean.tasting_notes || [],
+      notes: bean.notes || ''
+    });
+    setEditingBeanId(bean.id);
+    setIsEditingBean(true);
+  };
+
+  const handleDeleteBeanClick = (bean) => {
+    const isUsed = recipes.some(r => r.bean_id === bean.id);
+    if (isUsed) {
+      setBeanToDelete(bean);
+    } else {
+      if (confirm(`¿Estás seguro de que deseas eliminar el grano "${bean.name}"?`)) {
+        setBeans(prev => prev.filter(b => b.id !== bean.id));
+      }
+    }
+  };
+
+  const handleConfirmDeleteBean = () => {
+    if (!beanToDelete) return;
+    setRecipes(prev => prev.map(r => r.bean_id === beanToDelete.id ? { ...r, bean_id: null } : r));
+    setBeans(prev => prev.filter(b => b.id !== beanToDelete.id));
+    setBeanToDelete(null);
+    alert("Grano eliminado y desvinculado de las recetas correctamente.");
+  };
 
   const handleDeleteHistoryEntry = (id) => {
     if (confirm("¿Estás seguro de que deseas eliminar este registro del historial?")) {
@@ -190,6 +342,7 @@ export default function App() {
     coffee_g: 15,
     grind_size: '',
     water_temp_c: 90,
+    bean_id: '',
     steps: []
   });
 
@@ -356,6 +509,7 @@ export default function App() {
       coffee_g: recipe.coffee_g,
       grind_size: recipe.grind_size || '',
       water_temp_c: recipe.water_temp_c,
+      bean_id: recipe.bean_id || '',
       steps: [...recipe.steps]
     });
     setEditingRecipeId(recipe.id);
@@ -372,6 +526,7 @@ export default function App() {
       coffee_g: 15,
       grind_size: '',
       water_temp_c: 90,
+      bean_id: '',
       steps: []
     });
     setStepInput({ title: '', water_g: 0, duration_s: 30, instruction: '' });
@@ -453,9 +608,11 @@ export default function App() {
               vibrationEnabled={vibrationEnabled}
               vibrationType={vibrationType}
               voiceGuidanceEnabled={voiceGuidanceEnabled}
+              beanName={activeRecipe.bean_id ? beans.find(b => b.id === activeRecipe.bean_id)?.name : ''}
               onComplete={(rating = 0, notes = '', descriptors = []) => {
                 if (autoLogEnabled) {
                   const totalWater = activeRecipe.steps.reduce((acc, s) => acc + s.water_g, 0);
+                  const associatedBean = activeRecipe.bean_id ? beans.find(b => b.id === activeRecipe.bean_id) : null;
                   const newEntry = {
                     id: `history-${Date.now()}`,
                     recipeId: activeRecipe.id,
@@ -465,6 +622,7 @@ export default function App() {
                     coffee_g: activeRecipe.coffee_g,
                     water_g: totalWater,
                     grind_size: activeRecipe.grind_size,
+                    bean_name: associatedBean ? associatedBean.name : undefined,
                     notes,
                     rating,
                     descriptors
@@ -492,8 +650,9 @@ export default function App() {
 
             <form onSubmit={handleSaveRecipe} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Nombre de la receta</label>
+                <label htmlFor="recipe-name-input" className="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Nombre de la receta</label>
                 <input
+                  id="recipe-name-input"
                   type="text"
                   value={newRecipe.name}
                   onChange={(e) => setNewRecipe({ ...newRecipe, name: e.target.value })}
@@ -555,6 +714,28 @@ export default function App() {
                     min="1"
                   />
                 </div>
+              </div>
+
+              <div>
+                <label htmlFor="recipe-bean-input" className="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Grano de Café (Opcional)</label>
+                <select
+                  id="recipe-bean-input"
+                  value={newRecipe.bean_id || ''}
+                  onChange={(e) => setNewRecipe({ ...newRecipe, bean_id: e.target.value })}
+                  className="w-full p-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                >
+                  <option value="">-- Sin grano asociado --</option>
+                  {beans.map((b) => (
+                    <option key={b.id} value={b.id}>
+                      {b.name} {b.roaster ? `(${b.roaster})` : ''}
+                    </option>
+                  ))}
+                </select>
+                {beans.length === 0 && (
+                  <p className="text-[10px] text-amber-805 dark:text-amber-500 mt-1 font-semibold">
+                    No tienes granos registrados. Puedes agregarlos en la pestaña "Granos".
+                  </p>
+                )}
               </div>
 
               <div className="border-t border-slate-200 dark:border-slate-800 pt-3 mt-2">
@@ -696,6 +877,12 @@ export default function App() {
                 📋 Recetas
               </button>
               <button
+                onClick={() => setActiveTab('beans')}
+                className={`flex-1 pb-2.5 text-center font-bold text-sm border-b-2 transition cursor-pointer ${activeTab === 'beans' ? 'border-amber-800 dark:border-amber-500 text-amber-900 dark:text-amber-500' : 'border-transparent text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'}`}
+              >
+                🫘 Granos
+              </button>
+              <button
                 onClick={() => setActiveTab('history')}
                 className={`flex-1 pb-2.5 text-center font-bold text-sm border-b-2 transition cursor-pointer ${activeTab === 'history' ? 'border-amber-800 dark:border-amber-500 text-amber-900 dark:text-amber-500' : 'border-transparent text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'}`}
               >
@@ -703,7 +890,7 @@ export default function App() {
               </button>
             </div>
 
-            {activeTab === 'recipes' ? (
+            {activeTab === 'recipes' && (
               <div className="space-y-6">
                 <div className="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-3">
                   <h2 className="text-xl font-bold text-slate-900 dark:text-white">Tus Recetas</h2>
@@ -832,7 +1019,161 @@ export default function App() {
                   )}
                 </div>
               </div>
-            ) : (
+            )}
+
+            {activeTab === 'beans' && (
+              <div className="space-y-6">
+                <div className="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-3">
+                  <h2 className="text-xl font-bold text-slate-900 dark:text-white">Tus Granos</h2>
+                  <button
+                    onClick={() => {
+                      setNewBean({
+                        name: '',
+                        roaster: '',
+                        origin: '',
+                        process: 'Lavado',
+                        variety: '',
+                        roast_level: 'Medio',
+                        roast_date: '',
+                        sca_score: '',
+                        altitude: '',
+                        tasting_notes: [],
+                        notes: ''
+                      });
+                      setEditingBeanId(null);
+                      setIsEditingBean(true);
+                    }}
+                    className="px-3.5 py-2 bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-800 text-white text-xs font-bold rounded-xl shadow-sm transition flex items-center gap-1 cursor-pointer"
+                  >
+                    + Agregar Grano
+                  </button>
+                </div>
+
+                {/* Buscador de granos */}
+                <div className="relative">
+                  <input
+                    type="text"
+                    placeholder="Buscar por nombre, origen, tostaduría..."
+                    value={beanSearchQuery}
+                    onChange={(e) => setBeanSearchQuery(e.target.value)}
+                    className="w-full px-3 py-2 pl-9 border border-slate-250 dark:border-slate-850 rounded-xl bg-slate-50 dark:bg-slate-800/40 text-slate-900 dark:text-slate-100 text-xs focus:outline-none focus:ring-1 focus:ring-amber-500"
+                  />
+                  <span className="absolute left-3 top-2.5 text-slate-400 select-none">🔍</span>
+                </div>
+
+                {/* Listado de granos */}
+                <div className="space-y-3 max-h-[480px] overflow-y-auto pr-1 pb-24">
+                  {beans.filter(b => 
+                    b.name.toLowerCase().includes(beanSearchQuery.toLowerCase()) ||
+                    (b.roaster && b.roaster.toLowerCase().includes(beanSearchQuery.toLowerCase())) ||
+                    (b.origin && b.origin.toLowerCase().includes(beanSearchQuery.toLowerCase())) ||
+                    (b.variety && b.variety.toLowerCase().includes(beanSearchQuery.toLowerCase()))
+                  ).length === 0 ? (
+                    <p className="text-sm text-slate-400 dark:text-slate-400 text-center py-8 font-sans">
+                      {beans.length === 0 
+                        ? 'No tienes granos registrados aún. ¡Registra uno nuevo para empezar!'
+                        : 'No se encontraron granos que coincidan con la búsqueda.'}
+                    </p>
+                  ) : (
+                    beans.filter(b => 
+                      b.name.toLowerCase().includes(beanSearchQuery.toLowerCase()) ||
+                      (b.roaster && b.roaster.toLowerCase().includes(beanSearchQuery.toLowerCase())) ||
+                      (b.origin && b.origin.toLowerCase().includes(beanSearchQuery.toLowerCase())) ||
+                      (b.variety && b.variety.toLowerCase().includes(beanSearchQuery.toLowerCase()))
+                    ).map((bean) => (
+                      <div key={bean.id} className="p-4 bg-slate-50 dark:bg-slate-800/30 border border-slate-200 dark:border-slate-800 rounded-2xl space-y-2 text-left relative group">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <h3 className="font-bold text-slate-900 dark:text-white text-base leading-tight">{bean.name}</h3>
+                            {bean.roaster && (
+                              <p className="text-xs text-slate-550 dark:text-slate-400 font-medium">{bean.roaster}</p>
+                            )}
+                          </div>
+                          
+                          {/* Botones de acción */}
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => handleStartEditBean(bean)}
+                              className="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded transition text-xs cursor-pointer"
+                              title="Editar grano"
+                            >
+                              ✏️
+                            </button>
+                            <button
+                              onClick={() => handleDeleteBeanClick(bean)}
+                              className="p-1 hover:bg-red-50 dark:hover:bg-red-950/20 rounded transition text-xs cursor-pointer"
+                              title="Eliminar grano"
+                            >
+                              🗑️
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Atributos técnicos en badges */}
+                        <div className="flex flex-wrap gap-1.5 pt-1">
+                          {bean.origin && (
+                            <span className="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded text-[10px] font-semibold">
+                              📍 {bean.origin}
+                            </span>
+                          )}
+                          {bean.process && (
+                            <span className="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded text-[10px] font-semibold">
+                              ⚙️ {bean.process}
+                            </span>
+                          )}
+                          {bean.roast_level && (
+                            <span className="px-2 py-0.5 bg-amber-50 dark:bg-amber-950/20 text-amber-900 dark:text-amber-300 border border-amber-200/30 rounded text-[10px] font-semibold">
+                              🔥 Tueste {bean.roast_level}
+                            </span>
+                          )}
+                          {bean.variety && (
+                            <span className="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded text-[10px] font-semibold">
+                              🌱 {bean.variety}
+                            </span>
+                          )}
+                          {bean.altitude && (
+                            <span className="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded text-[10px] font-semibold">
+                              🏔️ {bean.altitude}
+                            </span>
+                          )}
+                          {bean.sca_score && (
+                            <span className="px-2 py-0.5 bg-emerald-50 dark:bg-emerald-950/20 text-emerald-805 dark:text-emerald-300 border border-emerald-200/20 rounded text-[10px] font-bold">
+                              🏆 SCA: {bean.sca_score}
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Notas de cata */}
+                        {bean.tasting_notes && bean.tasting_notes.length > 0 && (
+                          <div className="flex flex-wrap gap-1 pt-1.5">
+                            {bean.tasting_notes.map((note) => (
+                              <span key={note} className="px-2 py-0.5 bg-amber-50 dark:bg-amber-950/20 text-amber-900 dark:text-amber-300 border border-amber-200/20 rounded-full text-[9px] font-bold">
+                                {note}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* Notas generales */}
+                        {bean.notes && (
+                          <p className="text-xs text-slate-600 dark:text-slate-400 pt-1.5 border-t border-slate-150 dark:border-slate-800 italic">
+                            "{bean.notes}"
+                          </p>
+                        )}
+
+                        {bean.roast_date && (
+                          <div className="text-[9px] text-slate-400 dark:text-slate-500 pt-1 text-right">
+                            Tostado el: {bean.roast_date}
+                          </div>
+                        )}
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'history' && (
               <div className="space-y-6">
                 <div className="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-3">
                   <h2 className="text-xl font-bold text-slate-900 dark:text-white">Historial</h2>
@@ -896,6 +1237,12 @@ export default function App() {
                               <p className="text-[11px] text-slate-505 dark:text-slate-350 mt-1">
                                 {entry.coffee_g}g • {entry.grind_size || 'Molienda N/D'} • {entry.water_g}g agua
                               </p>
+
+                              {entry.bean_name && (
+                                <p className="text-[11px] text-amber-805 dark:text-amber-500 font-bold mt-0.5 flex items-center gap-1 select-none">
+                                  🫘 {entry.bean_name}
+                                </p>
+                              )}
 
                               {/* Display Flavor Tags */}
                               {entry.descriptors && entry.descriptors.length > 0 && (
@@ -1085,6 +1432,39 @@ export default function App() {
                   </span>
                 </div>
               </div>
+
+              {summaryRecipe.bean_id && beans.find(b => b.id === summaryRecipe.bean_id) && (
+                (() => {
+                  const bean = beans.find(b => b.id === summaryRecipe.bean_id);
+                  return (
+                    <div className="bg-amber-50/50 dark:bg-amber-950/10 border border-amber-200/20 rounded-xl p-3 text-xs space-y-1">
+                      <div className="font-extrabold text-[10px] text-amber-800 dark:text-amber-500 uppercase tracking-wider flex items-center gap-1">
+                        <span>🫘</span> Grano de Café
+                      </div>
+                      <div className="font-bold text-slate-800 dark:text-slate-200">
+                        {bean.name} {bean.roaster && <span className="text-[11px] font-normal text-slate-500 dark:text-slate-450 block">{bean.roaster}</span>}
+                      </div>
+                      <div className="flex flex-wrap gap-1 pt-1">
+                        {bean.origin && <span className="bg-white dark:bg-slate-800 border border-slate-200/30 text-[9px] px-1.5 py-0.5 rounded font-medium text-slate-600 dark:text-slate-300">📍 {bean.origin}</span>}
+                        {bean.process && <span className="bg-white dark:bg-slate-800 border border-slate-200/30 text-[9px] px-1.5 py-0.5 rounded font-medium text-slate-600 dark:text-slate-300">⚙️ {bean.process}</span>}
+                        {bean.roast_level && <span className="bg-white dark:bg-slate-800 border border-slate-200/30 text-[9px] px-1.5 py-0.5 rounded font-medium text-slate-600 dark:text-slate-300">🔥 Tueste {bean.roast_level}</span>}
+                        {bean.variety && <span className="bg-white dark:bg-slate-800 border border-slate-200/30 text-[9px] px-1.5 py-0.5 rounded font-medium text-slate-600 dark:text-slate-300">🌱 {bean.variety}</span>}
+                        {bean.altitude && <span className="bg-white dark:bg-slate-800 border border-slate-200/30 text-[9px] px-1.5 py-0.5 rounded font-medium text-slate-600 dark:text-slate-300">🏔️ {bean.altitude}</span>}
+                        {bean.sca_score && <span className="bg-emerald-100/50 dark:bg-emerald-950/30 text-emerald-800 dark:text-emerald-400 text-[9px] px-1.5 py-0.5 rounded font-bold border border-emerald-250/10">🏆 SCA {bean.sca_score}</span>}
+                      </div>
+                      {bean.tasting_notes && bean.tasting_notes.length > 0 && (
+                        <div className="flex flex-wrap gap-0.5 pt-1.5">
+                          {bean.tasting_notes.map(note => (
+                            <span key={note} className="bg-amber-100/40 dark:bg-amber-900/10 text-amber-900 dark:text-amber-300 text-[8px] font-bold px-1.5 py-0.5 rounded-full border border-amber-200/10">
+                              {note}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()
+              )}
 
               <div className="space-y-2">
                 <h4 className="text-xs font-extrabold text-slate-400 dark:text-slate-450 uppercase tracking-wider pl-1">Pasos</h4>
@@ -1348,6 +1728,307 @@ export default function App() {
             onConfirm={confirmImportRecipe}
             onCancel={() => setRecipeToImport(null)}
           />
+        )}
+
+        {isEditingBean && (
+          <div className="fixed inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
+            <form
+              onSubmit={handleSaveBean}
+              className="bg-white dark:bg-slate-900 rounded-2xl max-w-md w-full p-6 shadow-xl max-h-[85vh] overflow-y-auto space-y-4 border border-slate-100 dark:border-slate-800 text-left"
+            >
+              <div className="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-3">
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+                  {editingBeanId ? 'Editar Grano de Café' : 'Nuevo Grano de Café'}
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsEditingBean(false);
+                    setEditingBeanId(null);
+                  }}
+                  className="text-slate-400 dark:text-slate-350 hover:text-slate-650 dark:hover:text-slate-200 text-xl font-bold leading-none cursor-pointer"
+                >
+                  &times;
+                </button>
+              </div>
+
+              <div className="space-y-3">
+                {/* Nombre */}
+                <div className="space-y-1">
+                  <label htmlFor="bean-name-input" className="text-xs font-bold text-slate-500 dark:text-slate-450 uppercase tracking-wider block">Nombre del Grano*</label>
+                  <input
+                    id="bean-name-input"
+                    type="text"
+                    required
+                    placeholder="Ej: Etiopía Sidamo, Geisha Colombia..."
+                    value={newBean.name}
+                    onChange={(e) => setNewBean({ ...newBean, name: e.target.value })}
+                    className="w-full p-2 border border-slate-250 dark:border-slate-850 rounded-xl bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:outline-none focus:ring-1 focus:ring-amber-500"
+                  />
+                </div>
+
+                {/* Tostaduría y Origen */}
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="space-y-1">
+                    <label htmlFor="bean-roaster-input" className="text-xs font-bold text-slate-500 dark:text-slate-450 uppercase tracking-wider block">Tostaduría</label>
+                    <input
+                      id="bean-roaster-input"
+                      type="text"
+                      placeholder="Ej: Nomad, Blue Bottle..."
+                      value={newBean.roaster}
+                      onChange={(e) => setNewBean({ ...newBean, roaster: e.target.value })}
+                      className="w-full p-2 border border-slate-250 dark:border-slate-850 rounded-xl bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:outline-none focus:ring-1 focus:ring-amber-500"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label htmlFor="bean-origin-input" className="text-xs font-bold text-slate-500 dark:text-slate-450 uppercase tracking-wider block">País/Origen</label>
+                    <input
+                      id="bean-origin-input"
+                      type="text"
+                      placeholder="Ej: Etiopía, Huila..."
+                      value={newBean.origin}
+                      onChange={(e) => setNewBean({ ...newBean, origin: e.target.value })}
+                      className="w-full p-2 border border-slate-250 dark:border-slate-850 rounded-xl bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:outline-none focus:ring-1 focus:ring-amber-500"
+                    />
+                  </div>
+                </div>
+
+                {/* Variedad y Proceso */}
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="space-y-1">
+                    <label htmlFor="bean-variety-input" className="text-xs font-bold text-slate-500 dark:text-slate-450 uppercase tracking-wider block">Variedad</label>
+                    <input
+                      id="bean-variety-input"
+                      type="text"
+                      placeholder="Ej: Caturra, Castillo, Heirloom..."
+                      value={newBean.variety}
+                      onChange={(e) => setNewBean({ ...newBean, variety: e.target.value })}
+                      className="w-full p-2 border border-slate-250 dark:border-slate-850 rounded-xl bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:outline-none focus:ring-1 focus:ring-amber-500"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label htmlFor="bean-process-input" className="text-xs font-bold text-slate-500 dark:text-slate-450 uppercase tracking-wider block">Proceso de Beneficio</label>
+                    <select
+                      id="bean-process-input"
+                      value={newBean.process}
+                      onChange={(e) => setNewBean({ ...newBean, process: e.target.value })}
+                      className="w-full p-2 border border-slate-250 dark:border-slate-850 rounded-xl bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:outline-none focus:ring-1 focus:ring-amber-500"
+                    >
+                      <option value="Lavado">Lavado</option>
+                      <option value="Natural">Natural</option>
+                      <option value="Honey">Honey</option>
+                      <option value="Anaeróbico">Anaeróbico</option>
+                      <option value="Miel">Miel</option>
+                      <option value="Otro">Otro / Mezcla</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Nivel de Tueste y Fecha de Tueste */}
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="space-y-1">
+                    <label htmlFor="bean-roast-level-input" className="text-xs font-bold text-slate-500 dark:text-slate-450 uppercase tracking-wider block">Nivel de Tueste</label>
+                    <select
+                      id="bean-roast-level-input"
+                      value={newBean.roast_level}
+                      onChange={(e) => setNewBean({ ...newBean, roast_level: e.target.value })}
+                      className="w-full p-2 border border-slate-250 dark:border-slate-850 rounded-xl bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:outline-none focus:ring-1 focus:ring-amber-500"
+                    >
+                      <option value="Claro">Claro</option>
+                      <option value="Medio-Claro">Medio-Claro</option>
+                      <option value="Medio">Medio</option>
+                      <option value="Medio-Oscuro">Medio-Oscuro</option>
+                      <option value="Oscuro">Oscuro</option>
+                    </select>
+                  </div>
+                  <div className="space-y-1">
+                    <label htmlFor="bean-roast-date-input" className="text-xs font-bold text-slate-500 dark:text-slate-450 uppercase tracking-wider block">Fecha de Tueste</label>
+                    <input
+                      id="bean-roast-date-input"
+                      type="date"
+                      value={newBean.roast_date}
+                      onChange={(e) => setNewBean({ ...newBean, roast_date: e.target.value })}
+                      className="w-full p-2 border border-slate-250 dark:border-slate-850 rounded-xl bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:outline-none focus:ring-1 focus:ring-amber-500"
+                    />
+                  </div>
+                </div>
+
+                {/* Puntuación SCA y Altitud */}
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="space-y-1">
+                    <label htmlFor="bean-sca-score-input" className="text-xs font-bold text-slate-500 dark:text-slate-450 uppercase tracking-wider block">Puntuación SCA</label>
+                    <input
+                      id="bean-sca-score-input"
+                      type="number"
+                      step="0.25"
+                      min="0"
+                      max="100"
+                      placeholder="Ej: 85.5"
+                      value={newBean.sca_score}
+                      onChange={(e) => setNewBean({ ...newBean, sca_score: e.target.value })}
+                      className="w-full p-2 border border-slate-250 dark:border-slate-850 rounded-xl bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:outline-none focus:ring-1 focus:ring-amber-500"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label htmlFor="bean-altitude-input" className="text-xs font-bold text-slate-500 dark:text-slate-450 uppercase tracking-wider block">Altitud</label>
+                    <input
+                      id="bean-altitude-input"
+                      type="text"
+                      placeholder="Ej: 1900 msnm"
+                      value={newBean.altitude}
+                      onChange={(e) => setNewBean({ ...newBean, altitude: e.target.value })}
+                      className="w-full p-2 border border-slate-250 dark:border-slate-850 rounded-xl bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:outline-none focus:ring-1 focus:ring-amber-500"
+                    />
+                  </div>
+                </div>
+
+                {/* Perfil de sabor / Notas de Cata */}
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-slate-500 dark:text-slate-450 uppercase tracking-wider block">Descriptores de Sabor (Notas de Cata)</label>
+                  
+                  {/* Chips añadidos */}
+                  {newBean.tasting_notes.length > 0 && (
+                    <div className="flex flex-wrap gap-1 mb-2 bg-slate-50 dark:bg-slate-800/40 p-2 rounded-xl border border-slate-100 dark:border-slate-850">
+                      {newBean.tasting_notes.map((note) => (
+                        <span key={note} className="px-2 py-0.5 bg-amber-50 dark:bg-amber-950/20 text-amber-900 dark:text-amber-300 border border-amber-200/30 rounded-full text-[10px] font-bold flex items-center gap-1">
+                          {note}
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveTastingNote(note)}
+                            className="text-slate-405 hover:text-red-500 font-extrabold focus:outline-none"
+                          >
+                            &times;
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Predefinidos */}
+                  <div className="space-y-1">
+                    <span className="text-[10px] text-slate-400 dark:text-slate-500 block font-semibold">Sugeridos (haz clic para añadir):</span>
+                    <div className="flex flex-wrap gap-1 max-h-[75px] overflow-y-auto border border-slate-100 dark:border-slate-850/60 p-1.5 rounded-lg bg-slate-50/50 dark:bg-slate-800/10">
+                      {DEFAULT_TASTING_NOTES.map((note) => {
+                        const isAdded = newBean.tasting_notes.includes(note);
+                        return (
+                          <button
+                            key={note}
+                            type="button"
+                            disabled={isAdded}
+                            onClick={() => handleAddTastingNote(note)}
+                            className={`px-2 py-0.5 rounded-full text-[9px] font-bold border transition cursor-pointer ${
+                              isAdded
+                                ? 'bg-slate-105 dark:bg-slate-800 text-slate-350 dark:text-slate-600 border-slate-200 dark:border-slate-700/50'
+                                : 'bg-white dark:bg-slate-850 border-slate-200 dark:border-slate-750 text-slate-650 dark:text-slate-300 hover:bg-amber-50 dark:hover:bg-amber-950/20'
+                            }`}
+                          >
+                            {note}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Entrada personalizada */}
+                  <div className="flex gap-1.5 pt-1">
+                    <input
+                      type="text"
+                      placeholder="Agregar nota personalizada..."
+                      value={customTastingNote}
+                      onChange={(e) => setCustomTastingNote(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          handleAddTastingNote(customTastingNote);
+                        }
+                      }}
+                      className="flex-1 p-2 border border-slate-250 dark:border-slate-850 rounded-xl bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:outline-none focus:ring-1 focus:ring-amber-500"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleAddTastingNote(customTastingNote)}
+                      className="px-3 bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-800 text-white rounded-xl text-xs font-bold transition cursor-pointer"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+
+                {/* Notas generales */}
+                <div className="space-y-1">
+                  <label htmlFor="bean-notes-input" className="text-xs font-bold text-slate-500 dark:text-slate-450 uppercase tracking-wider block">Notas Generales</label>
+                  <textarea
+                    id="bean-notes-input"
+                    placeholder="Ej: Tueste artesanal para filtro, cuerpo medio, acidez brillante..."
+                    value={newBean.notes}
+                    onChange={(e) => setNewBean({ ...newBean, notes: e.target.value })}
+                    className="w-full p-2 border border-slate-250 dark:border-slate-850 rounded-xl bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:outline-none focus:ring-1 focus:ring-amber-500"
+                    rows="3"
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-2 pt-2 border-t border-slate-200 dark:border-slate-800">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsEditingBean(false);
+                    setEditingBeanId(null);
+                  }}
+                  className="flex-1 py-2.5 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-655 dark:text-slate-350 rounded-xl font-bold text-sm transition cursor-pointer"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 py-2.5 bg-emerald-700 hover:bg-emerald-800 dark:bg-emerald-600 dark:hover:bg-emerald-700 text-white rounded-xl font-bold text-sm transition shadow-sm cursor-pointer"
+                >
+                  Guardar Grano
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
+
+        {beanToDelete && (
+          <div className="fixed inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
+            <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-sm w-full p-6 shadow-xl border border-slate-100 dark:border-slate-800 space-y-4 text-center">
+              <div className="text-red-500 dark:text-red-400 text-3xl select-none">⚠️</div>
+              <div>
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white">Eliminar Grano en Uso</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
+                  El grano <strong className="text-slate-700 dark:text-slate-300">"{beanToDelete.name}"</strong> está vinculado a las siguientes recetas:
+                </p>
+                <ul className="text-xs text-amber-900 dark:text-amber-400 font-bold mt-2 max-h-24 overflow-y-auto space-y-1 bg-amber-50 dark:bg-amber-950/20 p-2 rounded-xl border border-amber-200/20 list-disc list-inside text-left">
+                  {recipes
+                    .filter((r) => r.bean_id === beanToDelete.id)
+                    .map((r) => (
+                      <li key={r.id} className="truncate">{r.name}</li>
+                    ))}
+                </ul>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-3 leading-relaxed">
+                  Si procedes, el grano se eliminará permanentemente y las recetas quedarán sin grano vinculado.
+                </p>
+              </div>
+
+              <div className="flex gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+                <button
+                  type="button"
+                  onClick={() => setBeanToDelete(null)}
+                  className="flex-1 py-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-650 dark:text-slate-300 rounded-xl font-bold text-xs transition cursor-pointer"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="button"
+                  onClick={handleConfirmDeleteBean}
+                  className="flex-1 py-2 bg-red-600 hover:bg-red-750 text-white rounded-xl font-bold text-xs transition shadow-sm cursor-pointer"
+                >
+                  Sí, Eliminar
+                </button>
+              </div>
+            </div>
+          </div>
         )}
       </main>
     </div>

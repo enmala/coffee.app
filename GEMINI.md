@@ -69,7 +69,7 @@ Las recetas se estructuran siguiendo este formato JSON:
 3. **Disponibilidad en tiendas de aplicaciones:** Publicar la PWA en Google Play Store (como TWA) y en Microsoft Store.
 4. **Gestión de granos de café:** Permitir un registro de granos de café con sus caracteristicas (origen, variadad, proceso, tostaduría, nivel de tueste, etc.) y que se pueda asociar un grano de café a una receta.
 5. **Mejoras en el registro historico:** Al realizar una evaluación del resultado de una preparación, dependiendo de la puntuación (estrellas) y los descriptores de sabor seleccionados se pueda sugerir ajustes a la receta para la próxima preparación.
-6. **Opciones para compartir recetas:** Permitir compartir recetas con otros usuarios a traves de un codigo QR que permita importar la receta en la app o enviado el archivo .json directamente por whatsapp, telegram, etc. para su importación en la app. La App debería permitir importar directamente el json al abrirlo, con una previsualización antes de guardar la receta.
+6. ~~**Opciones para compartir recetas:** Permitir compartir recetas con otros usuarios a traves de un codigo QR que permita importar la receta en la app o enviado el archivo .json directamente por whatsapp, telegram, etc. para su importación en la app. La App debería permitir importar directamente el json al abrirlo, con una previsualización antes de guardar la receta.~~
 7. **Sincronización en la nube:** Como alternativa al almacenamiento puramente local (localStorage), permitir hacer un respaldo y sincronización automáticos de recetas e historial usando las cuentas personales del usuario en la nube sin necesidad de montar una infraestructura de backend compleja.
 ---
 

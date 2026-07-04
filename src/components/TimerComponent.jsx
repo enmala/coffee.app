@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { playBeep, speakText } from '../utils/coffeeUtils';
 
-export default function TimerComponent({ recipe, onComplete, soundEnabled = true, vibrationEnabled = true, vibrationType = 'normal', voiceGuidanceEnabled = false }) {
+export default function TimerComponent({ recipe, onComplete, soundEnabled = true, vibrationEnabled = true, vibrationType = 'normal', voiceGuidanceEnabled = false, beanName }) {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [timeLeft, setTimeLeft] = useState(recipe.steps[0].duration_s);
   const [isRunning, setIsRunning] = useState(false);
@@ -105,7 +105,7 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [isRunning, currentStepIndex, recipe.steps, soundEnabled, vibrationEnabled, vibrationType]);
+  }, [isRunning, currentStepIndex, recipe.steps, soundEnabled, vibrationEnabled, vibrationType, voiceGuidanceEnabled]);
 
   const handleReset = () => {
     setIsRunning(false);
@@ -144,6 +144,11 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
       <div>
         <h3 className="text-lg font-bold text-slate-900 dark:text-white">{recipe.name}</h3>
         <span className="text-xs bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-350 px-2 py-0.5 rounded font-bold uppercase tracking-wider">{recipe.method}</span>
+        {beanName && (
+          <div className="text-xs text-amber-800 dark:text-amber-500 font-bold mt-1 select-none">
+            🫘 {beanName}
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-3 gap-2 bg-slate-50 dark:bg-slate-800/40 p-2 rounded-xl text-[11px] text-slate-600 dark:text-slate-300 border border-slate-100 dark:border-slate-800">

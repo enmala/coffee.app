@@ -145,8 +145,9 @@ describe('Coffee Beans Management Tests', () => {
     const addStepBtn = screen.getByText('+ Agregar Paso a la lista');
     fireEvent.click(addStepBtn);
 
-    const saveRecipeBtn = screen.getByText('Guardar Receta Completa');
+    const saveRecipeBtn = screen.getByText('Guardar Receta');
     fireEvent.click(saveRecipeBtn);
+    fireEvent.click(screen.getByText('Entendido'));
 
     // 2. Open recipe summary and verify bean is shown
     const recipeCard = screen.getByText('V60 con Sidamo').closest('.group');
@@ -204,8 +205,9 @@ describe('Coffee Beans Management Tests', () => {
     const addStepBtn = screen.getByText('+ Agregar Paso a la lista');
     fireEvent.click(addStepBtn);
 
-    const saveRecipeBtn = screen.getByText('Guardar Receta Completa');
+    const saveRecipeBtn = screen.getByText('Guardar Receta');
     fireEvent.click(saveRecipeBtn);
+    fireEvent.click(screen.getByText('Entendido'));
 
     // 2. Open recipe summary and click "Iniciar Timer"
     const recipeCardHist = screen.getByText('V60 para Historial').closest('.group');

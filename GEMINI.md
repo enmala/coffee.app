@@ -71,6 +71,7 @@ Las recetas se estructuran siguiendo este formato JSON:
 5. **Mejoras en el registro historico:** Al realizar una evaluación del resultado de una preparación, dependiendo de la puntuación (estrellas) y los descriptores de sabor seleccionados se pueda sugerir ajustes a la receta para la próxima preparación.
 6. ~~**Opciones para compartir recetas:** Permitir compartir recetas con otros usuarios a traves de un codigo QR que permita importar la receta en la app o enviado el archivo .json directamente por whatsapp, telegram, etc. para su importación en la app. La App debería permitir importar directamente el json al abrirlo, con una previsualización antes de guardar la receta.~~
 7. **Sincronización en la nube:** Como alternativa al almacenamiento puramente local (localStorage), permitir hacer un respaldo y sincronización automáticos de recetas e historial usando las cuentas personales del usuario en la nube sin necesidad de montar una infraestructura de backend compleja.
+8. **Mejoras UI:** Reemplazar diálogos de alerta del navegador por un modal nativo estilizado donde aún se utilicen los metodos .confirm() y .alert() de javascript
 ---
 
 ## 6. Reglas de trabajo en el repositorio

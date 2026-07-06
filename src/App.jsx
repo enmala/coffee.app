@@ -151,6 +151,7 @@ export default function App() {
   const [summaryRecipe, setSummaryRecipe] = useState(null);
   const [recipeToShare, setRecipeToShare] = useState(null);
   const [recipeToImport, setRecipeToImport] = useState(null);
+  const [saveSuccessMessage, setSaveSuccessMessage] = useState(null);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -545,14 +546,20 @@ export default function App() {
 
     if (editingRecipeId) {
       setRecipes((prev) => prev.map(r => r.id === editingRecipeId ? { ...newRecipe, id: editingRecipeId } : r));
-      alert("Receta actualizada correctamente.");
+      setSaveSuccessMessage({
+        title: "¡Receta Actualizada!",
+        body: "Los cambios en tu receta se han guardado correctamente."
+      });
     } else {
       const created = {
         ...newRecipe,
         id: `custom-${Date.now()}`
       };
       setRecipes((prev) => [...prev, created]);
-      alert("Receta guardada correctamente.");
+      setSaveSuccessMessage({
+        title: "¡Receta Guardada!",
+        body: "Tu nueva receta ha sido creada y guardada correctamente."
+      });
     }
     handleCancelForm();
   };
@@ -639,13 +646,6 @@ export default function App() {
               <h2 className="text-lg font-bold text-slate-900 dark:text-white">
                 {editingRecipeId ? 'Editar Receta' : 'Nueva Receta'}
               </h2>
-              <button
-                type="button"
-                onClick={handleCancelForm}
-                className="text-slate-400 dark:text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-sm font-semibold cursor-pointer"
-              >
-                Cancelar
-              </button>
             </div>
 
             <form onSubmit={handleSaveRecipe} className="space-y-4">
@@ -858,12 +858,21 @@ export default function App() {
                 </div>
               </div>
 
-              <button
-                type="submit"
-                className="w-full py-2.5 bg-emerald-700 hover:bg-emerald-800 dark:bg-emerald-600 dark:hover:bg-emerald-700 text-white font-bold rounded-xl text-sm transition shadow-sm cursor-pointer"
-              >
-                Guardar Receta Completa
-              </button>
+              <div className="flex gap-3 pt-4 border-t border-slate-200 dark:border-slate-800">
+                <button
+                  type="button"
+                  onClick={handleCancelForm}
+                  className="flex-1 py-2.5 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-655 dark:text-slate-350 rounded-xl font-bold text-sm transition cursor-pointer text-center"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 py-2.5 bg-emerald-700 hover:bg-emerald-800 dark:bg-emerald-600 dark:hover:bg-emerald-700 text-white rounded-xl font-bold text-sm transition shadow-sm cursor-pointer text-center"
+                >
+                  Guardar Receta
+                </button>
+              </div>
             </form>
           </div>
         ) : (
@@ -1728,6 +1737,35 @@ export default function App() {
             onConfirm={confirmImportRecipe}
             onCancel={() => setRecipeToImport(null)}
           />
+        )}
+
+        {saveSuccessMessage && (
+          <div className="fixed inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
+            <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-sm w-full p-5 md:p-6 shadow-xl border border-slate-100 dark:border-slate-800 text-center space-y-4 max-h-[90vh] overflow-y-auto">
+              <div className="flex justify-center text-emerald-650 dark:text-emerald-500 animate-bounce my-2">
+                <svg viewBox="0 0 24 24" className="w-12 h-12 fill-none stroke-current" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                  <polyline points="22 4 12 14.01 9 11.01" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+                  {saveSuccessMessage.title}
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                  {saveSuccessMessage.body}
+                </p>
+              </div>
+
+              <button 
+                type="button"
+                onClick={() => setSaveSuccessMessage(null)}
+                className="w-full py-2.5 bg-emerald-700 hover:bg-emerald-800 dark:bg-emerald-650 dark:hover:bg-emerald-700 text-white rounded-xl font-bold text-sm transition shadow-sm cursor-pointer"
+              >
+                Entendido
+              </button>
+            </div>
+          </div>
         )}
 
         {isEditingBean && (

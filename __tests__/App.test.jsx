@@ -144,8 +144,9 @@ describe('App Component', () => {
     fireEvent.click(addStepBtn);
     
     // Save recipe
-    const saveRecipeBtn = screen.getByText('Guardar Receta Completa');
+    const saveRecipeBtn = screen.getByText('Guardar Receta');
     fireEvent.click(saveRecipeBtn);
+    fireEvent.click(screen.getByText('Entendido'));
     
     // Verify recipe is saved
     expect(screen.getByText('Mi Receta Especial')).toBeInTheDocument();
@@ -166,8 +167,9 @@ describe('App Component', () => {
     fireEvent.change(nameInput, { target: { value: 'Método Modificado' } });
     
     // Save
-    const saveRecipeBtn = screen.getByText('Guardar Receta Completa');
+    const saveRecipeBtn = screen.getByText('Guardar Receta');
     fireEvent.click(saveRecipeBtn);
+    fireEvent.click(screen.getByText('Entendido'));
     
     expect(screen.getByText('Método Modificado')).toBeInTheDocument();
   });
@@ -498,7 +500,7 @@ describe('App Component', () => {
     const nameInput = screen.getByPlaceholderText('Ej: Mi V60 Balanceado');
     fireEvent.change(nameInput, { target: { value: ' ' } });
 
-    const saveRecipeBtn = screen.getByText('Guardar Receta Completa');
+    const saveRecipeBtn = screen.getByText('Guardar Receta');
     fireEvent.click(saveRecipeBtn);
     expect(window.alert).toHaveBeenCalledWith('Por favor, ingresa el nombre de la receta.');
 

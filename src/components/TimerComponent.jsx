@@ -16,7 +16,7 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
       ? `${minutes} minutos y ${seconds} segundos`
       : `${seconds} segundos`;
     const instructionText = step.instruction ? `${step.instruction}.` : '';
-    return `Paso ${index + 1} de ${total}: ${step.title}. ${instructionText} Tiempo estimado ${durationText}.`;
+    return `Paso ${index + 1}: ${step.title}. ${instructionText} Tiempo ${durationText}.`;
   };
 
   useEffect(() => {
@@ -168,45 +168,45 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
 
       {/* Progress circular SVG */}
       <div className="relative flex justify-center items-center my-6">
-        <svg className="w-52 h-52 transform -rotate-90">
+        <svg className="w-44 h-44 transform -rotate-90">
           {/* Circle background */}
           <circle
-            cx="104"
-            cy="104"
-            r="88"
+            cx="88"
+            cy="88"
+            r="76"
             className="stroke-slate-100 dark:stroke-slate-800/80"
             strokeWidth="8"
             fill="transparent"
           />
           {/* Progress circle */}
           <circle
-            cx="104"
-            cy="104"
-            r="88"
+            cx="88"
+            cy="88"
+            r="76"
             className="stroke-amber-800 dark:stroke-amber-500 transition-all duration-1000 ease-linear"
             strokeWidth="8"
             fill="transparent"
-            strokeDasharray={2 * Math.PI * 88}
-            strokeDashoffset={2 * Math.PI * 88 * (1 - (timeLeft / (currentStep.duration_s || 1)))}
+            strokeDasharray={2 * Math.PI * 76}
+            strokeDashoffset={2 * Math.PI * 76 * (1 - (timeLeft / (currentStep.duration_s || 1)))}
             strokeLinecap="round"
           />
         </svg>
         {/* Inner details */}
         <div className="absolute flex flex-col items-center justify-center space-y-1">
-          <span className="text-[10px] text-slate-450 dark:text-slate-500 uppercase font-bold tracking-widest max-w-[130px] truncate">
+          <span className="text-[9px] text-slate-455 dark:text-slate-450 uppercase font-bold tracking-widest max-w-[110px] truncate">
             {currentStep.title}
           </span>
-          <span className="text-4xl font-mono font-bold text-slate-900 dark:text-white select-none tracking-tight">
+          <span className="text-3xl font-mono font-bold text-slate-900 dark:text-white select-none tracking-tight">
             {formatTime(timeLeft)}
           </span>
-          <span className="text-[10px] text-amber-905 dark:text-amber-300 font-bold bg-amber-50 dark:bg-amber-950/30 px-2.5 py-0.5 rounded-full uppercase">
+          <span className="text-[9px] text-amber-905 dark:text-amber-300 font-bold bg-amber-50 dark:bg-amber-950/30 px-2 py-0.5 rounded-full uppercase">
             Paso {currentStepIndex + 1} de {recipe.steps.length}
           </span>
         </div>
       </div>
 
       {/* Step instructions and pour guide */}
-      <div className="p-4 bg-slate-50 dark:bg-slate-800/30 border border-slate-150 dark:border-slate-800/80 rounded-xl space-y-2.5 text-center">
+      <div className="p-4 bg-slate-50 dark:bg-slate-800/30 border border-slate-150 dark:border-slate-800/80 rounded-xl space-y-3.5 text-center">
         <p
           className="text-sm text-slate-650 dark:text-slate-355 min-h-[40px] flex items-center justify-center italic font-medium px-2 leading-relaxed"
           aria-live="polite"
@@ -214,14 +214,14 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
           {currentStep.instruction || 'No hay instrucciones para este paso.'}
         </p>
         
-        <div className="pt-2 border-t border-slate-200/50 dark:border-slate-700/50 grid grid-cols-2 gap-2 text-xs">
-          <div>
-            <span className="text-slate-450 dark:text-slate-450 block text-[9px] uppercase font-bold">Verter ahora</span>
-            <span className="font-bold text-amber-900 dark:text-amber-400 text-sm">+{currentStep.water_g}g</span>
+        <div className="grid grid-cols-2 gap-3 pt-1">
+          <div className="bg-amber-50/50 dark:bg-amber-950/20 p-3 rounded-xl border border-amber-200/10 dark:border-amber-900/20 shadow-sm">
+            <span className="text-slate-450 dark:text-slate-400 block text-[10px] uppercase font-bold tracking-wider mb-1">Verter ahora</span>
+            <span className="font-extrabold text-amber-800 dark:text-amber-400 text-2xl">+{currentStep.water_g}g</span>
           </div>
-          <div>
-            <span className="text-slate-450 dark:text-slate-450 block text-[9px] uppercase font-bold">Agua acumulada</span>
-            <span className="font-bold text-amber-900 dark:text-amber-400 text-sm">{cumulativeWater}g</span>
+          <div className="bg-amber-50/50 dark:bg-amber-950/20 p-3 rounded-xl border border-amber-200/10 dark:border-amber-900/20 shadow-sm">
+            <span className="text-slate-450 dark:text-slate-400 block text-[10px] uppercase font-bold tracking-wider mb-1">Agua acumulada</span>
+            <span className="font-extrabold text-amber-800 dark:text-amber-400 text-2xl">{cumulativeWater}g</span>
           </div>
         </div>
       </div>

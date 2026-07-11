@@ -290,7 +290,9 @@ describe('App Component', () => {
     const deleteEntryBtn = screen.getByTitle('Eliminar registro');
     fireEvent.click(deleteEntryBtn);
     
-    expect(window.confirm).toHaveBeenCalled();
+    const confirmBtn = screen.getByRole('button', { name: 'Sí, Eliminar' });
+    fireEvent.click(confirmBtn);
+    
     expect(screen.queryByText('"Delicioso sabor floral!"')).not.toBeInTheDocument();
   });
 
@@ -371,6 +373,9 @@ describe('App Component', () => {
     // Click clear all history
     const clearAllBtn = screen.getByText('Limpiar todo');
     fireEvent.click(clearAllBtn);
+    
+    const confirmBtn = screen.getByRole('button', { name: 'Sí, Limpiar Todo' });
+    fireEvent.click(confirmBtn);
     
     expect(screen.queryByText(/Sabor amargo/i)).not.toBeInTheDocument();
   });
@@ -566,14 +571,50 @@ describe('App Component', () => {
     
     fireEvent.click(screen.getByText('📜 Historial'));
     
-    // Mock confirm to return false
-    window.confirm = vi.fn().mockReturnValue(false);
-
     const deleteEntryBtn = screen.getByTitle('Eliminar registro');
     fireEvent.click(deleteEntryBtn);
     
-    expect(window.confirm).toHaveBeenCalled();
+    // Verify custom modal is shown
+    expect(screen.getByText('Eliminar Registro')).toBeInTheDocument();
+    
+    // Click cancel button in custom modal
+    const cancelBtn = screen.getByRole('button', { name: 'Cancelar' });
+    fireEvent.click(cancelBtn);
+    
+    expect(screen.queryByText('Eliminar Registro')).not.toBeInTheDocument();
     expect(screen.getByText(/Sabor amargo/i)).toBeInTheDocument();
+  });
+
+  test('confirm = true deletes history entry successfully', () => {
+    localStorage.setItem('coffee_history_v1', JSON.stringify([
+      {
+        id: 'hist-1',
+        recipeId: 'aeropress-standard',
+        recipeName: 'Aeropress Tradicional',
+        method: 'Aeropress',
+        date: new Date().toISOString(),
+        coffee_g: 15,
+        water_g: 220,
+        grind_size: 'Fine',
+        notes: 'Sabor amargo'
+      }
+    ]));
+    render(<App />);
+    
+    fireEvent.click(screen.getByText('📜 Historial'));
+    
+    const deleteEntryBtn = screen.getByTitle('Eliminar registro');
+    fireEvent.click(deleteEntryBtn);
+    
+    // Verify custom modal is shown
+    expect(screen.getByText('Eliminar Registro')).toBeInTheDocument();
+    
+    // Click confirm button in custom modal
+    const confirmBtn = screen.getByRole('button', { name: 'Sí, Eliminar' });
+    fireEvent.click(confirmBtn);
+    
+    expect(screen.queryByText('Eliminar Registro')).not.toBeInTheDocument();
+    expect(screen.queryByText(/Sabor amargo/i)).not.toBeInTheDocument();
   });
 
   test('clicks edit notes pencil and cancel notes form', () => {
@@ -692,7 +733,7 @@ describe('App Component', () => {
     expect(screen.getByText(/Volver al listado/i)).toBeInTheDocument();
   });
 
-  test('closes recipe menu by clicking backdrop overlay', () => {
+  test('closes recipe menu by clicking outside (click-away listener)', () => {
     render(<App />);
     const menuBtns = screen.getAllByTitle('Más opciones');
     
@@ -700,10 +741,8 @@ describe('App Component', () => {
     fireEvent.click(menuBtns[0]);
     expect(screen.getByText('✏️ Editar')).toBeInTheDocument();
     
-    // Click backdrop (the fixed overlay)
-    const backdrop = document.querySelector('.fixed.inset-0.z-10');
-    expect(backdrop).toBeInTheDocument();
-    fireEvent.click(backdrop);
+    // Click outside
+    fireEvent.click(document.body);
     
     // Menu options should be closed
     expect(screen.queryByText('✏️ Editar')).not.toBeInTheDocument();
@@ -726,14 +765,49 @@ describe('App Component', () => {
     render(<App />);
     fireEvent.click(screen.getByText('📜 Historial'));
     
-    // Mock confirm as false
-    window.confirm = vi.fn().mockReturnValue(false);
+    const clearAllBtn = screen.getByText('Limpiar todo');
+    fireEvent.click(clearAllBtn);
+    
+    // Verify custom modal is shown
+    expect(screen.getByText('Limpiar Historial')).toBeInTheDocument();
+    
+    // Click Cancelar in custom modal
+    const cancelBtn = screen.getByRole('button', { name: 'Cancelar' });
+    fireEvent.click(cancelBtn);
+    
+    expect(screen.queryByText('Limpiar Historial')).not.toBeInTheDocument();
+    expect(screen.getByText(/Sabor amargo/i)).toBeInTheDocument();
+  });
+
+  test('clears history successfully when confirmed', () => {
+    localStorage.setItem('coffee_history_v1', JSON.stringify([
+      {
+        id: 'hist-1',
+        recipeId: 'aeropress-standard',
+        recipeName: 'Aeropress Tradicional',
+        method: 'Aeropress',
+        date: new Date().toISOString(),
+        coffee_g: 15,
+        water_g: 220,
+        grind_size: 'Fine',
+        notes: 'Sabor amargo'
+      }
+    ]));
+    render(<App />);
+    fireEvent.click(screen.getByText('📜 Historial'));
     
     const clearAllBtn = screen.getByText('Limpiar todo');
     fireEvent.click(clearAllBtn);
     
-    expect(window.confirm).toHaveBeenCalled();
-    expect(screen.getByText(/Sabor amargo/i)).toBeInTheDocument();
+    // Verify custom modal is shown
+    expect(screen.getByText('Limpiar Historial')).toBeInTheDocument();
+    
+    // Click Sí, Limpiar Todo in custom modal
+    const confirmBtn = screen.getByRole('button', { name: 'Sí, Limpiar Todo' });
+    fireEvent.click(confirmBtn);
+    
+    expect(screen.queryByText('Limpiar Historial')).not.toBeInTheDocument();
+    expect(screen.queryByText(/Sabor amargo/i)).not.toBeInTheDocument();
   });
 
   test('starts active recipe timer and goes back to list using back button', () => {

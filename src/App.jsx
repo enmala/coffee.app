@@ -187,6 +187,8 @@ export default function App() {
   const [editingHistoryNotes, setEditingHistoryNotes] = useState(null);
   const [editingHistoryRating, setEditingHistoryRating] = useState(0);
   const [editingHistoryDescriptors, setEditingHistoryDescriptors] = useState([]);
+  const [historyEntryToDelete, setHistoryEntryToDelete] = useState(null);
+  const [showClearHistoryConfirm, setShowClearHistoryConfirm] = useState(false);
 
   // Estados para gestión de granos
   const [isEditingBean, setIsEditingBean] = useState(false);
@@ -220,6 +222,27 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('auto_log_enabled', JSON.stringify(autoLogEnabled));
   }, [autoLogEnabled]);
+
+  useEffect(() => {
+    if (menuOpenRecipeId === null) return;
+
+    const handleOutsideClick = (event) => {
+      const trigger = document.querySelector(`[data-menu-trigger="${menuOpenRecipeId}"]`);
+      const menu = document.querySelector(`[data-menu-content="${menuOpenRecipeId}"]`);
+      if (
+        (trigger && trigger.contains(event.target)) ||
+        (menu && menu.contains(event.target))
+      ) {
+        return;
+      }
+      setMenuOpenRecipeId(null);
+    };
+
+    document.addEventListener('click', handleOutsideClick);
+    return () => {
+      document.removeEventListener('click', handleOutsideClick);
+    };
+  }, [menuOpenRecipeId]);
 
   const handleAddTastingNote = (note) => {
     const trimmed = note.trim();
@@ -325,10 +348,19 @@ export default function App() {
     alert("Grano eliminado y desvinculado de las recetas correctamente.");
   };
 
-  const handleDeleteHistoryEntry = (id) => {
-    if (confirm("¿Estás seguro de que deseas eliminar este registro del historial?")) {
-      setHistory((prev) => prev.filter((item) => item.id !== id));
-    }
+  const handleDeleteHistoryEntry = (entry) => {
+    setHistoryEntryToDelete(entry);
+  };
+
+  const handleConfirmDeleteHistoryEntry = () => {
+    if (!historyEntryToDelete) return;
+    setHistory((prev) => prev.filter((item) => item.id !== historyEntryToDelete.id));
+    setHistoryEntryToDelete(null);
+  };
+
+  const handleConfirmClearHistory = () => {
+    setHistory([]);
+    setShowClearHistoryConfirm(false);
   };
 
   const handleUpdateHistoryEntry = (id, newNotes, newRating, newDescriptors) => {
@@ -930,7 +962,12 @@ export default function App() {
                     Object.keys(groupedRecipes).map((method) => {
                       const isCollapsed = !!collapsedMethods[method];
                       return (
-                        <div key={method} className="space-y-2">
+                        <div 
+                          key={method} 
+                          className={`space-y-2 ${
+                            groupedRecipes[method].some((r) => r.id === menuOpenRecipeId) ? 'relative z-30' : ''
+                          }`}
+                        >
                           <h3
                             onClick={() => toggleMethodCollapse(method)}
                             className="text-xs font-extrabold text-slate-400 dark:text-slate-300 hover:text-amber-800 dark:hover:text-amber-500 uppercase tracking-wider pl-1 pt-1 flex justify-between items-center cursor-pointer select-none transition-colors duration-200"
@@ -950,7 +987,9 @@ export default function App() {
                                 <div
                                   key={recipe.id}
                                   onClick={() => setActiveRecipe(recipe)}
-                                  className="p-3 bg-slate-50 dark:bg-slate-800/30 hover:bg-amber-50/20 dark:hover:bg-amber-900/10 border border-slate-200 dark:border-slate-800 hover:border-amber-200 dark:hover:border-amber-800/30 rounded-xl cursor-pointer transition flex justify-between items-center group"
+                                  className={`p-3 bg-slate-50 dark:bg-slate-800/30 hover:bg-amber-50/20 dark:hover:bg-amber-900/10 border border-slate-200 dark:border-slate-800 hover:border-amber-200 dark:hover:border-amber-800/30 rounded-xl cursor-pointer transition flex justify-between items-center group ${
+                                    menuOpenRecipeId === recipe.id ? 'relative z-30' : ''
+                                  }`}
                                 >
                                   <div className="space-y-1">
                                     <span className="font-semibold text-slate-950 dark:text-slate-100 text-sm block">{recipe.name}</span>
@@ -962,7 +1001,9 @@ export default function App() {
                                     </p>
                                   </div>
 
-                                  <div className="flex gap-1.5 opacity-80 group-hover:opacity-100 transition items-center">
+                                  <div className={`flex gap-1.5 transition items-center ${
+                                    menuOpenRecipeId === recipe.id ? 'opacity-100' : 'opacity-80 group-hover:opacity-100'
+                                  }`}>
                                     <button
                                       onClick={(e) => { e.stopPropagation(); setSummaryRecipe(recipe); }}
                                       className="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded text-slate-650 dark:text-slate-200 text-base md:text-lg cursor-pointer"
@@ -973,6 +1014,7 @@ export default function App() {
 
                                     <div className="relative">
                                       <button
+                                        data-menu-trigger={recipe.id}
                                         onClick={(e) => {
                                           e.stopPropagation();
                                           setMenuOpenRecipeId(menuOpenRecipeId === recipe.id ? null : recipe.id);
@@ -983,38 +1025,35 @@ export default function App() {
                                         •••
                                       </button>
                                       {menuOpenRecipeId === recipe.id && (
-                                        <>
-                                          <div
-                                            className="fixed inset-0 z-10"
-                                            onClick={(e) => { e.stopPropagation(); setMenuOpenRecipeId(null); }}
-                                          />
-                                          <div className="absolute right-0 top-full mt-1 w-28 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-750 rounded-lg shadow-lg py-1 z-20 text-xs text-slate-700 dark:text-slate-200">
-                                            <button
-                                              onClick={(e) => { e.stopPropagation(); handleEditRecipe(recipe); setMenuOpenRecipeId(null); }}
-                                              className="w-full px-3 py-1.5 text-left hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-1.5 cursor-pointer"
-                                            >
-                                              ✏️ Editar
-                                            </button>
-                                            <button
-                                              onClick={(e) => { e.stopPropagation(); setRecipeToShare(recipe); setMenuOpenRecipeId(null); }}
-                                              className="w-full px-3 py-1.5 text-left hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-1.5 cursor-pointer"
-                                            >
-                                              🔗 Compartir
-                                            </button>
-                                            <button
-                                              onClick={(e) => { e.stopPropagation(); handleExportJson(recipe); setMenuOpenRecipeId(null); }}
-                                              className="w-full px-3 py-1.5 text-left hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-1.5 cursor-pointer"
-                                            >
-                                              📥 Exportar
-                                            </button>
-                                            <button
-                                              onClick={(e) => { e.stopPropagation(); handleDeleteRecipe(recipe.id, e); setMenuOpenRecipeId(null); }}
-                                              className="w-full px-3 py-1.5 text-left hover:bg-red-50 dark:hover:bg-red-950/20 text-red-600 dark:text-red-400 flex items-center gap-1.5 cursor-pointer font-semibold"
-                                            >
-                                              🗑️ Eliminar
-                                            </button>
-                                          </div>
-                                        </>
+                                        <div
+                                          data-menu-content={recipe.id}
+                                          className="absolute right-0 top-full mt-1 w-28 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-750 rounded-lg shadow-lg py-1 z-20 text-xs text-slate-700 dark:text-slate-200"
+                                        >
+                                          <button
+                                            onClick={(e) => { e.stopPropagation(); handleEditRecipe(recipe); setMenuOpenRecipeId(null); }}
+                                            className="w-full px-3 py-1.5 text-left hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-1.5 cursor-pointer"
+                                          >
+                                            ✏️ Editar
+                                          </button>
+                                          <button
+                                            onClick={(e) => { e.stopPropagation(); setRecipeToShare(recipe); setMenuOpenRecipeId(null); }}
+                                            className="w-full px-3 py-1.5 text-left hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-1.5 cursor-pointer"
+                                          >
+                                            🔗 Compartir
+                                          </button>
+                                          <button
+                                            onClick={(e) => { e.stopPropagation(); handleExportJson(recipe); setMenuOpenRecipeId(null); }}
+                                            className="w-full px-3 py-1.5 text-left hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-1.5 cursor-pointer"
+                                          >
+                                            📥 Exportar
+                                          </button>
+                                          <button
+                                            onClick={(e) => { e.stopPropagation(); handleDeleteRecipe(recipe.id, e); setMenuOpenRecipeId(null); }}
+                                            className="w-full px-3 py-1.5 text-left hover:bg-red-50 dark:hover:bg-red-950/20 text-red-600 dark:text-red-400 flex items-center gap-1.5 cursor-pointer font-semibold"
+                                          >
+                                            🗑️ Eliminar
+                                          </button>
+                                        </div>
                                       )}
                                     </div>
                                   </div>
@@ -1198,11 +1237,7 @@ export default function App() {
                     </label>
                     {history.length > 0 && (
                       <button
-                        onClick={() => {
-                          if (confirm("¿Estás seguro de que deseas limpiar todo tu historial de preparaciones?")) {
-                            setHistory([]);
-                          }
-                        }}
+                        onClick={() => setShowClearHistoryConfirm(true)}
                         className="text-xs text-red-500 hover:text-red-700 dark:hover:text-red-400 underline cursor-pointer"
                       >
                         Limpiar todo
@@ -1279,7 +1314,7 @@ export default function App() {
                                 ✏️
                               </button>
                               <button
-                                onClick={() => handleDeleteHistoryEntry(entry.id)}
+                                onClick={() => handleDeleteHistoryEntry(entry)}
                                 className="p-1 hover:bg-red-50 dark:hover:bg-red-950/20 rounded text-red-500 dark:text-red-400 cursor-pointer"
                                 title="Eliminar registro"
                               >
@@ -2063,6 +2098,68 @@ export default function App() {
                   className="flex-1 py-2 bg-red-600 hover:bg-red-750 text-white rounded-xl font-bold text-xs transition shadow-sm cursor-pointer"
                 >
                   Sí, Eliminar
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {historyEntryToDelete && (
+          <div className="fixed inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
+            <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-sm w-full p-6 shadow-xl border border-slate-100 dark:border-slate-800 space-y-4 text-center">
+              <div className="text-red-500 dark:text-red-400 text-3xl select-none">🗑️</div>
+              <div>
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white">Eliminar Registro</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
+                  ¿Estás seguro de que deseas eliminar la preparación de <strong className="text-slate-700 dark:text-slate-300">"{historyEntryToDelete.recipeName}"</strong> del historial? Esta acción no se puede deshacer.
+                </p>
+              </div>
+
+              <div className="flex gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+                <button
+                  type="button"
+                  onClick={() => setHistoryEntryToDelete(null)}
+                  className="flex-1 py-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-650 dark:text-slate-300 rounded-xl font-bold text-xs transition cursor-pointer"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="button"
+                  onClick={handleConfirmDeleteHistoryEntry}
+                  className="flex-1 py-2 bg-red-600 hover:bg-red-750 text-white rounded-xl font-bold text-xs transition shadow-sm cursor-pointer"
+                >
+                  Sí, Eliminar
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {showClearHistoryConfirm && (
+          <div className="fixed inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
+            <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-sm w-full p-6 shadow-xl border border-slate-100 dark:border-slate-800 space-y-4 text-center">
+              <div className="text-red-500 dark:text-red-400 text-3xl select-none">⚠️</div>
+              <div>
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white">Limpiar Historial</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
+                  ¿Estás seguro de que deseas limpiar todo tu historial de preparaciones? Esta acción eliminará permanentemente todos los registros y no se puede deshacer.
+                </p>
+              </div>
+
+              <div className="flex gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+                <button
+                  type="button"
+                  onClick={() => setShowClearHistoryConfirm(false)}
+                  className="flex-1 py-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-650 dark:text-slate-300 rounded-xl font-bold text-xs transition cursor-pointer"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="button"
+                  onClick={handleConfirmClearHistory}
+                  className="flex-1 py-2 bg-red-600 hover:bg-red-750 text-white rounded-xl font-bold text-xs transition shadow-sm cursor-pointer"
+                >
+                  Sí, Limpiar Todo
                 </button>
               </div>
             </div>

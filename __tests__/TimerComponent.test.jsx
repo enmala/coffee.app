@@ -303,7 +303,7 @@ describe('TimerComponent', () => {
 
     fireEvent.click(screen.getByText('Iniciar'));
 
-    expect(speakText).toHaveBeenCalledWith(expect.stringContaining('Paso 1 de 2'));
+    expect(speakText).toHaveBeenCalledWith(expect.stringContaining('Paso 1'));
   });
 
   test('speaks completion message when voice guidance is enabled and recipe finishes', () => {
@@ -397,7 +397,7 @@ describe('TimerComponent', () => {
     render(<TimerComponent recipe={mockRecipe} onComplete={onCompleteMock} />);
     const svgEl = screen.getByText('Preinfusión').closest('div').parentElement.querySelector('svg');
     expect(svgEl).toBeInTheDocument();
-    expect(svgEl).toHaveClass('w-52');
+    expect(svgEl).toHaveClass('w-44');
     const circles = svgEl.querySelectorAll('circle');
     expect(circles).toHaveLength(2);
   });

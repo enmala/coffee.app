@@ -3,6 +3,7 @@ import { getMethodIcon, COFFEE_DESCRIPTORS, decompressRecipe } from './utils/cof
 import TimerComponent from './components/TimerComponent';
 import ShareModal from './components/ShareModal';
 import ImportConfirmationModal from './components/ImportConfirmationModal';
+import NotificationModal from './components/NotificationModal';
 import { version } from '../package.json';
 
 const DEFAULT_RECIPES = [
@@ -152,6 +153,12 @@ export default function App() {
   const [recipeToShare, setRecipeToShare] = useState(null);
   const [recipeToImport, setRecipeToImport] = useState(null);
   const [saveSuccessMessage, setSaveSuccessMessage] = useState(null);
+  const [recipeToDelete, setRecipeToDelete] = useState(null);
+  const [customAlert, setCustomAlert] = useState(null); // { message, type, title }
+
+  const showAlert = (message, type = 'info', title = null) => {
+    setCustomAlert({ message, type, title });
+  };
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -167,7 +174,7 @@ export default function App() {
           window.history.replaceState({}, '', url.pathname + url.search);
         } catch (err) {
           console.error("Error al decodificar la receta de la URL:", err);
-          alert(err.message || "No se pudo importar la receta desde la URL.");
+          showAlert(err.message || "No se pudo importar la receta desde la URL.", "error");
           
           const url = new URL(window.location.href);
           url.searchParams.delete('recipe');
@@ -266,7 +273,7 @@ export default function App() {
   const handleSaveBean = (e) => {
     e.preventDefault();
     if (!newBean.name.trim()) {
-      alert("El nombre del grano es obligatorio.");
+      showAlert("El nombre del grano es obligatorio.", "error");
       return;
     }
 
@@ -283,14 +290,14 @@ export default function App() {
 
     if (editingBeanId) {
       setBeans(prev => prev.map(b => b.id === editingBeanId ? { ...beanData, id: editingBeanId } : b));
-      alert("Grano de café actualizado correctamente.");
+      showAlert("Grano de café actualizado correctamente.", "success");
     } else {
       const addedBean = {
         ...beanData,
         id: `bean-${Date.now()}`
       };
       setBeans(prev => [addedBean, ...prev]);
-      alert("Grano de café guardado correctamente.");
+      showAlert("Grano de café guardado correctamente.", "success");
     }
 
     // Reset bean form
@@ -330,14 +337,7 @@ export default function App() {
   };
 
   const handleDeleteBeanClick = (bean) => {
-    const isUsed = recipes.some(r => r.bean_id === bean.id);
-    if (isUsed) {
-      setBeanToDelete(bean);
-    } else {
-      if (confirm(`¿Estás seguro de que deseas eliminar el grano "${bean.name}"?`)) {
-        setBeans(prev => prev.filter(b => b.id !== bean.id));
-      }
-    }
+    setBeanToDelete(bean);
   };
 
   const handleConfirmDeleteBean = () => {
@@ -345,7 +345,7 @@ export default function App() {
     setRecipes(prev => prev.map(r => r.bean_id === beanToDelete.id ? { ...r, bean_id: null } : r));
     setBeans(prev => prev.filter(b => b.id !== beanToDelete.id));
     setBeanToDelete(null);
-    alert("Grano eliminado y desvinculado de las recetas correctamente.");
+    showAlert("Grano de café eliminado correctamente.", "success");
   };
 
   const handleDeleteHistoryEntry = (entry) => {
@@ -399,14 +399,14 @@ export default function App() {
       try {
         const imported = JSON.parse(event.target.result);
         if (!imported.name || !imported.steps || !Array.isArray(imported.steps)) {
-          alert("El archivo JSON no tiene una estructura válida de receta.");
+          showAlert("El archivo JSON no tiene una estructura válida de receta.", "error");
           return;
         }
 
         setRecipeToImport(imported);
       } catch (err) {
         console.error("Error al leer el archivo JSON:", err);
-        alert("Ocurrió un error al leer el archivo JSON.");
+        showAlert("Ocurrió un error al leer el archivo JSON.", "error");
       }
     };
     reader.readAsText(file);
@@ -435,7 +435,7 @@ export default function App() {
     };
 
     setRecipes((prev) => [...prev, updated]);
-    alert(`Receta importada correctamente como "${recipeName}".`);
+    showAlert(`Receta importada correctamente como "${recipeName}".`, "success");
     setRecipeToImport(null);
   };
 
@@ -449,16 +449,21 @@ export default function App() {
     downloadAnchor.remove();
   };
 
-  const handleDeleteRecipe = (id, e) => {
+  const handleDeleteRecipe = (recipe, e) => {
     e.stopPropagation();
-    if (confirm("¿Estás seguro de que deseas eliminar esta receta?")) {
-      setRecipes((prev) => prev.filter(r => r.id !== id));
-    }
+    setRecipeToDelete(recipe);
+  };
+
+  const handleConfirmDeleteRecipe = () => {
+    if (!recipeToDelete) return;
+    setRecipes((prev) => prev.filter(r => r.id !== recipeToDelete.id));
+    setRecipeToDelete(null);
+    showAlert("Receta eliminada correctamente.", "success");
   };
 
   const handleAddStepToForm = () => {
     if (!stepInput.title.trim()) {
-      alert("Por favor ingresa un título para el paso.");
+      showAlert("Por favor ingresa un título para el paso.", "error");
       return;
     }
 
@@ -568,11 +573,11 @@ export default function App() {
   const handleSaveRecipe = (e) => {
     e.preventDefault();
     if (!newRecipe.name.trim()) {
-      alert("Por favor, ingresa el nombre de la receta.");
+      showAlert("Por favor, ingresa el nombre de la receta.", "error");
       return;
     }
     if (newRecipe.steps.length === 0) {
-      alert("Debes agregar al menos un paso de preparación.");
+      showAlert("Debes agregar al menos un paso de preparación.", "error");
       return;
     }
 
@@ -1048,7 +1053,7 @@ export default function App() {
                                             📥 Exportar
                                           </button>
                                           <button
-                                            onClick={(e) => { e.stopPropagation(); handleDeleteRecipe(recipe.id, e); setMenuOpenRecipeId(null); }}
+                                            onClick={(e) => { e.stopPropagation(); handleDeleteRecipe(recipe, e); setMenuOpenRecipeId(null); }}
                                             className="w-full px-3 py-1.5 text-left hover:bg-red-50 dark:hover:bg-red-950/20 text-red-600 dark:text-red-400 flex items-center gap-1.5 cursor-pointer font-semibold"
                                           >
                                             🗑️ Eliminar
@@ -1762,6 +1767,7 @@ export default function App() {
           <ShareModal
             recipe={recipeToShare}
             onClose={() => setRecipeToShare(null)}
+            onAlert={showAlert}
           />
         )}
 
@@ -2066,23 +2072,32 @@ export default function App() {
         {beanToDelete && (
           <div className="fixed inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
             <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-sm w-full p-6 shadow-xl border border-slate-100 dark:border-slate-800 space-y-4 text-center">
-              <div className="text-red-500 dark:text-red-400 text-3xl select-none">⚠️</div>
-              <div>
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white">Eliminar Grano en Uso</h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
-                  El grano <strong className="text-slate-700 dark:text-slate-300">"{beanToDelete.name}"</strong> está vinculado a las siguientes recetas:
-                </p>
-                <ul className="text-xs text-amber-900 dark:text-amber-400 font-bold mt-2 max-h-24 overflow-y-auto space-y-1 bg-amber-50 dark:bg-amber-950/20 p-2 rounded-xl border border-amber-200/20 list-disc list-inside text-left">
-                  {recipes
-                    .filter((r) => r.bean_id === beanToDelete.id)
-                    .map((r) => (
-                      <li key={r.id} className="truncate">{r.name}</li>
-                    ))}
-                </ul>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-3 leading-relaxed">
-                  Si procedes, el grano se eliminará permanentemente y las recetas quedarán sin grano vinculado.
-                </p>
-              </div>
+              <div className="text-red-500 dark:text-red-400 text-3xl select-none">🗑️</div>
+              {recipes.some((r) => r.bean_id === beanToDelete.id) ? (
+                <div>
+                  <h3 className="text-lg font-bold text-slate-900 dark:text-white">Eliminar Grano en Uso</h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
+                    El grano <strong className="text-slate-700 dark:text-slate-300">"{beanToDelete.name}"</strong> está vinculado a las siguientes recetas:
+                  </p>
+                  <ul className="text-xs text-amber-900 dark:text-amber-400 font-bold mt-2 max-h-24 overflow-y-auto space-y-1 bg-amber-50 dark:bg-amber-950/20 p-2 rounded-xl border border-amber-200/20 list-disc list-inside text-left">
+                    {recipes
+                      .filter((r) => r.bean_id === beanToDelete.id)
+                      .map((r) => (
+                        <li key={r.id} className="truncate">{r.name}</li>
+                      ))}
+                  </ul>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-3 leading-relaxed">
+                    Si procedes, el grano se eliminará permanentemente y las recetas quedarán sin grano vinculado.
+                  </p>
+                </div>
+              ) : (
+                <div>
+                  <h3 className="text-lg font-bold text-slate-900 dark:text-white">Eliminar Grano</h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
+                    ¿Estás seguro de que deseas eliminar el grano <strong className="text-slate-700 dark:text-slate-300">"{beanToDelete.name}"</strong>? Esta acción no se puede deshacer.
+                  </p>
+                </div>
+              )}
 
               <div className="flex gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
                 <button
@@ -2095,6 +2110,37 @@ export default function App() {
                 <button
                   type="button"
                   onClick={handleConfirmDeleteBean}
+                  className="flex-1 py-2 bg-red-600 hover:bg-red-750 text-white rounded-xl font-bold text-xs transition shadow-sm cursor-pointer"
+                >
+                  Sí, Eliminar
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {recipeToDelete && (
+          <div className="fixed inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
+            <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-sm w-full p-6 shadow-xl border border-slate-100 dark:border-slate-800 space-y-4 text-center">
+              <div className="text-red-500 dark:text-red-400 text-3xl select-none">🗑️</div>
+              <div>
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white">Eliminar Receta</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
+                  ¿Estás seguro de que deseas eliminar la receta <strong className="text-slate-700 dark:text-slate-300">"{recipeToDelete.name}"</strong>? Esta acción no se puede deshacer.
+                </p>
+              </div>
+
+              <div className="flex gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+                <button
+                  type="button"
+                  onClick={() => setRecipeToDelete(null)}
+                  className="flex-1 py-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-650 dark:text-slate-300 rounded-xl font-bold text-xs transition cursor-pointer"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="button"
+                  onClick={handleConfirmDeleteRecipe}
                   className="flex-1 py-2 bg-red-600 hover:bg-red-750 text-white rounded-xl font-bold text-xs transition shadow-sm cursor-pointer"
                 >
                   Sí, Eliminar
@@ -2164,6 +2210,15 @@ export default function App() {
               </div>
             </div>
           </div>
+        )}
+
+        {customAlert && (
+          <NotificationModal
+            message={customAlert.message}
+            type={customAlert.type}
+            title={customAlert.title}
+            onClose={() => setCustomAlert(null)}
+          />
         )}
       </main>
     </div>

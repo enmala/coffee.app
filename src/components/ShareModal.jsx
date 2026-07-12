@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import QRCode from 'qrcode';
 import { compressRecipe } from '../utils/coffeeUtils';
 
-export default function ShareModal({ recipe, onClose }) {
+export default function ShareModal({ recipe, onClose, onAlert }) {
   const [shareUrl, setShareUrl] = useState('');
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState('');
@@ -68,7 +68,11 @@ export default function ShareModal({ recipe, onClose }) {
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       console.error("Error al copiar enlace:", err);
-      alert("No se pudo copiar el enlace automáticamente.");
+      if (onAlert) {
+        onAlert("No se pudo copiar el enlace automáticamente.", "error");
+      } else {
+        alert("No se pudo copiar el enlace automáticamente.");
+      }
     }
   };
 

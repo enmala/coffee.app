@@ -72,7 +72,8 @@ describe('Coffee Beans Management Tests', () => {
     fireEvent.click(submitBtn);
 
     // Verify alert showed up
-    expect(window.alert).toHaveBeenCalledWith('Grano de café guardado correctamente.');
+    expect(screen.getByText('Grano de café guardado correctamente.')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /aceptar/i }));
 
     // Verify new bean is rendered
     expect(screen.getByText('Colombia Supremo')).toBeInTheDocument();
@@ -109,7 +110,8 @@ describe('Coffee Beans Management Tests', () => {
 
     // Verify change
     expect(screen.getByText('Etiopía Sidamo Modificado')).toBeInTheDocument();
-    expect(window.alert).toHaveBeenCalledWith('Grano de café actualizado correctamente.');
+    expect(screen.getByText('Grano de café actualizado correctamente.')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /aceptar/i }));
   });
 
   test('should delete a coffee bean not in use', () => {
@@ -122,6 +124,14 @@ describe('Coffee Beans Management Tests', () => {
     // Click delete
     const deleteBtn = screen.getByTitle('Eliminar grano');
     fireEvent.click(deleteBtn);
+
+    // Verify custom modal is opened and click confirm
+    expect(screen.getByText('Eliminar Grano')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Sí, Eliminar' }));
+
+    // Dismiss custom success alert modal
+    expect(screen.getByText('Grano de café eliminado correctamente.')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /aceptar/i }));
 
     // Verify it is removed
     expect(screen.queryByText('Etiopía Sidamo')).not.toBeInTheDocument();
@@ -174,6 +184,10 @@ describe('Coffee Beans Management Tests', () => {
     // Confirm deletion
     const confirmDeleteBtn = screen.getByRole('button', { name: 'Sí, Eliminar' });
     fireEvent.click(confirmDeleteBtn);
+
+    // Dismiss custom success alert modal
+    expect(screen.getByText('Grano de café eliminado correctamente.')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /aceptar/i }));
 
     // Bean should be gone
     expect(screen.queryByText('Etiopía Sidamo')).not.toBeInTheDocument();
@@ -248,6 +262,10 @@ describe('Coffee Beans Management Tests', () => {
     // Confirm deletion
     const confirmDeleteBtn = screen.getByRole('button', { name: 'Sí, Eliminar' });
     fireEvent.click(confirmDeleteBtn);
+
+    // Dismiss custom success alert modal
+    expect(screen.getByText('Grano de café eliminado correctamente.')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /aceptar/i }));
 
     // 7. Verify bean is deleted but History entry STILL has the bean name snapshot
     fireEvent.click(historyTabBtn);

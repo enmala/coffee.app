@@ -13,19 +13,19 @@ Los agentes de IA deben leer este archivo para saber qué implementar a continua
 ## ⏳ Pendiente (Backlog Priorizado)
 
 - [ ] **Calculadora Dinámica de Ratios**
-  - *Etiquetas:* [Prioridad: Alta] [Complejidad: Alta]
+  - *Etiquetas:* [Prioridad: Media] [Complejidad: Alta]
   - *Descripción:* Permitir al usuario modificar la cantidad de café inicial (`coffee_g`) en tiempo de ejecución (por ejemplo, desde el resumen o antes de iniciar el timer) y que la aplicación recalcule y escale proporcionalmente la cantidad de agua necesaria para cada paso individual basándose en la relación (ratio) original. Pendiente por definir estrategia de calculo teniendo en cuenta que no solamente se debe aumentar la cantidad de agua sino que ajustar los tiempos por cada etapa del proceso.
 
 - [ ] **Internacionalización**
-  - *Etiquetas:* [Prioridad: Media] [Complejidad: Media]
-  - *Descripción:* Ajuste de los mensajes y textos de la aplicación en multiples idiomas según la configuración del dispositivo o la selección del usuario. Al menos se debería soportar, ademas del español, ingles, portugues, aleman, frances y italiano.
+  - *Etiquetas:* [Prioridad: Alta] [Complejidad: Media]
+  - *Descripción:* Ajuste de los mensajes y textos de la aplicación en multiples idiomas según la configuración del dispositivo o la selección del usuario. Al menos se debería soportar, ademas del español, ingles, portugues, aleman, frances e italiano.
 
 - [ ] **Mejoras en el registro historico**
-  - *Etiquetas:* [Prioridad: Media] [Complejidad: Media]
-  - *Descripción:* Al realizar una evaluación del resultado de una preparación, dependiendo de la puntuación (estrellas) y los descriptores de sabor seleccionados se pueda sugerir ajustes a la receta para la próxima preparación.
+  - *Etiquetas:* [Prioridad: Media] [Complejidad: Alta]
+  - *Descripción:* Al realizar una evaluación del resultado de una preparación, dependiendo de la puntuación (estrellas) y los descriptores de sabor seleccionados se pueda sugerir ajustes a la receta para la próxima preparación. Sería ideal ademas si se pudiera aplicar los ajustes sugeridos a la receta original, en este caso, la aplicación debería preguntar al usuario si desea aplicar los ajustes a la receta original o a una copia, para esta última, se deberia utilizar la fecha y hora actual mas la etiqueta " - copia" para diferenciarla de la original. Los ajustes sugeridos deberian ser realistas y coherentes con los descriptores de sabor y la puntuación obtenida. Por ejemplo: si la puntuación es baja y el descriptor es "ácido", se podría sugerir aumentar la temperatura del agua, si es "amargo", disminuir la temperatura del agua o el tiempo de infusión, si es "sin sabor", aumentar la cantidad de café o el tiempo de infusión, etc. Los parametros a ajustar son nivel de molido del grano, temperatura del agua, tiempos de infusión y ratio de café/agua.
 
 - [ ] **Sincronización en la nube**
-  - *Etiquetas:* [Prioridad: Media] [Complejidad: Alta]
+  - *Etiquetas:* [Prioridad: Baja] [Complejidad: Alta]
   - *Descripción:* Como alternativa al almacenamiento puramente local (localStorage), permitir hacer un respaldo y sincronización automáticos de recetas e historial usando las cuentas personales del usuario en la nube sin necesidad de montar una infraestructura de backend compleja.
 
 - [ ] **Disponibilidad en tiendas de aplicaciones**

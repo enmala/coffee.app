@@ -184,7 +184,10 @@ describe('App Component', () => {
     const deleteBtn = screen.getByText('🗑️ Eliminar');
     fireEvent.click(deleteBtn);
     
-    expect(window.confirm).toHaveBeenCalled();
+    // Custom confirm modal should show up
+    expect(screen.getByText('Eliminar Receta')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /sí, eliminar/i }));
+    
     expect(screen.queryByText('Método 4:6 (Tetsu Kasuya)')).not.toBeInTheDocument();
   });
 
@@ -199,8 +202,9 @@ describe('App Component', () => {
     fireEvent.click(confirmBtn);
     
     await waitFor(() => {
-      expect(window.alert).toHaveBeenCalledWith(expect.stringContaining('Receta importada correctamente'));
+      expect(screen.getByText(/Receta importada correctamente/)).toBeInTheDocument();
     });
+    fireEvent.click(screen.getByRole('button', { name: /aceptar/i }));
     
     expect(screen.getByText('Receta Importada')).toBeInTheDocument();
   });
@@ -445,7 +449,7 @@ describe('App Component', () => {
 
     // 1. Missing files
     fireEvent.change(importInput, { target: { files: [] } });
-    expect(window.alert).not.toHaveBeenCalled();
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
 
     // 2. Invalid JSON structure (missing steps)
     class InvalidFileReaderMock {
@@ -460,8 +464,9 @@ describe('App Component', () => {
     const file = new File(['{}'], 'recipe.json', { type: 'application/json' });
     fireEvent.change(importInput, { target: { files: [file] } });
     await waitFor(() => {
-      expect(window.alert).toHaveBeenCalledWith('El archivo JSON no tiene una estructura válida de receta.');
+      expect(screen.getByText('El archivo JSON no tiene una estructura válida de receta.')).toBeInTheDocument();
     });
+    fireEvent.click(screen.getByRole('button', { name: /aceptar/i }));
 
     // Restore reader
     window.FileReader = FileReaderMock;
@@ -492,8 +497,9 @@ describe('App Component', () => {
     fireEvent.click(confirmBtn);
 
     await waitFor(() => {
-      expect(window.alert).toHaveBeenCalledWith(expect.stringContaining('Receta importada correctamente como "Aeropress Tradicional (1)"'));
+      expect(screen.getByText(/Receta importada correctamente como "Aeropress Tradicional \(1\)"/)).toBeInTheDocument();
     });
+    fireEvent.click(screen.getByRole('button', { name: /aceptar/i }));
   });
 
   test('recipe form validation edge cases: empty name, no steps', () => {
@@ -507,12 +513,14 @@ describe('App Component', () => {
 
     const saveRecipeBtn = screen.getByText('Guardar Receta');
     fireEvent.click(saveRecipeBtn);
-    expect(window.alert).toHaveBeenCalledWith('Por favor, ingresa el nombre de la receta.');
+    expect(screen.getByText('Por favor, ingresa el nombre de la receta.')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /aceptar/i }));
 
     // Enter name but no steps
     fireEvent.change(screen.getByPlaceholderText('Ej: Mi V60 Balanceado'), { target: { value: 'Nueva Receta Sin Pasos' } });
     fireEvent.click(saveRecipeBtn);
-    expect(window.alert).toHaveBeenCalledWith('Debes agregar al menos un paso de preparación.');
+    expect(screen.getByText('Debes agregar al menos un paso de preparación.')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /aceptar/i }));
   });
 
   test('step movement boundary cases: index 0 up, last index down', () => {
@@ -540,16 +548,16 @@ describe('App Component', () => {
   test('confirm = false does not delete recipe', () => {
     render(<App />);
     
-    // Mock confirm to return false
-    window.confirm = vi.fn().mockReturnValue(false);
-
     const menuBtns = screen.getAllByTitle('Más opciones');
     fireEvent.click(menuBtns[0]);
     
     const deleteBtn = screen.getByText('🗑️ Eliminar');
     fireEvent.click(deleteBtn);
     
-    expect(window.confirm).toHaveBeenCalled();
+    // Custom confirm modal should show up
+    expect(screen.getByText('Eliminar Receta')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /cancelar/i }));
+    
     expect(screen.getByText('Método 4:6 (Tetsu Kasuya)')).toBeInTheDocument();
   });
 
@@ -720,8 +728,9 @@ describe('App Component', () => {
     
     await waitFor(() => {
       // It should increment to (2) because (1) is already in the list
-      expect(window.alert).toHaveBeenCalledWith(expect.stringContaining('Receta importada correctamente como "Aeropress Tradicional (2)"'));
+      expect(screen.getByText(/Receta importada correctamente como "Aeropress Tradicional \(2\)"/)).toBeInTheDocument();
     });
+    fireEvent.click(screen.getByRole('button', { name: /aceptar/i }));
   });
 
   test('clicks recipe card directly to start timer without summary', () => {
@@ -839,8 +848,9 @@ describe('App Component', () => {
     const file = new File(['invalid'], 'recipe.json', { type: 'application/json' });
     fireEvent.change(importInput, { target: { files: [file] } });
     await waitFor(() => {
-      expect(window.alert).toHaveBeenCalledWith("Ocurrió un error al leer el archivo JSON.");
+      expect(screen.getByText("Ocurrió un error al leer el archivo JSON.")).toBeInTheDocument();
     });
+    fireEvent.click(screen.getByRole('button', { name: /aceptar/i }));
 
     // Restore reader
     window.FileReader = FileReaderMock;
@@ -914,7 +924,8 @@ describe('App Component', () => {
     // 6. Step form validations: empty step title validation alert
     fireEvent.change(screen.getByPlaceholderText('Título del paso'), { target: { value: '' } });
     fireEvent.click(screen.getByText('+ Agregar Paso a la lista'));
-    expect(window.alert).toHaveBeenCalledWith("Por favor ingresa un título para el paso.");
+    expect(screen.getByText("Por favor ingresa un título para el paso.")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /aceptar/i }));
 
     // 7. Value inputs default to 0 fallback when empty
     fireEvent.change(screen.getByPlaceholderText('Agua (g)'), { target: { value: '' } });

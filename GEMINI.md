@@ -64,15 +64,14 @@ Las recetas se estructuran siguiendo este formato JSON:
 
 ## 5. Próximas Características y Mejoras Pendientes (Backlog de Desarrollo)
 
-1.  **Calculadora Dinámica de Ratios:** Permitir al usuario modificar la cantidad de café inicial (`coffee_g`) en tiempo de ejecución (por ejemplo, desde el resumen o antes de iniciar el timer) y que la aplicación recalcule y escale proporcionalmente la cantidad de agua necesaria para cada paso individual basándose en la relación (ratio) original. Pendiente por definir estrategia de calculo teniendo en cuenta que no solamente se debe aumentar la cantidad de agua sino que ajustar los tiempos por cada etapa del proceso.
-2. **Internacionalización:** Ajuste de los mensajes y textos de la aplicación en multiples idiomas según la configuración del dispositivo o la selección del usuario. Al menos se debería soportar, ademas del español, ingles, portugues, aleman, frances y italiano.
-3. **Disponibilidad en tiendas de aplicaciones:** Publicar la PWA en Google Play Store (como TWA) y en Microsoft Store.
-4. **Gestión de granos de café:** Permitir un registro de granos de café con sus caracteristicas (origen, variadad, proceso, tostaduría, nivel de tueste, etc.) y que se pueda asociar un grano de café a una receta.
-5. **Mejoras en el registro historico:** Al realizar una evaluación del resultado de una preparación, dependiendo de la puntuación (estrellas) y los descriptores de sabor seleccionados se pueda sugerir ajustes a la receta para la próxima preparación.
-6. ~~**Opciones para compartir recetas:** Permitir compartir recetas con otros usuarios a traves de un codigo QR que permita importar la receta en la app o enviado el archivo .json directamente por whatsapp, telegram, etc. para su importación en la app. La App debería permitir importar directamente el json al abrirlo, con una previsualización antes de guardar la receta.~~
-7. **Sincronización en la nube:** Como alternativa al almacenamiento puramente local (localStorage), permitir hacer un respaldo y sincronización automáticos de recetas e historial usando las cuentas personales del usuario en la nube sin necesidad de montar una infraestructura de backend compleja.
-8. **Mejoras UI:** Reemplazar diálogos de alerta del navegador por un modal nativo estilizado donde aún se utilicen los metodos .confirm() y .alert() de javascript
----
+El listado de tareas pendientes, en progreso y completadas ha sido migrado al archivo `BACKLOG.md` en la raíz de este proyecto.
+
+**Reglas para el manejo del Backlog:**
+1. Los agentes de IA deben leer siempre el archivo `BACKLOG.md` para saber qué implementar a continuación.
+2. Cada vez que se finaliza una tarea, el agente debe actualizar el archivo `BACKLOG.md` marcando la tarea correspondiente como completada en la sección `✅ Completado` y moviéndola de las secciones pendientes/en progreso.
+3. Si el agente trabaja en una tarea o mejora que no estaba originalmente listada en el backlog, al terminar debe agregarla obligatoriamente a la lista de `✅ Completado` en `BACKLOG.md`.
+
+--- 
 
 ## 6. Reglas de trabajo en el repositorio
 

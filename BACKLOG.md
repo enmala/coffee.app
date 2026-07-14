@@ -44,3 +44,4 @@ Los agentes de IA deben leer este archivo para saber qué implementar a continua
 - [x] Opciones para compartir recetas (Exportación a .json, enlace a portapapeles, código QR).
 - [x] Mejoras UI: Reemplazar diálogos de alerta del navegador por modales nativos estilizados.
 - [x] Ajustes UI menores: Reducción del timer SVG, tarjetas ámbar para verter agua y soluciones de superposición del menú de opciones (z-index).
+- [x] Gestión de Navegación de Retroceso (History API) para vistas y diálogos internos, mostrando confirmación al salir de la aplicación.

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { getMethodIcon, COFFEE_DESCRIPTORS, decompressRecipe } from './utils/coffeeUtils';
 import TimerComponent from './components/TimerComponent';
 import ShareModal from './components/ShareModal';
@@ -70,10 +70,6 @@ export default function App() {
     return saved ? JSON.parse(saved) : DEFAULT_BEANS;
   });
 
-  useEffect(() => {
-    localStorage.setItem('coffee_beans_v1', JSON.stringify(beans));
-  }, [beans]);
-
   const [isAboutOpen, setIsAboutOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
@@ -97,52 +93,16 @@ export default function App() {
     return saved !== null ? JSON.parse(saved) : false;
   });
 
-  useEffect(() => {
-    localStorage.setItem('coffee_sound_enabled', JSON.stringify(soundEnabled));
-  }, [soundEnabled]);
-
-  useEffect(() => {
-    localStorage.setItem('coffee_vibration_enabled', JSON.stringify(vibrationEnabled));
-  }, [vibrationEnabled]);
-
-  useEffect(() => {
-    localStorage.setItem('coffee_vibration_type', vibrationType);
-  }, [vibrationType]);
-
-  useEffect(() => {
-    localStorage.setItem('coffee_voice_guidance_enabled', JSON.stringify(voiceGuidanceEnabled));
-  }, [voiceGuidanceEnabled]);
-
   const [theme, setTheme] = useState(() => {
     const saved = localStorage.getItem('theme');
     if (saved) return saved;
     return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
   });
 
-  useEffect(() => {
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-    localStorage.setItem('theme', theme);
-  }, [theme]);
-
   const [collapsedMethods, setCollapsedMethods] = useState(() => {
     const saved = localStorage.getItem('collapsed_methods_v1');
     return saved ? JSON.parse(saved) : {};
   });
-
-  useEffect(() => {
-    localStorage.setItem('collapsed_methods_v1', JSON.stringify(collapsedMethods));
-  }, [collapsedMethods]);
-
-  const toggleMethodCollapse = (method) => {
-    setCollapsedMethods((prev) => ({
-      ...prev,
-      [method]: !prev[method]
-    }));
-  };
 
   const [activeRecipe, setActiveRecipe] = useState(null);
   const [isCreating, setIsCreating] = useState(false);
@@ -156,35 +116,6 @@ export default function App() {
   const [recipeToDelete, setRecipeToDelete] = useState(null);
   const [customAlert, setCustomAlert] = useState(null); // { message, type, title }
 
-  const showAlert = (message, type = 'info', title = null) => {
-    setCustomAlert({ message, type, title });
-  };
-
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const recipeParam = params.get('recipe');
-    if (recipeParam) {
-      async function decodeUrlRecipe() {
-        try {
-          const decodedRecipe = await decompressRecipe(recipeParam);
-          setRecipeToImport(decodedRecipe);
-          
-          const url = new URL(window.location.href);
-          url.searchParams.delete('recipe');
-          window.history.replaceState({}, '', url.pathname + url.search);
-        } catch (err) {
-          console.error("Error al decodificar la receta de la URL:", err);
-          showAlert(err.message || "No se pudo importar la receta desde la URL.", "error");
-          
-          const url = new URL(window.location.href);
-          url.searchParams.delete('recipe');
-          window.history.replaceState({}, '', url.pathname + url.search);
-        }
-      }
-      decodeUrlRecipe();
-    }
-  }, []);
-
   const [activeTab, setActiveTab] = useState('recipes'); // 'recipes', 'beans', or 'history'
   const [history, setHistory] = useState(() => {
     const saved = localStorage.getItem('coffee_history_v1');
@@ -197,7 +128,9 @@ export default function App() {
   const [historyEntryToDelete, setHistoryEntryToDelete] = useState(null);
   const [showClearHistoryConfirm, setShowClearHistoryConfirm] = useState(false);
 
-  // Estados para gestión de granos
+  const [showExitConfirm, setShowExitConfirm] = useState(false);
+  const allowExitRef = useRef(false);
+
   const [isEditingBean, setIsEditingBean] = useState(false);
   const [editingBeanId, setEditingBeanId] = useState(null);
   const [newBean, setNewBean] = useState({
@@ -221,6 +154,343 @@ export default function App() {
     const saved = localStorage.getItem('auto_log_enabled');
     return saved !== null ? JSON.parse(saved) : true;
   });
+
+  const [newRecipe, setNewRecipe] = useState({
+    name: '',
+    method: 'V60',
+    coffee_g: 15,
+    grind_size: '',
+    water_temp_c: 90,
+    bean_id: '',
+    steps: []
+  });
+
+  const [stepInput, setStepInput] = useState({
+    title: '',
+    water_g: 0,
+    duration_s: 30,
+    instruction: ''
+  });
+
+  const showAlert = (message, type = 'info', title = null) => {
+    setCustomAlert({ message, type, title });
+  };
+
+  function syncStateWithHistory(state) {
+    setShowExitConfirm(false);
+    
+    // Active Recipe / Timer
+    if (state.view === 'timer' && state.recipeId) {
+      const rec = recipes.find((r) => r.id === state.recipeId);
+      setActiveRecipe(rec || null);
+    } else {
+      setActiveRecipe(null);
+    }
+
+    // Recipe Creator/Editor
+    if (state.view === 'edit-recipe') {
+      setIsCreating(true);
+      setEditingRecipeId(state.recipeId || null);
+    } else {
+      setIsCreating(false);
+      setEditingRecipeId(null);
+      setNewRecipe({
+        name: '',
+        method: 'V60',
+        coffee_g: 15,
+        grind_size: '',
+        water_temp_c: 90,
+        bean_id: '',
+        steps: []
+      });
+      setStepInput({ title: '', water_g: 0, duration_s: 30, instruction: '' });
+      setEditingStepIndex(null);
+    }
+
+    // Bean Creator/Editor
+    if (state.view === 'edit-bean') {
+      setIsEditingBean(true);
+      setEditingBeanId(state.beanId || null);
+    } else {
+      setIsEditingBean(false);
+      setEditingBeanId(null);
+      setNewBean({
+        name: '',
+        roaster: '',
+        origin: '',
+        process: 'Lavado',
+        variety: '',
+        roast_level: 'Medio',
+        roast_date: '',
+        sca_score: '',
+        altitude: '',
+        tasting_notes: [],
+        notes: ''
+      });
+    }
+
+    // History Editor
+    if (state.view === 'edit-history' && state.historyId) {
+      setEditingHistoryId(state.historyId);
+    } else {
+      setEditingHistoryId(null);
+    }
+
+    // Modals
+    setIsSettingsOpen(state.view === 'settings');
+    setIsAboutOpen(state.view === 'about');
+    
+    if (state.view === 'summary' && state.recipeId) {
+      const rec = recipes.find((r) => r.id === state.recipeId);
+      setSummaryRecipe(rec || null);
+    } else {
+      setSummaryRecipe(null);
+    }
+
+    if (state.view === 'share' && state.recipeId) {
+      const rec = recipes.find((r) => r.id === state.recipeId);
+      setRecipeToShare(rec || null);
+    } else {
+      setRecipeToShare(null);
+    }
+
+    if (state.view === 'delete-recipe' && state.recipeId) {
+      const rec = recipes.find((r) => r.id === state.recipeId);
+      setRecipeToDelete(rec || null);
+    } else {
+      setRecipeToDelete(null);
+    }
+
+    if (state.view === 'delete-bean' && state.beanId) {
+      const bn = beans.find((b) => b.id === state.beanId);
+      setBeanToDelete(bn || null);
+    } else {
+      setBeanToDelete(null);
+    }
+
+    if (state.view === 'delete-history-entry' && state.entryId) {
+      const entry = history.find((h) => h.id === state.entryId);
+      setHistoryEntryToDelete(entry || null);
+    } else {
+      setHistoryEntryToDelete(null);
+    }
+
+    setShowClearHistoryConfirm(state.view === 'clear-history');
+    
+    if (state.view !== 'import') {
+      setRecipeToImport(null);
+    }
+  }
+
+  function navigateTo(view, data = {}) {
+    window.history.pushState({ view, ...data }, '');
+    syncStateWithHistory({ view, ...data });
+  }
+
+  useEffect(() => {
+    localStorage.setItem('coffee_beans_v1', JSON.stringify(beans));
+  }, [beans]);
+
+  useEffect(() => {
+    localStorage.setItem('coffee_sound_enabled', JSON.stringify(soundEnabled));
+  }, [soundEnabled]);
+
+  useEffect(() => {
+    localStorage.setItem('coffee_vibration_enabled', JSON.stringify(vibrationEnabled));
+  }, [vibrationEnabled]);
+
+  useEffect(() => {
+    localStorage.setItem('coffee_vibration_type', vibrationType);
+  }, [vibrationType]);
+
+  useEffect(() => {
+    localStorage.setItem('coffee_voice_guidance_enabled', JSON.stringify(voiceGuidanceEnabled));
+  }, [voiceGuidanceEnabled]);
+
+  useEffect(() => {
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+
+  useEffect(() => {
+    localStorage.setItem('collapsed_methods_v1', JSON.stringify(collapsedMethods));
+  }, [collapsedMethods]);
+
+  const toggleMethodCollapse = (method) => {
+    setCollapsedMethods((prev) => ({
+      ...prev,
+      [method]: !prev[method]
+    }));
+  };
+
+  useEffect(() => {
+    if (!window.history.state || window.history.state.view !== 'main') {
+      window.history.replaceState({ view: 'base' }, '');
+      window.history.pushState({ view: 'main' }, '');
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const recipeParam = params.get('recipe');
+    if (recipeParam) {
+      async function decodeUrlRecipe() {
+        try {
+          const decodedRecipe = await decompressRecipe(recipeParam);
+          setRecipeToImport(decodedRecipe);
+          navigateTo('import');
+          
+          const url = new URL(window.location.href);
+          url.searchParams.delete('recipe');
+          window.history.replaceState({ view: 'import' }, '', url.pathname + url.search);
+        } catch (err) {
+          console.error("Error al decodificar la receta de la URL:", err);
+          showAlert(err.message || "No se pudo importar la receta desde la URL.", "error");
+          
+          const url = new URL(window.location.href);
+          url.searchParams.delete('recipe');
+          window.history.replaceState({ view: 'main' }, '', url.pathname + url.search);
+        }
+      }
+      decodeUrlRecipe();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const closeTimer = () => {
+    setActiveRecipe(null);
+    if (window.history.state && window.history.state.view === 'timer') {
+      window.history.back();
+    }
+  };
+
+  const handleCancelForm = () => {
+    setIsCreating(false);
+    setEditingRecipeId(null);
+    setEditingStepIndex(null);
+    setNewRecipe({
+      name: '',
+      method: 'V60',
+      coffee_g: 15,
+      grind_size: '',
+      water_temp_c: 90,
+      bean_id: '',
+      steps: []
+    });
+    setStepInput({ title: '', water_g: 0, duration_s: 30, instruction: '' });
+    if (window.history.state && window.history.state.view === 'edit-recipe') {
+      window.history.back();
+    }
+  };
+
+  const handleCancelBean = () => {
+    setIsEditingBean(false);
+    setEditingBeanId(null);
+    setNewBean({
+      name: '',
+      roaster: '',
+      origin: '',
+      process: 'Lavado',
+      variety: '',
+      roast_level: 'Medio',
+      roast_date: '',
+      sca_score: '',
+      altitude: '',
+      tasting_notes: [],
+      notes: ''
+    });
+    if (window.history.state && window.history.state.view === 'edit-bean') {
+      window.history.back();
+    }
+  };
+
+  const closeSettings = () => {
+    setIsSettingsOpen(false);
+    if (window.history.state && window.history.state.view === 'settings') {
+      window.history.back();
+    }
+  };
+
+  const closeAbout = () => {
+    setIsAboutOpen(false);
+    if (window.history.state && window.history.state.view === 'about') {
+      window.history.back();
+    }
+  };
+
+  const closeSummary = () => {
+    setSummaryRecipe(null);
+    if (window.history.state && window.history.state.view === 'summary') {
+      window.history.back();
+    }
+  };
+
+  const closeShare = () => {
+    setRecipeToShare(null);
+    if (window.history.state && window.history.state.view === 'share') {
+      window.history.back();
+    }
+  };
+
+  const closeImport = () => {
+    setRecipeToImport(null);
+    if (window.history.state && window.history.state.view === 'import') {
+      window.history.back();
+    }
+  };
+
+  const closeDeleteRecipe = () => {
+    setRecipeToDelete(null);
+    if (window.history.state && window.history.state.view === 'delete-recipe') {
+      window.history.back();
+    }
+  };
+
+  const closeDeleteBean = () => {
+    setBeanToDelete(null);
+    if (window.history.state && window.history.state.view === 'delete-bean') {
+      window.history.back();
+    }
+  };
+
+  const closeDeleteHistoryEntry = () => {
+    setHistoryEntryToDelete(null);
+    if (window.history.state && window.history.state.view === 'delete-history-entry') {
+      window.history.back();
+    }
+  };
+
+  const closeClearHistory = () => {
+    setShowClearHistoryConfirm(false);
+    if (window.history.state && window.history.state.view === 'clear-history') {
+      window.history.back();
+    }
+  };
+
+  useEffect(() => {
+    const handlePopState = (event) => {
+      const state = event.state;
+      if (!state) return;
+
+      if (state.view === 'base') {
+        if (allowExitRef.current) {
+          return;
+        }
+        setShowExitConfirm(true);
+        window.history.pushState({ view: 'main' }, '');
+        return;
+      }
+
+      syncStateWithHistory(state);
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [recipes, beans, history]);
+
 
   useEffect(() => {
     localStorage.setItem('coffee_history_v1', JSON.stringify(history));
@@ -300,22 +570,7 @@ export default function App() {
       showAlert("Grano de café guardado correctamente.", "success");
     }
 
-    // Reset bean form
-    setNewBean({
-      name: '',
-      roaster: '',
-      origin: '',
-      process: 'Lavado',
-      variety: '',
-      roast_level: 'Medio',
-      roast_date: '',
-      sca_score: '',
-      altitude: '',
-      tasting_notes: [],
-      notes: ''
-    });
-    setEditingBeanId(null);
-    setIsEditingBean(false);
+    handleCancelBean();
   };
 
   const handleStartEditBean = (bean) => {
@@ -334,33 +589,63 @@ export default function App() {
     });
     setEditingBeanId(bean.id);
     setIsEditingBean(true);
+    navigateTo('edit-bean', { beanId: bean.id });
+  };
+
+  const handleStartNewBean = () => {
+    setNewBean({
+      name: '',
+      roaster: '',
+      origin: '',
+      process: 'Lavado',
+      variety: '',
+      roast_level: 'Medio',
+      roast_date: '',
+      sca_score: '',
+      altitude: '',
+      tasting_notes: [],
+      notes: ''
+    });
+    setEditingBeanId(null);
+    setIsEditingBean(true);
+    navigateTo('edit-bean');
+  };
+
+  const handleStartEditHistory = (entry) => {
+    setEditingHistoryId(entry.id);
+    setEditingHistoryNotes(entry.notes || '');
+    setEditingHistoryRating(entry.rating || 0);
+    setEditingHistoryDescriptors(entry.descriptors || []);
+    navigateTo('edit-history', { historyId: entry.id });
   };
 
   const handleDeleteBeanClick = (bean) => {
     setBeanToDelete(bean);
+    navigateTo('delete-bean', { beanId: bean.id });
   };
 
   const handleConfirmDeleteBean = () => {
     if (!beanToDelete) return;
     setRecipes(prev => prev.map(r => r.bean_id === beanToDelete.id ? { ...r, bean_id: null } : r));
     setBeans(prev => prev.filter(b => b.id !== beanToDelete.id));
-    setBeanToDelete(null);
+    closeDeleteBean();
     showAlert("Grano de café eliminado correctamente.", "success");
   };
 
   const handleDeleteHistoryEntry = (entry) => {
     setHistoryEntryToDelete(entry);
+    navigateTo('delete-history-entry', { entryId: entry.id });
   };
 
   const handleConfirmDeleteHistoryEntry = () => {
     if (!historyEntryToDelete) return;
     setHistory((prev) => prev.filter((item) => item.id !== historyEntryToDelete.id));
-    setHistoryEntryToDelete(null);
+    closeDeleteHistoryEntry();
   };
 
   const handleConfirmClearHistory = () => {
     setHistory([]);
-    setShowClearHistoryConfirm(false);
+    closeClearHistory();
   };
 
   const handleUpdateHistoryEntry = (id, newNotes, newRating, newDescriptors) => {
@@ -369,22 +654,6 @@ export default function App() {
     );
   };
 
-  const [newRecipe, setNewRecipe] = useState({
-    name: '',
-    method: 'V60',
-    coffee_g: 15,
-    grind_size: '',
-    water_temp_c: 90,
-    bean_id: '',
-    steps: []
-  });
-
-  const [stepInput, setStepInput] = useState({
-    title: '',
-    water_g: 0,
-    duration_s: 30,
-    instruction: ''
-  });
 
   useEffect(() => {
     localStorage.setItem('coffee_recipes_v1', JSON.stringify(recipes));
@@ -436,7 +705,7 @@ export default function App() {
 
     setRecipes((prev) => [...prev, updated]);
     showAlert(`Receta importada correctamente como "${recipeName}".`, "success");
-    setRecipeToImport(null);
+    closeImport();
   };
 
   const handleExportJson = (recipe) => {
@@ -452,12 +721,13 @@ export default function App() {
   const handleDeleteRecipe = (recipe, e) => {
     e.stopPropagation();
     setRecipeToDelete(recipe);
+    navigateTo('delete-recipe', { recipeId: recipe.id });
   };
 
   const handleConfirmDeleteRecipe = () => {
     if (!recipeToDelete) return;
     setRecipes((prev) => prev.filter(r => r.id !== recipeToDelete.id));
-    setRecipeToDelete(null);
+    closeDeleteRecipe();
     showAlert("Receta eliminada correctamente.", "success");
   };
 
@@ -552,12 +822,10 @@ export default function App() {
     });
     setEditingRecipeId(recipe.id);
     setIsCreating(true);
+    navigateTo('edit-recipe', { recipeId: recipe.id });
   };
 
-  const handleCancelForm = () => {
-    setIsCreating(false);
-    setEditingRecipeId(null);
-    setEditingStepIndex(null);
+  const handleNewRecipeClick = () => {
     setNewRecipe({
       name: '',
       method: 'V60',
@@ -567,7 +835,9 @@ export default function App() {
       bean_id: '',
       steps: []
     });
-    setStepInput({ title: '', water_g: 0, duration_s: 30, instruction: '' });
+    setEditingRecipeId(null);
+    setIsCreating(true);
+    navigateTo('edit-recipe');
   };
 
   const handleSaveRecipe = (e) => {
@@ -625,8 +895,11 @@ export default function App() {
         </div>
         <div className="flex gap-2">
           <button
-            onClick={() => setIsSettingsOpen(true)}
-            className="p-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition cursor-pointer text-slate-650 dark:text-slate-200 flex items-center justify-center"
+            onClick={() => {
+              setIsSettingsOpen(true);
+              navigateTo('settings');
+            }}
+            className="p-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition cursor-pointer text-slate-655 dark:text-slate-200 flex items-center justify-center"
             title="Configuración"
           >
             <svg className="w-5 h-5 transition-transform duration-300 hover:rotate-45" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -641,7 +914,7 @@ export default function App() {
         {activeRecipe ? (
           <div>
             <button
-              onClick={() => setActiveRecipe(null)}
+              onClick={closeTimer}
               className="mb-4 text-amber-800 dark:text-amber-500 hover:text-amber-950 dark:hover:text-amber-400 font-semibold text-sm flex items-center gap-1 cursor-pointer"
             >
               ← Volver al listado
@@ -673,7 +946,7 @@ export default function App() {
                   };
                   setHistory((prev) => [newEntry, ...prev]);
                 }
-                setActiveRecipe(null);
+                closeTimer();
               }}
             />
           </div>
@@ -952,7 +1225,7 @@ export default function App() {
                       />
                     </label>
                     <button
-                      onClick={() => setIsCreating(true)}
+                      onClick={handleNewRecipeClick}
                       className="px-3 py-1.5 bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-800 text-white text-xs font-bold rounded-lg transition cursor-pointer"
                     >
                       + Nueva Receta
@@ -991,7 +1264,10 @@ export default function App() {
                               {groupedRecipes[method].map((recipe) => (
                                 <div
                                   key={recipe.id}
-                                  onClick={() => setActiveRecipe(recipe)}
+                                  onClick={() => {
+                                    setActiveRecipe(recipe);
+                                    navigateTo('timer', { recipeId: recipe.id });
+                                  }}
                                   className={`p-3 bg-slate-50 dark:bg-slate-800/30 hover:bg-amber-50/20 dark:hover:bg-amber-900/10 border border-slate-200 dark:border-slate-800 hover:border-amber-200 dark:hover:border-amber-800/30 rounded-xl cursor-pointer transition flex justify-between items-center group ${
                                     menuOpenRecipeId === recipe.id ? 'relative z-30' : ''
                                   }`}
@@ -1010,7 +1286,11 @@ export default function App() {
                                     menuOpenRecipeId === recipe.id ? 'opacity-100' : 'opacity-80 group-hover:opacity-100'
                                   }`}>
                                     <button
-                                      onClick={(e) => { e.stopPropagation(); setSummaryRecipe(recipe); }}
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setSummaryRecipe(recipe);
+                                        navigateTo('summary', { recipeId: recipe.id });
+                                      }}
                                       className="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded text-slate-650 dark:text-slate-200 text-base md:text-lg cursor-pointer"
                                       title="Ver Resumen"
                                     >
@@ -1042,6 +1322,12 @@ export default function App() {
                                           </button>
                                           <button
                                             onClick={(e) => { e.stopPropagation(); setRecipeToShare(recipe); setMenuOpenRecipeId(null); }}
+                                            className="hidden"
+                                          >
+                                            Share Placeholder
+                                          </button>
+                                          <button
+                                            onClick={(e) => { e.stopPropagation(); navigateTo('share', { recipeId: recipe.id }); setMenuOpenRecipeId(null); }}
                                             className="w-full px-3 py-1.5 text-left hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-1.5 cursor-pointer"
                                           >
                                             🔗 Compartir
@@ -1079,23 +1365,7 @@ export default function App() {
                 <div className="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-3">
                   <h2 className="text-xl font-bold text-slate-900 dark:text-white">Tus Granos</h2>
                   <button
-                    onClick={() => {
-                      setNewBean({
-                        name: '',
-                        roaster: '',
-                        origin: '',
-                        process: 'Lavado',
-                        variety: '',
-                        roast_level: 'Medio',
-                        roast_date: '',
-                        sca_score: '',
-                        altitude: '',
-                        tasting_notes: [],
-                        notes: ''
-                      });
-                      setEditingBeanId(null);
-                      setIsEditingBean(true);
-                    }}
+                    onClick={handleStartNewBean}
                     className="px-3.5 py-2 bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-800 text-white text-xs font-bold rounded-xl shadow-sm transition flex items-center gap-1 cursor-pointer"
                   >
                     + Agregar Grano
@@ -1307,12 +1577,7 @@ export default function App() {
 
                             <div className="flex gap-1 opacity-60 group-hover:opacity-100 transition">
                               <button
-                                onClick={() => {
-                                  setEditingHistoryId(entry.id);
-                                  setEditingHistoryNotes(entry.notes || '');
-                                  setEditingHistoryRating(entry.rating || 0);
-                                  setEditingHistoryDescriptors(entry.descriptors || []);
-                                }}
+                                onClick={() => handleStartEditHistory(entry)}
                                 className="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded text-slate-500 dark:text-slate-300 cursor-pointer"
                                 title="Editar observaciones"
                               >
@@ -1392,7 +1657,12 @@ export default function App() {
 
                               <div className="flex gap-2 justify-end">
                                 <button
-                                  onClick={() => setEditingHistoryId(null)}
+                                  onClick={() => {
+                                    setEditingHistoryId(null);
+                                    if (window.history.state && window.history.state.view === 'edit-history') {
+                                      window.history.back();
+                                    }
+                                  }}
                                   className="px-2 py-1 text-[10px] border border-slate-200 dark:border-slate-700 text-slate-550 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded font-semibold cursor-pointer"
                                 >
                                   Cancelar
@@ -1401,6 +1671,9 @@ export default function App() {
                                   onClick={() => {
                                     handleUpdateHistoryEntry(entry.id, editingHistoryNotes, editingHistoryRating, editingHistoryDescriptors);
                                     setEditingHistoryId(null);
+                                    if (window.history.state && window.history.state.view === 'edit-history') {
+                                      window.history.back();
+                                    }
                                   }}
                                   className="px-2 py-1 text-[10px] bg-emerald-700 hover:bg-emerald-800 text-white rounded font-semibold cursor-pointer"
                                 >
@@ -1448,8 +1721,8 @@ export default function App() {
                   <span className="inline-block text-[10px] bg-amber-50 dark:bg-amber-950/20 text-amber-900 dark:text-amber-300 border border-amber-200 dark:border-amber-900/30 px-2 py-0.5 rounded font-bold uppercase tracking-wider mt-1">{summaryRecipe.method}</span>
                 </div>
                 <button
-                  onClick={() => setSummaryRecipe(null)}
-                  className="text-slate-400 dark:text-slate-300 hover:text-slate-600 dark:hover:text-slate-200 text-xl font-bold leading-none cursor-pointer"
+                  onClick={closeSummary}
+                  className="text-slate-400 dark:text-slate-350 hover:text-slate-600 dark:hover:text-slate-200 text-xl font-bold leading-none cursor-pointer"
                 >
                   &times;
                 </button>
@@ -1536,22 +1809,22 @@ export default function App() {
 
               <div className="flex gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
                 <button
-                  onClick={() => setRecipeToShare(summaryRecipe)}
+                  onClick={() => navigateTo('share', { recipeId: summaryRecipe.id })}
                   className="py-2 px-3 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-650 dark:text-slate-300 rounded-xl font-bold text-xs transition cursor-pointer flex items-center justify-center gap-1.5"
                   title="Compartir receta"
                 >
                   🔗 Compartir
                 </button>
                 <button
-                  onClick={() => setSummaryRecipe(null)}
+                  onClick={closeSummary}
                   className="flex-1 py-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-650 dark:text-slate-300 rounded-xl font-bold text-xs transition cursor-pointer"
                 >
                   Cerrar
                 </button>
                 <button
                   onClick={() => {
-                    setActiveRecipe(summaryRecipe);
-                    setSummaryRecipe(null);
+                    window.history.replaceState({ view: 'timer', recipeId: summaryRecipe.id }, '');
+                    syncStateWithHistory({ view: 'timer', recipeId: summaryRecipe.id });
                   }}
                   className="flex-1 py-2 bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-800 text-white rounded-xl font-bold text-xs transition shadow-sm cursor-pointer"
                 >
@@ -1572,7 +1845,7 @@ export default function App() {
                   <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Personaliza tu experiencia de preparación</p>
                 </div>
                 <button
-                  onClick={() => setIsSettingsOpen(false)}
+                  onClick={closeSettings}
                   className="text-slate-400 dark:text-slate-350 hover:text-slate-600 dark:hover:text-slate-200 text-xl font-bold leading-none cursor-pointer"
                 >
                   &times;
@@ -1680,6 +1953,7 @@ export default function App() {
                     onClick={() => {
                       setIsSettingsOpen(false);
                       setIsAboutOpen(true);
+                      window.history.replaceState({ view: 'about' }, '');
                     }}
                     className="px-3 py-1.5 bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-800 text-white text-xs font-bold rounded-lg transition cursor-pointer"
                   >
@@ -1690,7 +1964,7 @@ export default function App() {
 
               <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
                 <button
-                  onClick={() => setIsSettingsOpen(false)}
+                  onClick={closeSettings}
                   className="w-full py-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-650 dark:text-slate-300 rounded-xl font-bold text-xs transition cursor-pointer"
                 >
                   Cerrar
@@ -1711,7 +1985,7 @@ export default function App() {
                   <span className="inline-block text-[10px] bg-amber-50 dark:bg-amber-950/20 text-amber-900 dark:text-amber-300 border border-amber-200 dark:border-amber-900/30 px-2 py-0.5 rounded font-bold uppercase tracking-wider mt-1">v{version}</span>
                 </div>
                 <button
-                  onClick={() => setIsAboutOpen(false)}
+                  onClick={closeAbout}
                   className="text-slate-400 dark:text-slate-300 hover:text-slate-600 dark:hover:text-slate-200 text-xl font-bold leading-none cursor-pointer"
                 >
                   &times;
@@ -1753,7 +2027,7 @@ export default function App() {
 
               <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
                 <button
-                  onClick={() => setIsAboutOpen(false)}
+                  onClick={closeAbout}
                   className="w-full py-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-650 dark:text-slate-300 rounded-xl font-bold text-xs transition cursor-pointer"
                 >
                   Cerrar
@@ -1766,7 +2040,7 @@ export default function App() {
         {recipeToShare && (
           <ShareModal
             recipe={recipeToShare}
-            onClose={() => setRecipeToShare(null)}
+            onClose={closeShare}
             onAlert={showAlert}
           />
         )}
@@ -1776,7 +2050,7 @@ export default function App() {
             recipe={recipeToImport}
             existingRecipes={recipes}
             onConfirm={confirmImportRecipe}
-            onCancel={() => setRecipeToImport(null)}
+            onCancel={closeImport}
           />
         )}
 
@@ -1821,10 +2095,7 @@ export default function App() {
                 </h3>
                 <button
                   type="button"
-                  onClick={() => {
-                    setIsEditingBean(false);
-                    setEditingBeanId(null);
-                  }}
+                  onClick={handleCancelBean}
                   className="text-slate-400 dark:text-slate-350 hover:text-slate-650 dark:hover:text-slate-200 text-xl font-bold leading-none cursor-pointer"
                 >
                   &times;
@@ -2050,10 +2321,7 @@ export default function App() {
               <div className="flex gap-2 pt-2 border-t border-slate-200 dark:border-slate-800">
                 <button
                   type="button"
-                  onClick={() => {
-                    setIsEditingBean(false);
-                    setEditingBeanId(null);
-                  }}
+                  onClick={handleCancelBean}
                   className="flex-1 py-2.5 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-655 dark:text-slate-350 rounded-xl font-bold text-sm transition cursor-pointer"
                 >
                   Cancelar
@@ -2102,7 +2370,7 @@ export default function App() {
               <div className="flex gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
                 <button
                   type="button"
-                  onClick={() => setBeanToDelete(null)}
+                  onClick={closeDeleteBean}
                   className="flex-1 py-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-650 dark:text-slate-300 rounded-xl font-bold text-xs transition cursor-pointer"
                 >
                   Cancelar
@@ -2133,7 +2401,7 @@ export default function App() {
               <div className="flex gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
                 <button
                   type="button"
-                  onClick={() => setRecipeToDelete(null)}
+                  onClick={closeDeleteRecipe}
                   className="flex-1 py-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-650 dark:text-slate-300 rounded-xl font-bold text-xs transition cursor-pointer"
                 >
                   Cancelar
@@ -2164,7 +2432,7 @@ export default function App() {
               <div className="flex gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
                 <button
                   type="button"
-                  onClick={() => setHistoryEntryToDelete(null)}
+                  onClick={closeDeleteHistoryEntry}
                   className="flex-1 py-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-650 dark:text-slate-300 rounded-xl font-bold text-xs transition cursor-pointer"
                 >
                   Cancelar
@@ -2195,7 +2463,7 @@ export default function App() {
               <div className="flex gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
                 <button
                   type="button"
-                  onClick={() => setShowClearHistoryConfirm(false)}
+                  onClick={closeClearHistory}
                   className="flex-1 py-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-650 dark:text-slate-300 rounded-xl font-bold text-xs transition cursor-pointer"
                 >
                   Cancelar
@@ -2206,6 +2474,43 @@ export default function App() {
                   className="flex-1 py-2 bg-red-600 hover:bg-red-750 text-white rounded-xl font-bold text-xs transition shadow-sm cursor-pointer"
                 >
                   Sí, Limpiar Todo
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {showExitConfirm && (
+          <div className="fixed inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
+            <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-sm w-full p-6 shadow-xl border border-slate-100 dark:border-slate-800 space-y-4 text-center">
+              <div className="text-amber-800 dark:text-amber-500 text-3xl select-none">☕</div>
+              <div>
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white">¿Salir de Barista Timer?</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
+                  ¿Estás seguro de que deseas salir de la aplicación?
+                </p>
+              </div>
+
+              <div className="flex gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+                <button
+                  type="button"
+                  onClick={() => setShowExitConfirm(false)}
+                  className="flex-1 py-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-655 dark:text-slate-350 rounded-xl font-bold text-xs transition cursor-pointer"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    allowExitRef.current = true;
+                    window.history.go(-2);
+                    setTimeout(() => {
+                      window.close();
+                    }, 100);
+                  }}
+                  className="flex-1 py-2 bg-amber-800 hover:bg-amber-900 text-white rounded-xl font-bold text-xs transition shadow-sm cursor-pointer"
+                >
+                  Sí, Salir
                 </button>
               </div>
             </div>

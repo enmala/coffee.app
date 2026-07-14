@@ -9,7 +9,7 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
 
   const currentStep = recipe.steps[currentStepIndex];
 
-  const getStepMessage = (step, index, total) => {
+  const getStepMessage = (step, index) => {
     const minutes = Math.floor(step.duration_s / 60);
     const seconds = step.duration_s % 60;
     const durationText = minutes > 0
@@ -21,8 +21,8 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
 
   useEffect(() => {
     if (!voiceGuidanceEnabled || !isRunning) return;
-    speakText(getStepMessage(currentStep, currentStepIndex, recipe.steps.length));
-  }, [voiceGuidanceEnabled, isRunning, currentStepIndex, currentStep, recipe.steps.length]);
+    speakText(getStepMessage(currentStep, currentStepIndex));
+  }, [voiceGuidanceEnabled, isRunning, currentStepIndex, currentStep]);
 
   useEffect(() => {
     let lock = null;

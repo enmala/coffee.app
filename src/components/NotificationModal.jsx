@@ -1,4 +1,3 @@
-import React from 'react';
 
 export default function NotificationModal({ message, type = 'info', title, onClose }) {
   if (!message) return null;

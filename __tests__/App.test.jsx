@@ -1185,4 +1185,29 @@ describe('App Component', () => {
     
     window.location = originalLocation;
   });
+
+  test('handles popstate browser back navigation correctly', () => {
+    render(<App />);
+
+    // 1. Open Settings modal
+    const settingsBtn = screen.getByTitle('Configuración');
+    fireEvent.click(settingsBtn);
+    expect(screen.getByText('Personaliza tu experiencia de preparación')).toBeInTheDocument();
+
+    // 2. Simulate browser Back button via dispatching a popstate event with view: 'main'
+    act(() => {
+      window.dispatchEvent(new PopStateEvent('popstate', { state: { view: 'main' } }));
+    });
+
+    // 3. Settings modal should close
+    expect(screen.queryByText('Personaliza tu experiencia de preparación')).not.toBeInTheDocument();
+
+    // 4. Simulate browser back gesture on main view (view: 'base') -> exit confirmation shows up
+    act(() => {
+      window.dispatchEvent(new PopStateEvent('popstate', { state: { view: 'base' } }));
+    });
+    
+    // 5. Exit confirmation dialog should display
+    expect(screen.getByText('¿Salir de Barista Timer?')).toBeInTheDocument();
+  });
 });

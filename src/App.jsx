@@ -172,6 +172,8 @@ export default function App() {
     instruction: ''
   });
 
+  const [stepTitleError, setStepTitleError] = useState(false);
+
   const showAlert = (message, type = 'info', title = null) => {
     setCustomAlert({ message, type, title });
   };
@@ -380,6 +382,7 @@ export default function App() {
       steps: []
     });
     setStepInput({ title: '', water_g: 0, duration_s: 30, instruction: '' });
+    setStepTitleError(false);
     if (window.history.state && window.history.state.view === 'edit-recipe') {
       window.history.back();
     }
@@ -733,19 +736,22 @@ export default function App() {
 
   const handleAddStepToForm = () => {
     if (!stepInput.title.trim()) {
+      setStepTitleError(true);
       showAlert("Por favor ingresa un título para el paso.", "error");
       return;
     }
+
+    setStepTitleError(false);
 
     if (editingStepIndex !== null) {
       setNewRecipe((prev) => {
         const updatedSteps = [...prev.steps];
         updatedSteps[editingStepIndex] = {
           ...updatedSteps[editingStepIndex],
-          title: stepInput.title,
+          title: stepInput.title.trim(),
           water_g: Number(stepInput.water_g),
           duration_s: Number(stepInput.duration_s),
-          instruction: stepInput.instruction
+          instruction: stepInput.instruction.trim()
         };
         return { ...prev, steps: updatedSteps };
       });
@@ -757,10 +763,10 @@ export default function App() {
           ...prev.steps,
           {
             step_number: prev.steps.length + 1,
-            title: stepInput.title,
+            title: stepInput.title.trim(),
             water_g: Number(stepInput.water_g),
             duration_s: Number(stepInput.duration_s),
-            instruction: stepInput.instruction
+            instruction: stepInput.instruction.trim()
           }
         ]
       }));
@@ -777,11 +783,13 @@ export default function App() {
       instruction: step.instruction || ''
     });
     setEditingStepIndex(idx);
+    setStepTitleError(false);
   };
 
   const handleCancelStepEdit = () => {
     setEditingStepIndex(null);
     setStepInput({ title: '', water_g: 0, duration_s: 30, instruction: '' });
+    setStepTitleError(false);
   };
 
   const handleMoveStep = (idx, direction) => {
@@ -846,20 +854,49 @@ export default function App() {
       showAlert("Por favor, ingresa el nombre de la receta.", "error");
       return;
     }
-    if (newRecipe.steps.length === 0) {
+
+    // Auto-commit active step edits if title is not empty
+    let finalSteps = [...newRecipe.steps];
+    if (stepInput.title.trim()) {
+      const stepToSave = {
+        title: stepInput.title.trim(),
+        water_g: Number(stepInput.water_g),
+        duration_s: Number(stepInput.duration_s),
+        instruction: stepInput.instruction.trim()
+      };
+
+      if (editingStepIndex !== null) {
+        finalSteps[editingStepIndex] = {
+          ...finalSteps[editingStepIndex],
+          ...stepToSave
+        };
+      } else {
+        finalSteps.push({
+          step_number: finalSteps.length + 1,
+          ...stepToSave
+        });
+      }
+    }
+
+    if (finalSteps.length === 0) {
       showAlert("Debes agregar al menos un paso de preparación.", "error");
       return;
     }
 
+    const recipeData = {
+      ...newRecipe,
+      steps: finalSteps
+    };
+
     if (editingRecipeId) {
-      setRecipes((prev) => prev.map(r => r.id === editingRecipeId ? { ...newRecipe, id: editingRecipeId } : r));
+      setRecipes((prev) => prev.map(r => r.id === editingRecipeId ? { ...recipeData, id: editingRecipeId } : r));
       setSaveSuccessMessage({
         title: "¡Receta Actualizada!",
         body: "Los cambios en tu receta se han guardado correctamente."
       });
     } else {
       const created = {
-        ...newRecipe,
+        ...recipeData,
         id: `custom-${Date.now()}`
       };
       setRecipes((prev) => [...prev, created]);
@@ -885,6 +922,9 @@ export default function App() {
     const secs = seconds % 60;
     return `${mins}m ${secs}s`;
   };
+
+  const totalStepsTime = newRecipe.steps.reduce((sum, s) => sum + (Number(s.duration_s) || 0), 0);
+  const totalStepsWater = newRecipe.steps.reduce((sum, s) => sum + (Number(s.water_g) || 0), 0);
 
   return (
     <div className="min-h-screen bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 p-3 md:p-4 font-sans flex flex-col items-center transition-colors duration-300">
@@ -1048,29 +1088,41 @@ export default function App() {
                 )}
               </div>
 
-              <div className="border-t border-slate-200 dark:border-slate-800 pt-3 mt-2">
-                <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">Pasos Añadidos ({newRecipe.steps.length})</h3>
+              <div className="border-t border-slate-200 dark:border-slate-800 pt-3 mt-2 text-left">
+                <div className="flex justify-between items-center mb-3">
+                  <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200">
+                    Pasos Añadidos ({newRecipe.steps.length})
+                  </h3>
+                  {newRecipe.steps.length > 0 && (
+                    <span className="text-xs font-semibold text-amber-900 dark:text-amber-400 bg-amber-100/60 dark:bg-amber-955/20 px-2 py-0.5 rounded-lg border border-amber-200/20">
+                      ⏱️ {totalStepsTime}s • 💧 {totalStepsWater}g
+                    </span>
+                  )}
+                </div>
+
                 {newRecipe.steps.length > 0 && (
-                  <ul className="mb-4 bg-slate-50 dark:bg-slate-800 rounded-lg p-2 divide-y divide-slate-200 dark:divide-slate-700 text-xs text-slate-600 dark:text-slate-300">
+                  <ul className="mb-4 bg-slate-50 dark:bg-slate-850 rounded-xl p-2.5 divide-y divide-slate-200/80 dark:divide-slate-800/80 border border-slate-200/40 dark:border-slate-800/60">
                     {newRecipe.steps.map((s, idx) => (
-                      <li key={idx} className={`py-1.5 px-2 flex justify-between items-center rounded transition ${editingStepIndex === idx ? 'bg-amber-105/50 dark:bg-amber-900/20 border border-amber-500/50' : 'hover:bg-slate-100 dark:hover:bg-slate-800'}`}>
+                      <li key={idx} className={`py-2 px-2.5 flex justify-between items-center rounded-lg transition ${editingStepIndex === idx ? 'bg-amber-100/40 dark:bg-amber-900/10 border border-amber-500/20' : 'hover:bg-slate-100/50 dark:hover:bg-slate-800/30'}`}>
                         <div
-                          className="flex-1 cursor-pointer pr-2 select-none"
+                          className="flex-1 cursor-pointer pr-3 select-none text-left"
                           onClick={() => handleSelectStepToEdit(idx)}
                           title="Haz clic para editar este paso"
                         >
-                          <span className="font-semibold">{s.step_number}. {s.title}</span>
-                          <span className="text-[10px] text-slate-500 dark:text-slate-400 block">
-                            {s.duration_s}s | {s.water_g}g {s.instruction ? `• "${s.instruction}"` : ''}
+                          <span className="font-bold text-sm text-slate-900 dark:text-white block">
+                            {s.step_number}. {s.title}
+                          </span>
+                          <span className="text-xs text-slate-500 dark:text-slate-400 block mt-0.5">
+                            ⏱️ {s.duration_s}s • 💧 {s.water_g}g {s.instruction ? `• "${s.instruction}"` : ''}
                           </span>
                         </div>
 
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-1 shrink-0">
                           <button
                             type="button"
                             onClick={() => handleMoveStep(idx, 'up')}
                             disabled={idx === 0}
-                            className="p-1 hover:bg-slate-200 dark:hover:bg-slate-750 disabled:opacity-20 rounded text-xs cursor-pointer font-bold"
+                            className="p-1 hover:bg-slate-200/60 dark:hover:bg-slate-700 disabled:opacity-20 rounded-lg text-xs cursor-pointer font-bold transition text-slate-500 dark:text-slate-400"
                             title="Mover arriba"
                           >
                             ▲
@@ -1079,7 +1131,7 @@ export default function App() {
                             type="button"
                             onClick={() => handleMoveStep(idx, 'down')}
                             disabled={idx === newRecipe.steps.length - 1}
-                            className="p-1 hover:bg-slate-200 dark:hover:bg-slate-750 disabled:opacity-20 rounded text-xs cursor-pointer font-bold"
+                            className="p-1 hover:bg-slate-200/60 dark:hover:bg-slate-700 disabled:opacity-20 rounded-lg text-xs cursor-pointer font-bold transition text-slate-500 dark:text-slate-400"
                             title="Mover abajo"
                           >
                             ▼
@@ -1100,7 +1152,7 @@ export default function App() {
                                 setEditingStepIndex(editingStepIndex - 1);
                               }
                             }}
-                            className="p-1 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 rounded font-bold text-xs cursor-pointer"
+                            className="p-1 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-lg font-bold text-xs cursor-pointer transition"
                             title="Eliminar paso"
                           >
                             ✕
@@ -1111,57 +1163,75 @@ export default function App() {
                   </ul>
                 )}
 
-                <div className="bg-amber-50/50 dark:bg-amber-950/10 p-3 rounded-lg space-y-2 border border-amber-100 dark:border-amber-900/20">
+                <div className="bg-amber-50/20 dark:bg-amber-955/5 p-4 rounded-2xl space-y-3.5 border border-amber-200/20 dark:border-amber-900/10 shadow-sm text-left">
                   <div className="flex justify-between items-center">
-                    <span className="text-xs font-bold text-amber-900 dark:text-amber-400 block">
-                      {editingStepIndex !== null ? `Editando Paso ${editingStepIndex + 1}` : 'Formulario de Paso'}
+                    <span className="text-xs font-bold text-amber-900 dark:text-amber-400 flex items-center gap-1">
+                      <span>⚡</span> {editingStepIndex !== null ? `Editando Paso ${editingStepIndex + 1}` : 'Agregar Paso de Preparación'}
                     </span>
                     {editingStepIndex !== null && (
                       <button
                         type="button"
                         onClick={handleCancelStepEdit}
-                        className="text-[10px] text-slate-500 dark:text-slate-400 hover:underline cursor-pointer"
+                        className="text-[10px] text-slate-500 dark:text-slate-400 hover:underline cursor-pointer font-semibold"
                       >
                         Cancelar edición
                       </button>
                     )}
                   </div>
-                  <div className="grid grid-cols-2 gap-2">
-                    <input
-                      type="text"
-                      placeholder="Título del paso"
-                      value={stepInput.title}
-                      onChange={(e) => setStepInput({ ...stepInput, title: e.target.value })}
-                      className="p-1.5 border border-slate-200 dark:border-slate-700 rounded bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:outline-none"
-                    />
-                    <div className="flex gap-1">
+                  <div className="space-y-2">
+                    <div>
                       <input
-                        type="number"
-                        placeholder="Agua (g)"
-                        value={stepInput.water_g || ''}
-                        onChange={(e) => setStepInput({ ...stepInput, water_g: parseFloat(e.target.value) || 0 })}
-                        className="w-1/2 p-1.5 border border-slate-200 dark:border-slate-700 rounded bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:outline-none"
+                        type="text"
+                        placeholder="Título del paso"
+                        value={stepInput.title}
+                        onChange={(e) => {
+                          setStepInput({ ...stepInput, title: e.target.value });
+                          if (e.target.value.trim()) setStepTitleError(false);
+                        }}
+                        className={`w-full p-2 border rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:outline-none focus:ring-2 focus:ring-amber-500 transition ${stepTitleError ? 'border-red-500 focus:ring-red-500' : 'border-slate-200 dark:border-slate-700'}`}
                       />
+                      {stepTitleError && (
+                        <p className="text-[10px] text-red-500 font-bold mt-1 pl-1">
+                          El título del paso es obligatorio.
+                        </p>
+                      )}
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <label className="block text-[9px] font-bold uppercase text-slate-500 dark:text-slate-455 mb-0.5 pl-1">Agua a verter (g)</label>
+                        <input
+                          type="number"
+                          placeholder="Agua (g)"
+                          value={stepInput.water_g || ''}
+                          onChange={(e) => setStepInput({ ...stepInput, water_g: parseFloat(e.target.value) || 0 })}
+                          className="w-full p-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:outline-none focus:ring-2 focus:ring-amber-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[9px] font-bold uppercase text-slate-500 dark:text-slate-455 mb-0.5 pl-1">Duración (segundos)</label>
+                        <input
+                          type="number"
+                          placeholder="Tiempo (s)"
+                          value={stepInput.duration_s || ''}
+                          onChange={(e) => setStepInput({ ...stepInput, duration_s: parseInt(e.target.value) || 0 })}
+                          className="w-full p-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:outline-none focus:ring-2 focus:ring-amber-500"
+                        />
+                      </div>
+                    </div>
+                    <div>
                       <input
-                        type="number"
-                        placeholder="Tiempo (s)"
-                        value={stepInput.duration_s || ''}
-                        onChange={(e) => setStepInput({ ...stepInput, duration_s: parseInt(e.target.value) || 0 })}
-                        className="w-1/2 p-1.5 border border-slate-200 dark:border-slate-700 rounded bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:outline-none"
+                        type="text"
+                        placeholder="Instrucción corta"
+                        value={stepInput.instruction}
+                        onChange={(e) => setStepInput({ ...stepInput, instruction: e.target.value })}
+                        className="w-full p-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:outline-none focus:ring-2 focus:ring-amber-500"
                       />
                     </div>
                   </div>
-                  <input
-                    type="text"
-                    placeholder="Instrucción corta"
-                    value={stepInput.instruction}
-                    onChange={(e) => setStepInput({ ...stepInput, instruction: e.target.value })}
-                    className="w-full p-1.5 border border-slate-200 dark:border-slate-700 rounded bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:outline-none"
-                  />
                   <button
                     type="button"
                     onClick={handleAddStepToForm}
-                    className={`w-full py-1.5 text-white rounded text-xs font-semibold cursor-pointer transition ${editingStepIndex !== null ? 'bg-emerald-700 hover:bg-emerald-800 dark:bg-emerald-650' : 'bg-amber-800 hover:bg-amber-900'}`}
+                    className={`w-full py-2 text-white rounded-xl text-xs font-bold cursor-pointer transition shadow-sm ${editingStepIndex !== null ? 'bg-emerald-700 hover:bg-emerald-800 dark:bg-emerald-600 dark:hover:bg-emerald-700' : 'bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-800'}`}
                   >
                     {editingStepIndex !== null ? '✓ Guardar Cambios en Paso' : '+ Agregar Paso a la lista'}
                   </button>

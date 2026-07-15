@@ -1101,7 +1101,7 @@ export default function App() {
                 </div>
 
                 {newRecipe.steps.length > 0 && (
-                  <ul className="mb-4 bg-slate-50 dark:bg-slate-855 rounded-xl p-2.5 divide-y divide-slate-200/80 dark:divide-slate-800/80 border border-slate-200/40 dark:border-slate-800/60">
+                  <ul className="mb-4 bg-slate-50 dark:bg-slate-800 rounded-xl p-2.5 divide-y divide-slate-200/80 dark:divide-slate-800/80 border border-slate-200/40 dark:border-slate-800/60">
                     {newRecipe.steps.map((s, idx) => (
                       <li key={idx} className={`py-2 px-2.5 flex justify-between items-center rounded-lg transition ${editingStepIndex === idx ? 'bg-amber-100/40 dark:bg-amber-900/10 border border-amber-500/20' : 'hover:bg-slate-100/50 dark:hover:bg-slate-800/30'}`}>
                         <div

@@ -148,6 +148,7 @@ describe('Coffee Beans Management Tests', () => {
     fireEvent.change(screen.getByLabelText('Grano de Café (Opcional)'), { target: { value: 'bean-example-ethiopia' } });
     
     // Add step to form
+    fireEvent.click(screen.getByText('+ Agregar Paso'));
     fireEvent.change(screen.getByPlaceholderText('Título del paso'), { target: { value: 'Preinfundir' } });
     fireEvent.change(screen.getByPlaceholderText('Agua (g)'), { target: { value: '50' } });
     fireEvent.change(screen.getByPlaceholderText('Tiempo (s)'), { target: { value: '30' } });
@@ -212,6 +213,7 @@ describe('Coffee Beans Management Tests', () => {
     fireEvent.change(screen.getByLabelText('Grano de Café (Opcional)'), { target: { value: 'bean-example-ethiopia' } });
     
     // Add step to form
+    fireEvent.click(screen.getByText('+ Agregar Paso'));
     fireEvent.change(screen.getByPlaceholderText('Título del paso'), { target: { value: 'Preinfundir' } });
     fireEvent.change(screen.getByPlaceholderText('Agua (g)'), { target: { value: '50' } });
     fireEvent.change(screen.getByPlaceholderText('Tiempo (s)'), { target: { value: '30' } });

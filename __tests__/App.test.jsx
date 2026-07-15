@@ -135,6 +135,7 @@ describe('App Component', () => {
     fireEvent.change(screen.getByPlaceholderText('Ej: Fina, Media, 15 clicks'), { target: { value: 'Medio' } });
     
     // Add a step
+    fireEvent.click(screen.getByText('+ Agregar Paso'));
     fireEvent.change(screen.getByPlaceholderText('Título del paso'), { target: { value: 'Preinfusión' } });
     fireEvent.change(screen.getByPlaceholderText('Agua (g)'), { target: { value: '50' } });
     fireEvent.change(screen.getByPlaceholderText('Tiempo (s)'), { target: { value: '30' } });
@@ -317,10 +318,12 @@ describe('App Component', () => {
     fireEvent.click(newRecipeBtn);
     
     // Add step 1
+    fireEvent.click(screen.getByText('+ Agregar Paso'));
     fireEvent.change(screen.getByPlaceholderText('Título del paso'), { target: { value: 'Step 1' } });
     fireEvent.click(screen.getByText('+ Agregar Paso a la lista'));
     
     // Add step 2
+    fireEvent.click(screen.getByText('+ Agregar Paso'));
     fireEvent.change(screen.getByPlaceholderText('Título del paso'), { target: { value: 'Step 2' } });
     fireEvent.click(screen.getByText('+ Agregar Paso a la lista'));
     
@@ -529,10 +532,12 @@ describe('App Component', () => {
     fireEvent.click(newRecipeBtn);
 
     // Add step 1
+    fireEvent.click(screen.getByText('+ Agregar Paso'));
     fireEvent.change(screen.getByPlaceholderText('Título del paso'), { target: { value: 'Step 1' } });
     fireEvent.click(screen.getByText('+ Agregar Paso a la lista'));
     
     // Add step 2
+    fireEvent.click(screen.getByText('+ Agregar Paso'));
     fireEvent.change(screen.getByPlaceholderText('Título del paso'), { target: { value: 'Step 2' } });
     fireEvent.click(screen.getByText('+ Agregar Paso a la lista'));
 
@@ -863,6 +868,7 @@ describe('App Component', () => {
     fireEvent.change(screen.getByPlaceholderText('Ej: Mi V60 Balanceado'), { target: { value: 'Test Recipe' } });
 
     // Fill step without instruction, add it
+    fireEvent.click(screen.getByText('+ Agregar Paso'));
     fireEvent.change(screen.getByPlaceholderText('Título del paso'), { target: { value: 'Step 1' } });
     fireEvent.change(screen.getByPlaceholderText('Agua (g)'), { target: { value: '50' } });
     fireEvent.change(screen.getByPlaceholderText('Tiempo (s)'), { target: { value: '30' } });
@@ -893,6 +899,7 @@ describe('App Component', () => {
 
     // 4. Update editingStepIndex when moving steps (up/down)
     // Add a second step so we can move them
+    fireEvent.click(screen.getByText('+ Agregar Paso'));
     fireEvent.change(screen.getByPlaceholderText('Título del paso'), { target: { value: 'Step 2' } });
     fireEvent.click(screen.getByText('+ Agregar Paso a la lista'));
 
@@ -908,6 +915,7 @@ describe('App Component', () => {
 
     // 5. Deleting steps while editing adjusts editingStepIndex
     // Add third step
+    fireEvent.click(screen.getByText('+ Agregar Paso'));
     fireEvent.change(screen.getByPlaceholderText('Título del paso'), { target: { value: 'Step 3' } });
     fireEvent.click(screen.getByText('+ Agregar Paso a la lista'));
 
@@ -922,6 +930,7 @@ describe('App Component', () => {
     fireEvent.click(screen.getAllByTitle('Eliminar paso')[0]);
 
     // 6. Step form validations: empty step title validation alert
+    fireEvent.click(screen.getByText('+ Agregar Paso'));
     fireEvent.change(screen.getByPlaceholderText('Título del paso'), { target: { value: '' } });
     fireEvent.click(screen.getByText('+ Agregar Paso a la lista'));
     expect(screen.getByText("Por favor ingresa un título para el paso.")).toBeInTheDocument();
@@ -1209,5 +1218,92 @@ describe('App Component', () => {
     
     // 5. Exit confirmation dialog should display
     expect(screen.getByText('¿Salir de Barista Timer?')).toBeInTheDocument();
+  });
+
+  test('App recipe editor UI/UX improvements (auto-save new step, live totals)', async () => {
+    render(<App />);
+
+    // 1. Click "Nueva Receta"
+    fireEvent.click(screen.getByText('+ Nueva Receta'));
+
+    // 2. Type recipe name
+    fireEvent.change(screen.getByPlaceholderText('Ej: Mi V60 Balanceado'), { target: { value: 'UX Test Recipe' } });
+
+    // 3. Fill the step form
+    fireEvent.click(screen.getByText('+ Agregar Paso'));
+    fireEvent.change(screen.getByPlaceholderText('Título del paso'), { target: { value: 'Preinfusion' } });
+    fireEvent.change(screen.getByPlaceholderText('Agua (g)'), { target: { value: '50' } });
+    fireEvent.change(screen.getByPlaceholderText('Tiempo (s)'), { target: { value: '30' } });
+
+    // 4. Click "+ Agregar Paso a la lista"
+    fireEvent.click(screen.getByText('+ Agregar Paso a la lista'));
+
+    // 5. Verify that step is added and totals are displayed
+    expect(screen.getByText('1. Preinfusion')).toBeInTheDocument();
+    expect(screen.getAllByText(/⏱️ 30s • 💧 50g/)[0]).toBeInTheDocument();
+
+    // 6. Start typing another step (Auto-Save new step test)
+    fireEvent.click(screen.getByText('+ Agregar Paso'));
+    fireEvent.change(screen.getByPlaceholderText('Título del paso'), { target: { value: 'First Pour' } });
+    fireEvent.change(screen.getByPlaceholderText('Agua (g)'), { target: { value: '150' } });
+    fireEvent.change(screen.getByPlaceholderText('Tiempo (s)'), { target: { value: '45' } });
+
+    // 7. Click "Guardar Receta" directly without clicking "+ Agregar Paso a la lista"!
+    fireEvent.click(screen.getByRole('button', { name: 'Guardar Receta' }));
+
+    // 8. Verify recipe was saved successfully and editor is closed
+    expect(screen.queryByText('Nueva Receta')).not.toBeInTheDocument();
+    expect(screen.getByText('UX Test Recipe')).toBeInTheDocument();
+
+    // 9. Click on the recipe card's summary button to open summary
+    const recipeCard = screen.getByText('UX Test Recipe').closest('.group');
+    const summaryBtn = recipeCard.querySelector('button[title="Ver Resumen"]');
+    fireEvent.click(summaryBtn);
+    expect(screen.getByText('Tiempo Total Estimado')).toBeInTheDocument();
+    
+    // Check that BOTH steps are present
+    expect(screen.getByText('Paso 1: Preinfusion')).toBeInTheDocument();
+    expect(screen.getByText('Paso 2: First Pour')).toBeInTheDocument();
+
+    // Close summary
+    fireEvent.click(screen.getByRole('button', { name: 'Cerrar' }));
+  });
+
+  test('App recipe editor auto-saves step edits on recipe save', async () => {
+    render(<App />);
+
+    // 1. Click "Nueva Receta"
+    fireEvent.click(screen.getByText('+ Nueva Receta'));
+
+    // 2. Type recipe name and add one step
+    fireEvent.change(screen.getByPlaceholderText('Ej: Mi V60 Balanceado'), { target: { value: 'UX Edit Test Recipe' } });
+    fireEvent.click(screen.getByText('+ Agregar Paso'));
+    fireEvent.change(screen.getByPlaceholderText('Título del paso'), { target: { value: 'Step A' } });
+    fireEvent.change(screen.getByPlaceholderText('Agua (g)'), { target: { value: '50' } });
+    fireEvent.change(screen.getByPlaceholderText('Tiempo (s)'), { target: { value: '30' } });
+    fireEvent.click(screen.getByText('+ Agregar Paso a la lista'));
+
+    // 3. Click the step to edit it
+    fireEvent.click(screen.getByText('1. Step A'));
+    expect(screen.getByText('Cancelar edición')).toBeInTheDocument();
+
+    // 4. Modify the step details
+    fireEvent.change(screen.getByPlaceholderText('Título del paso'), { target: { value: 'Step A Modificado' } });
+    fireEvent.change(screen.getByPlaceholderText('Agua (g)'), { target: { value: '60' } });
+    fireEvent.change(screen.getByPlaceholderText('Tiempo (s)'), { target: { value: '40' } });
+
+    // 5. Click "Guardar Receta" directly without clicking "✓ Guardar Cambios en Paso"!
+    fireEvent.click(screen.getByRole('button', { name: 'Guardar Receta' }));
+
+    // 6. Verify recipe details show the modified step
+    expect(screen.queryByText('Nueva Receta')).not.toBeInTheDocument();
+    const recipeCard = screen.getByText('UX Edit Test Recipe').closest('.group');
+    const summaryBtn = recipeCard.querySelector('button[title="Ver Resumen"]');
+    fireEvent.click(summaryBtn);
+    expect(screen.getByText('Tiempo Total Estimado')).toBeInTheDocument();
+    expect(screen.getByText('Paso 1: Step A Modificado')).toBeInTheDocument();
+
+    // Close summary
+    fireEvent.click(screen.getByRole('button', { name: 'Cerrar' }));
   });
 });

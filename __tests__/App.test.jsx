@@ -135,6 +135,7 @@ describe('App Component', () => {
     fireEvent.change(screen.getByPlaceholderText('Ej: Fina, Media, 15 clicks'), { target: { value: 'Medio' } });
     
     // Add a step
+    fireEvent.click(screen.getByText('+ Agregar Paso'));
     fireEvent.change(screen.getByPlaceholderText('Título del paso'), { target: { value: 'Preinfusión' } });
     fireEvent.change(screen.getByPlaceholderText('Agua (g)'), { target: { value: '50' } });
     fireEvent.change(screen.getByPlaceholderText('Tiempo (s)'), { target: { value: '30' } });
@@ -317,10 +318,12 @@ describe('App Component', () => {
     fireEvent.click(newRecipeBtn);
     
     // Add step 1
+    fireEvent.click(screen.getByText('+ Agregar Paso'));
     fireEvent.change(screen.getByPlaceholderText('Título del paso'), { target: { value: 'Step 1' } });
     fireEvent.click(screen.getByText('+ Agregar Paso a la lista'));
     
     // Add step 2
+    fireEvent.click(screen.getByText('+ Agregar Paso'));
     fireEvent.change(screen.getByPlaceholderText('Título del paso'), { target: { value: 'Step 2' } });
     fireEvent.click(screen.getByText('+ Agregar Paso a la lista'));
     
@@ -529,10 +532,12 @@ describe('App Component', () => {
     fireEvent.click(newRecipeBtn);
 
     // Add step 1
+    fireEvent.click(screen.getByText('+ Agregar Paso'));
     fireEvent.change(screen.getByPlaceholderText('Título del paso'), { target: { value: 'Step 1' } });
     fireEvent.click(screen.getByText('+ Agregar Paso a la lista'));
     
     // Add step 2
+    fireEvent.click(screen.getByText('+ Agregar Paso'));
     fireEvent.change(screen.getByPlaceholderText('Título del paso'), { target: { value: 'Step 2' } });
     fireEvent.click(screen.getByText('+ Agregar Paso a la lista'));
 
@@ -863,6 +868,7 @@ describe('App Component', () => {
     fireEvent.change(screen.getByPlaceholderText('Ej: Mi V60 Balanceado'), { target: { value: 'Test Recipe' } });
 
     // Fill step without instruction, add it
+    fireEvent.click(screen.getByText('+ Agregar Paso'));
     fireEvent.change(screen.getByPlaceholderText('Título del paso'), { target: { value: 'Step 1' } });
     fireEvent.change(screen.getByPlaceholderText('Agua (g)'), { target: { value: '50' } });
     fireEvent.change(screen.getByPlaceholderText('Tiempo (s)'), { target: { value: '30' } });
@@ -893,6 +899,7 @@ describe('App Component', () => {
 
     // 4. Update editingStepIndex when moving steps (up/down)
     // Add a second step so we can move them
+    fireEvent.click(screen.getByText('+ Agregar Paso'));
     fireEvent.change(screen.getByPlaceholderText('Título del paso'), { target: { value: 'Step 2' } });
     fireEvent.click(screen.getByText('+ Agregar Paso a la lista'));
 
@@ -908,6 +915,7 @@ describe('App Component', () => {
 
     // 5. Deleting steps while editing adjusts editingStepIndex
     // Add third step
+    fireEvent.click(screen.getByText('+ Agregar Paso'));
     fireEvent.change(screen.getByPlaceholderText('Título del paso'), { target: { value: 'Step 3' } });
     fireEvent.click(screen.getByText('+ Agregar Paso a la lista'));
 
@@ -922,6 +930,7 @@ describe('App Component', () => {
     fireEvent.click(screen.getAllByTitle('Eliminar paso')[0]);
 
     // 6. Step form validations: empty step title validation alert
+    fireEvent.click(screen.getByText('+ Agregar Paso'));
     fireEvent.change(screen.getByPlaceholderText('Título del paso'), { target: { value: '' } });
     fireEvent.click(screen.getByText('+ Agregar Paso a la lista'));
     expect(screen.getByText("Por favor ingresa un título para el paso.")).toBeInTheDocument();
@@ -1221,6 +1230,7 @@ describe('App Component', () => {
     fireEvent.change(screen.getByPlaceholderText('Ej: Mi V60 Balanceado'), { target: { value: 'UX Test Recipe' } });
 
     // 3. Fill the step form
+    fireEvent.click(screen.getByText('+ Agregar Paso'));
     fireEvent.change(screen.getByPlaceholderText('Título del paso'), { target: { value: 'Preinfusion' } });
     fireEvent.change(screen.getByPlaceholderText('Agua (g)'), { target: { value: '50' } });
     fireEvent.change(screen.getByPlaceholderText('Tiempo (s)'), { target: { value: '30' } });
@@ -1233,6 +1243,7 @@ describe('App Component', () => {
     expect(screen.getAllByText(/⏱️ 30s • 💧 50g/)[0]).toBeInTheDocument();
 
     // 6. Start typing another step (Auto-Save new step test)
+    fireEvent.click(screen.getByText('+ Agregar Paso'));
     fireEvent.change(screen.getByPlaceholderText('Título del paso'), { target: { value: 'First Pour' } });
     fireEvent.change(screen.getByPlaceholderText('Agua (g)'), { target: { value: '150' } });
     fireEvent.change(screen.getByPlaceholderText('Tiempo (s)'), { target: { value: '45' } });
@@ -1266,6 +1277,7 @@ describe('App Component', () => {
 
     // 2. Type recipe name and add one step
     fireEvent.change(screen.getByPlaceholderText('Ej: Mi V60 Balanceado'), { target: { value: 'UX Edit Test Recipe' } });
+    fireEvent.click(screen.getByText('+ Agregar Paso'));
     fireEvent.change(screen.getByPlaceholderText('Título del paso'), { target: { value: 'Step A' } });
     fireEvent.change(screen.getByPlaceholderText('Agua (g)'), { target: { value: '50' } });
     fireEvent.change(screen.getByPlaceholderText('Tiempo (s)'), { target: { value: '30' } });

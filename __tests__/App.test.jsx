@@ -72,26 +72,20 @@ describe('App Component', () => {
     expect(finalTheme).toBe(initialTheme);
   });
 
-  test('opens and closes the About modal', () => {
+  test('opens and closes the About modal from the header', () => {
     render(<App />);
-    
-    // Open settings modal first
-    const settingsBtn = screen.getByTitle('Configuración');
-    fireEvent.click(settingsBtn);
-    
-    // Click About button inside settings
-    const aboutBtn = screen.getByText('Ver Acerca de');
+
+    const aboutBtn = screen.getByTitle('Acerca de');
     fireEvent.click(aboutBtn);
-    
-    expect(screen.getByText('EnMalA')).toBeInTheDocument();
+
+    expect(screen.getByText(/Enrique Maldonado/)).toBeInTheDocument();
     expect(screen.getByText(`v${version}`)).toBeInTheDocument();
     expect(screen.getByText('Repositorio en GitHub')).toBeInTheDocument();
     expect(screen.getByText('Apoya el proyecto en Ko-fi')).toBeInTheDocument();
-    
-    // Close modal via Close button
+
     const closeBtn = screen.getAllByText('Cerrar').find(btn => btn.tagName === 'BUTTON');
     fireEvent.click(closeBtn);
-    expect(screen.queryByText('EnMalA')).not.toBeInTheDocument();
+    expect(screen.queryByText(/Enrique Maldonado/)).not.toBeInTheDocument();
   });
 
   test('switches tabs between Recipes and History', () => {
@@ -389,13 +383,12 @@ describe('App Component', () => {
 
   test('closes About modal with header close button', () => {
     render(<App />);
-    fireEvent.click(screen.getByTitle('Configuración'));
-    fireEvent.click(screen.getByText('Ver Acerca de'));
+    fireEvent.click(screen.getByTitle('Acerca de'));
     
     // Click top &times; button
     const closeXBtn = screen.getByText('×');
     fireEvent.click(closeXBtn);
-    expect(screen.queryByText('EnMalA')).not.toBeInTheDocument();
+    expect(screen.queryByText(/Enrique Maldonado/)).not.toBeInTheDocument();
   });
 
   test('loads initial states from pre-seeded localStorage and media queries', () => {

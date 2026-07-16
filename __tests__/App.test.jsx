@@ -116,7 +116,7 @@ describe('App Component', () => {
     
     // Verify TimerComponent is rendered
     expect(screen.getByText(/Volver al listado/i)).toBeInTheDocument();
-    expect(screen.getByText('Iniciar')).toBeInTheDocument();
+    expect(screen.getByText('Pausar')).toBeInTheDocument();
   });
 
   test('creates a new recipe with steps', () => {
@@ -239,12 +239,11 @@ describe('App Component', () => {
     const summaryBtns = screen.getAllByTitle('Ver Resumen');
     fireEvent.click(summaryBtns[0]);
     const startTimerBtn = screen.getByText('Iniciar Timer');
+    vi.useFakeTimers();
     fireEvent.click(startTimerBtn);
     
     // Render the TimerComponent, run it immediately to completion
     // The recipe has 5 steps of 45s, 45s, 30s, 30s, 30s. Total: 180s.
-    vi.useFakeTimers();
-    fireEvent.click(screen.getByText('Iniciar'));
     
     act(() => {
       vi.advanceTimersByTime(45000);
@@ -733,8 +732,9 @@ describe('App Component', () => {
 
   test('clicks recipe card directly to start timer without summary', () => {
     render(<App />);
-    const recipeCard = screen.getByText('Aeropress Tradicional');
-    fireEvent.click(recipeCard);
+    const recipeCard = screen.getByText('Aeropress Tradicional').closest('.group');
+    const startDirectlyBtn = recipeCard.querySelector('[title*="Iniciar preparación"]');
+    fireEvent.click(startDirectlyBtn);
     
     // Expect TimerComponent is rendered directly
     expect(screen.getByText(/Volver al listado/i)).toBeInTheDocument();

@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { playBeep, speakText } from '../utils/coffeeUtils';
 
-export default function TimerComponent({ recipe, onComplete, soundEnabled = true, vibrationEnabled = true, vibrationType = 'normal', voiceGuidanceEnabled = false, beanName }) {
+export default function TimerComponent({ recipe, onComplete, soundEnabled = true, vibrationEnabled = true, vibrationType = 'normal', voiceGuidanceEnabled = false, beanName, autoStart = false }) {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [timeLeft, setTimeLeft] = useState(recipe.steps[0].duration_s);
-  const [isRunning, setIsRunning] = useState(false);
+  const [isRunning, setIsRunning] = useState(autoStart);
   const [showFinishedModal, setShowFinishedModal] = useState(false);
 
   const currentStep = recipe.steps[currentStepIndex];
@@ -153,15 +153,15 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
 
       <div className="grid grid-cols-3 gap-2 bg-slate-50 dark:bg-slate-800/40 p-2 rounded-xl text-[11px] text-slate-600 dark:text-slate-300 border border-slate-100 dark:border-slate-800">
         <div>
-          <span className="block text-slate-450 dark:text-slate-400 text-[9px] uppercase font-bold">Café</span>
+          <span className="block text-slate-400 dark:text-slate-400 text-[9px] uppercase font-bold">Café</span>
           <span className="font-semibold text-xs">{recipe.coffee_g}g</span>
         </div>
         <div>
-          <span className="block text-slate-450 dark:text-slate-400 text-[9px] uppercase font-bold">Molienda</span>
+          <span className="block text-slate-400 dark:text-slate-400 text-[9px] uppercase font-bold">Molienda</span>
           <span className="font-semibold text-xs truncate block">{recipe.grind_size || 'N/D'}</span>
         </div>
         <div>
-          <span className="block text-slate-450 dark:text-slate-400 text-[9px] uppercase font-bold">Temp.</span>
+          <span className="block text-slate-400 dark:text-slate-400 text-[9px] uppercase font-bold">Temp.</span>
           <span className="font-semibold text-xs">{recipe.water_temp_c}°C</span>
         </div>
       </div>
@@ -193,22 +193,22 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
         </svg>
         {/* Inner details */}
         <div className="absolute flex flex-col items-center justify-center space-y-1">
-          <span className="text-[9px] text-slate-455 dark:text-slate-450 uppercase font-bold tracking-widest max-w-[110px] truncate">
+          <span className="text-[9px] text-slate-500 dark:text-slate-400 uppercase font-bold tracking-widest max-w-[110px] truncate">
             {currentStep.title}
           </span>
           <span className="text-3xl font-mono font-bold text-slate-900 dark:text-white select-none tracking-tight">
             {formatTime(timeLeft)}
           </span>
-          <span className="text-[9px] text-amber-905 dark:text-amber-300 font-bold bg-amber-50 dark:bg-amber-950/30 px-2 py-0.5 rounded-full uppercase">
+          <span className="text-[9px] text-amber-800 dark:text-amber-300 font-bold bg-amber-50 dark:bg-amber-950/30 px-2 py-0.5 rounded-full uppercase">
             Paso {currentStepIndex + 1} de {recipe.steps.length}
           </span>
         </div>
       </div>
 
       {/* Step instructions and pour guide */}
-      <div className="p-4 bg-slate-50 dark:bg-slate-800/30 border border-slate-150 dark:border-slate-800/80 rounded-xl space-y-3.5 text-center">
+      <div className="p-4 bg-slate-50 dark:bg-slate-800/30 border border-slate-200 dark:border-slate-800/80 rounded-xl space-y-3.5 text-center">
         <p
-          className="text-sm text-slate-650 dark:text-slate-355 min-h-[40px] flex items-center justify-center italic font-medium px-2 leading-relaxed"
+          className="text-sm text-slate-600 dark:text-slate-300 min-h-[40px] flex items-center justify-center italic font-medium px-2 leading-relaxed"
           aria-live="polite"
         >
           {currentStep.instruction || 'No hay instrucciones para este paso.'}
@@ -216,11 +216,11 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
         
         <div className="grid grid-cols-2 gap-3 pt-1">
           <div className="bg-amber-50/50 dark:bg-amber-950/20 p-3 rounded-xl border border-amber-200/10 dark:border-amber-900/20 shadow-sm">
-            <span className="text-slate-450 dark:text-slate-400 block text-[10px] uppercase font-bold tracking-wider mb-1">Verter ahora</span>
+            <span className="text-slate-500 dark:text-slate-400 block text-[10px] uppercase font-bold tracking-wider mb-1">Verter ahora</span>
             <span className="font-extrabold text-amber-800 dark:text-amber-400 text-2xl">+{currentStep.water_g}g</span>
           </div>
           <div className="bg-amber-50/50 dark:bg-amber-950/20 p-3 rounded-xl border border-amber-200/10 dark:border-amber-900/20 shadow-sm">
-            <span className="text-slate-450 dark:text-slate-400 block text-[10px] uppercase font-bold tracking-wider mb-1">Agua acumulada</span>
+            <span className="text-slate-500 dark:text-slate-400 block text-[10px] uppercase font-bold tracking-wider mb-1">Agua acumulada</span>
             <span className="font-extrabold text-amber-800 dark:text-amber-400 text-2xl">{cumulativeWater}g</span>
           </div>
         </div>

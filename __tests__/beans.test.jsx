@@ -230,11 +230,10 @@ describe('Coffee Beans Management Tests', () => {
     const summaryBtnHist = recipeCardHist.querySelector('[title="Ver Resumen"]');
     fireEvent.click(summaryBtnHist);
     const startTimerBtn = screen.getByRole('button', { name: 'Iniciar Timer' });
+    vi.useFakeTimers();
     fireEvent.click(startTimerBtn);
 
     // 3. Start timer and advance timers
-    vi.useFakeTimers();
-    fireEvent.click(screen.getByText('Iniciar'));
     act(() => {
       vi.advanceTimersByTime(30000);
     });

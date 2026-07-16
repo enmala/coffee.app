@@ -35,6 +35,8 @@ Los agentes de IA deben leer este archivo para saber qué implementar a continua
 ---
 
 ## ✅ Completado
+- [x] Acceso directo y visible a la vista "Acerca de" desde el encabezado, manteniendo la estética del diseño.
+- [x] Refactor del enlace "Acerca de" en el modal de Configuración a diseño de pill badge con icono informativo.
 - [x] Agrupamiento dinámico de recetas por método en la lista principal.
 - [x] Botón discreto de importación de JSON al lado de "Nueva Receta".
 - [x] Modal de resumen de receta con lista de pasos detallados.

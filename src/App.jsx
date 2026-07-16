@@ -936,6 +936,18 @@ export default function App() {
         <div className="flex gap-2">
           <button
             onClick={() => {
+              setIsSettingsOpen(false);
+              setIsAboutOpen(true);
+              navigateTo('about');
+            }}
+            className="px-2.5 py-2 bg-white/90 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition cursor-pointer text-slate-700 dark:text-slate-200 flex items-center justify-center gap-1.5 text-[11px] font-semibold"
+            title="Acerca de"
+          >
+            <span className="text-sm">ⓘ</span>
+            <span className="hidden sm:inline">Acerca de</span>
+          </button>
+          <button
+            onClick={() => {
               setIsSettingsOpen(true);
               navigateTo('settings');
             }}
@@ -2040,21 +2052,19 @@ export default function App() {
                   )}
                 </div>
 
-                {/* About button */}
-                <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-800/60">
-                  <div className="text-left">
-                    <span className="text-sm font-bold text-slate-800 dark:text-slate-200 block">Información</span>
-                    <span className="text-xs text-slate-500 dark:text-slate-400">Acerca de la app y créditos</span>
-                  </div>
+                {/* About link */}
+                <div className="flex justify-center pt-2">
                   <button
+                    type="button"
                     onClick={() => {
                       setIsSettingsOpen(false);
                       setIsAboutOpen(true);
-                      window.history.replaceState({ view: 'about' }, '');
+                      navigateTo('about');
                     }}
-                    className="px-3 py-1.5 bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-800 text-white text-xs font-bold rounded-lg transition cursor-pointer"
+                    className="px-4 py-2 rounded-full text-xs font-medium text-amber-800 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/40 hover:bg-amber-100 dark:hover:bg-amber-900/30 transition cursor-pointer flex items-center gap-1.5"
                   >
-                    Ver Acerca de
+                    <span>ⓘ</span>
+                    <span>Acerca de la aplicación</span>
                   </button>
                 </div>
               </div>
@@ -2091,10 +2101,10 @@ export default function App() {
 
               <div className="space-y-3 text-sm text-slate-600 dark:text-slate-350 text-left">
                 <p>
-                  <strong>Barista Timer</strong> es una aplicación web interactiva diseñada para asistir a los amantes del café de especialidad a cronometrar y seguir sus recetas de extracción paso a paso.
+                  Tu compañero de barra para café de especialidad. Crea, guarda y cronometra tus recetas de extracción paso a paso, con alertas, historial y soporte offline.
                 </p>
                 <p className="text-xs text-slate-500 dark:text-slate-400">
-                  Desarrollado por <a href="https://github.com/enmala" target="_blank" rel="noopener noreferrer" className="text-amber-800 dark:text-amber-550 dark:hover:text-amber-405 hover:underline font-semibold">EnMalA</a>
+                  Hecho con ☕ por <a className="text-amber-800 dark:text-amber-550 dark:hover:text-amber-405 hover:underline font-semibold">Enrique Maldonado</a>
                 </p>
               </div>
 

@@ -28,3 +28,4 @@ dist-ssr
 work
 coverage
 .agents/
+*.keystore

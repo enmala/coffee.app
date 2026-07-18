@@ -130,8 +130,6 @@ export default function App() {
   const [historyEntryToDelete, setHistoryEntryToDelete] = useState(null);
   const [showClearHistoryConfirm, setShowClearHistoryConfirm] = useState(false);
 
-  const [showExitConfirm, setShowExitConfirm] = useState(false);
-  const allowExitRef = useRef(false);
 
   const [isEditingBean, setIsEditingBean] = useState(false);
   const [editingBeanId, setEditingBeanId] = useState(null);
@@ -182,7 +180,6 @@ export default function App() {
   };
 
   function syncStateWithHistory(state) {
-    setShowExitConfirm(false);
     
     if (state.view !== 'timer') {
       setAutoStartTimer(false);
@@ -341,9 +338,8 @@ export default function App() {
   };
 
   useEffect(() => {
-    if (!window.history.state || window.history.state.view !== 'main') {
-      window.history.replaceState({ view: 'base' }, '');
-      window.history.pushState({ view: 'main' }, '');
+    if (!window.history.state) {
+      window.history.replaceState({ view: 'main' }, '');
     }
 
     const params = new URLSearchParams(window.location.search);
@@ -480,14 +476,6 @@ export default function App() {
       const state = event.state;
       if (!state) return;
 
-      if (state.view === 'base') {
-        if (allowExitRef.current) {
-          return;
-        }
-        setShowExitConfirm(true);
-        window.history.pushState({ view: 'main' }, '');
-        return;
-      }
 
       syncStateWithHistory(state);
     };
@@ -2649,45 +2637,6 @@ export default function App() {
           </div>
         )}
 
-        {showExitConfirm && (
-          <div className="fixed inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
-            <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-sm w-full p-6 shadow-xl border border-slate-100 dark:border-slate-800 space-y-4 text-center">
-              <div className="text-amber-800 dark:text-amber-500 text-3xl select-none">☕</div>
-              <div>
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white">¿Salir de Barista Timer?</h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
-                  ¿Estás seguro de que deseas salir de la aplicación?
-                </p>
-              </div>
-
-              <div className="flex gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
-                <button
-                  type="button"
-                  onClick={() => setShowExitConfirm(false)}
-                  className="flex-1 py-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-655 dark:text-slate-350 rounded-xl font-bold text-xs transition cursor-pointer"
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    allowExitRef.current = true;
-                    window.history.back();
-                    setTimeout(() => {
-                      window.history.back();
-                      setTimeout(() => {
-                        window.close();
-                      }, 50);
-                    }, 100);
-                  }}
-                  className="flex-1 py-2 bg-amber-800 hover:bg-amber-900 text-white rounded-xl font-bold text-xs transition shadow-sm cursor-pointer"
-                >
-                  Sí, Salir
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
 
         {customAlert && (
           <NotificationModal

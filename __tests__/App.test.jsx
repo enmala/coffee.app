@@ -1204,13 +1204,6 @@ describe('App Component', () => {
     // 3. Settings modal should close
     expect(screen.queryByText('Personaliza tu experiencia de preparación')).not.toBeInTheDocument();
 
-    // 4. Simulate browser back gesture on main view (view: 'base') -> exit confirmation shows up
-    act(() => {
-      window.dispatchEvent(new PopStateEvent('popstate', { state: { view: 'base' } }));
-    });
-    
-    // 5. Exit confirmation dialog should display
-    expect(screen.getByText('¿Salir de Barista Timer?')).toBeInTheDocument();
   });
 
   test('App recipe editor UI/UX improvements (auto-save new step, live totals)', async () => {

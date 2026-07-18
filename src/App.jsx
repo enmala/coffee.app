@@ -2672,9 +2672,12 @@ export default function App() {
                   type="button"
                   onClick={() => {
                     allowExitRef.current = true;
-                    window.history.go(-2);
+                    window.history.back();
                     setTimeout(() => {
-                      window.close();
+                      window.history.back();
+                      setTimeout(() => {
+                        window.close();
+                      }, 50);
                     }, 100);
                   }}
                   className="flex-1 py-2 bg-amber-800 hover:bg-amber-900 text-white rounded-xl font-bold text-xs transition shadow-sm cursor-pointer"

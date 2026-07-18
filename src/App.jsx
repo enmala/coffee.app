@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { getMethodIcon, COFFEE_DESCRIPTORS, decompressRecipe } from './utils/coffeeUtils';
 import TimerComponent from './components/TimerComponent';
 import ShareModal from './components/ShareModal';

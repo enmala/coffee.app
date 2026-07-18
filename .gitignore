@@ -29,3 +29,19 @@ work
 coverage
 .agents/
 *.keystore
+
+# Android / Bubblewrap TWA generated files
+/app/
+/gradle/
+/gradlew
+/gradlew.bat
+/settings.gradle
+/build.gradle
+*.apk
+*.aab
+.gradle/
+build/
+/gradle.properties
+/manifest-checksum.txt
+/store_icon.png
+*.idsig

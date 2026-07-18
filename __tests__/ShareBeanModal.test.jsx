@@ -122,4 +122,97 @@ describe('ShareBeanModal Component Tests', () => {
     fireEvent.click(shareBtn);
     expect(mockShare).toHaveBeenCalled();
   });
+
+  test('handles clipboard write error and calls onAlert', async () => {
+    const mockOnAlert = vi.fn();
+    Object.defineProperty(navigator, 'clipboard', {
+      value: {
+        writeText: vi.fn().mockRejectedValue(new Error('Clipboard error'))
+      },
+      writable: true,
+      configurable: true
+    });
+
+    await act(async () => {
+      render(<ShareBeanModal bean={mockBean} onClose={mockOnClose} onAlert={mockOnAlert} />);
+    });
+
+    const copyBtn = screen.getByText('Copiar Enlace');
+    await act(async () => {
+      fireEvent.click(copyBtn);
+    });
+
+    expect(mockOnAlert).toHaveBeenCalledWith("No se pudo copiar el enlace automáticamente.", "error");
+  });
+
+  test('handles clipboard write error without onAlert', async () => {
+    const spyAlert = vi.spyOn(window, 'alert').mockImplementation(() => {});
+    Object.defineProperty(navigator, 'clipboard', {
+      value: {
+        writeText: vi.fn().mockRejectedValue(new Error('Clipboard error'))
+      },
+      writable: true,
+      configurable: true
+    });
+
+    await act(async () => {
+      render(<ShareBeanModal bean={mockBean} onClose={mockOnClose} />);
+    });
+
+    const copyBtn = screen.getByText('Copiar Enlace');
+    await act(async () => {
+      fireEvent.click(copyBtn);
+    });
+
+    expect(spyAlert).toHaveBeenCalledWith("No se pudo copiar el enlace automáticamente.");
+    spyAlert.mockRestore();
+  });
+
+  test('handles QR code rendering error', async () => {
+    const QRCode = (await import('qrcode')).default;
+    const spyToCanvas = vi.spyOn(QRCode, 'toCanvas').mockImplementation((canvas, text, options, cb) => {
+      if (cb) cb(new Error('QR rendering failed'));
+    });
+
+    await act(async () => {
+      render(<ShareBeanModal bean={mockBean} onClose={mockOnClose} />);
+    });
+
+    expect(await screen.findByText('Error al renderizar el código QR.')).toBeInTheDocument();
+    spyToCanvas.mockRestore();
+  });
+
+  test('handles web share error that is not AbortError', async () => {
+    const mockShare = vi.fn().mockRejectedValue(new Error('Share failed'));
+    Object.defineProperty(navigator, 'share', {
+      value: mockShare,
+      writable: true,
+      configurable: true
+    });
+    const spyConsoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    await act(async () => {
+      render(<ShareBeanModal bean={mockBean} onClose={mockOnClose} />);
+    });
+
+    const shareBtn = screen.getByText('Compartir en Móvil');
+    await act(async () => {
+      fireEvent.click(shareBtn);
+    });
+
+    expect(spyConsoleError).toHaveBeenCalled();
+    spyConsoleError.mockRestore();
+  });
+
+  test('handles bean compression error in useEffect', async () => {
+    const coffeeUtils = await import('../src/utils/coffeeUtils');
+    const spyCompress = vi.spyOn(coffeeUtils, 'compressBean').mockRejectedValue(new Error('Compression failed'));
+
+    await act(async () => {
+      render(<ShareBeanModal bean={mockBean} onClose={mockOnClose} />);
+    });
+
+    expect(await screen.findByText('No se pudo generar el enlace de compartir.')).toBeInTheDocument();
+    spyCompress.mockRestore();
+  });
 });

@@ -207,5 +207,17 @@ describe('coffeeUtils', () => {
     test('should throw error for invalid formatted bean string', async () => {
       await expect(decompressBean('invalid_bean_string')).rejects.toThrow();
     });
+
+    test('should throw error if decompressed bean does not have a name', async () => {
+      const noNamePayload = 'br1_e30='; // base64 de '{}' es 'e30='
+      await expect(decompressBean(noNamePayload)).rejects.toThrow("Estructura de grano de café inválida");
+    });
+
+    test('should decompress a bean even without a prefix', async () => {
+      const rawBean = { n: 'Geisha' };
+      const rawBase64 = btoa(JSON.stringify(rawBean));
+      const decompressed = await decompressBean(rawBase64);
+      expect(decompressed.name).toBe('Geisha');
+    });
   });
 });

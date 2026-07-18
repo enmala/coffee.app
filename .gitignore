@@ -27,3 +27,4 @@ dist-ssr
 # Other
 work
 coverage
+.agents/

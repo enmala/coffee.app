@@ -16,7 +16,7 @@ export default defineConfig({
         short_name: 'BaristaTimer',
         description: 'Recetario y temporizador para café de especialidad',
         theme_color: '#1e1b4b',
-        background_color: '#f8fafc',
+        background_color: '#1e1b4b',
         display: 'standalone',
         orientation: 'portrait',
         icons: [

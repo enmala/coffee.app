@@ -10,7 +10,7 @@
   "navigationColorDark": "#1E1B4B",
   "navigationDividerColor": "#000000",
   "navigationDividerColorDark": "#000000",
-  "backgroundColor": "#F8FAFC",
+  "backgroundColor": "#1E1B4B",
   "enableNotifications": false,
   "startUrl": "/",
   "iconUrl": "https://barista.bitslab.cl/pwa-512x512.png",

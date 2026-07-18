@@ -46,7 +46,7 @@ Los agentes de IA deben leer este archivo para saber qué implementar a continua
 - [x] Opciones para compartir recetas (Exportación a .json, enlace a portapapeles, código QR).
 - [x] Mejoras UI: Reemplazar diálogos de alerta del navegador por modales nativos estilizados.
 - [x] Ajustes UI menores: Reducción del timer SVG, tarjetas ámbar para verter agua y soluciones de superposición del menú de opciones (z-index).
-- [x] Gestión de Navegación de Retroceso (History API) para vistas y diálogos internos, mostrando confirmación al salir de la aplicación.
+- [x] Gestión de Navegación de Retroceso (History API) para vistas y diálogos internos, permitiendo salir de la aplicación directamente con el gesto nativo.
 - [x] Mejoras de UI/UX y accesibilidad en el editor de recetas (autoguardado de pasos en progreso, totales dinámicos en tiempo real y aumento de tamaño de tipografía).
 - [x] Optimización UX/UI de la vista de resumen de receta, auto-start en el temporizador y acordeón de grano de café asociado (v1.4.0).
 - [x] Configuración, documentación y preparación de empaquetado TWA (Google Play Store) usando Bubblewrap (v1.4.2).

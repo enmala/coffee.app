@@ -240,3 +240,99 @@ export const decompressRecipe = async (encodedStr) => {
     }))
   };
 };
+
+// Codifica un grano de café a una cadena Base64 URL-safe comprimida nativamente con Deflate
+export const compressBean = async (bean) => {
+  const minified = {
+    n: bean.name,
+    r: bean.roaster || '',
+    o: bean.origin || '',
+    p: bean.process || 'Lavado',
+    v: bean.variety || '',
+    l: bean.roast_level || 'Medio',
+    d: bean.roast_date || '',
+    s: bean.sca_score ? parseFloat(bean.sca_score) : null,
+    a: bean.altitude || '',
+    t: bean.tasting_notes || [],
+    x: bean.notes || ''
+  };
+
+  const jsonStr = JSON.stringify(minified);
+
+  try {
+    if (typeof CompressionStream !== 'undefined') {
+      const stream = new Blob([jsonStr]).stream();
+      const compressedStream = stream.pipeThrough(new CompressionStream('deflate'));
+      const response = new Response(compressedStream);
+      const blob = await response.blob();
+      const arrayBuffer = await blob.arrayBuffer();
+      const uint8Array = new Uint8Array(arrayBuffer);
+      const binString = Array.from(uint8Array, (byte) => String.fromCharCode(byte)).join("");
+      const base64 = btoa(binString);
+      return 'bc1_' + base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    }
+  } catch (err) {
+    console.warn("Fallo al comprimir grano nativamente, usando fallback sin compresión:", err);
+  }
+
+  // Fallback: URL-safe base64 de JSON minificado
+  const bytes = new TextEncoder().encode(jsonStr);
+  const binString = Array.from(bytes, (byte) => String.fromCharCode(byte)).join("");
+  const base64 = btoa(binString);
+  return 'br1_' + base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+};
+
+// Decodifica un grano de café a partir de una cadena Base64 URL-safe comprimida o cruda
+export const decompressBean = async (encodedStr) => {
+  if (!encodedStr) throw new Error("Cadena de grano vacía");
+
+  const type = encodedStr.substring(0, 4);
+  const actualPayload = encodedStr.substring(4);
+
+  let base64 = (type === 'bc1_' || type === 'br1_') ? actualPayload : encodedStr;
+  base64 = base64.replace(/-/g, '+').replace(/_/g, '/');
+  while (base64.length % 4) {
+    base64 += '=';
+  }
+
+  let jsonStr;
+  try {
+    if (type === 'bc1_' && typeof DecompressionStream !== 'undefined') {
+      const binString = atob(base64);
+      const bytes = Uint8Array.from(binString, (char) => char.charCodeAt(0));
+      const stream = new Blob([bytes]).stream();
+      const decompressedStream = stream.pipeThrough(new DecompressionStream('deflate'));
+      const response = new Response(decompressedStream);
+      jsonStr = await response.text();
+    } else {
+      // br1_ o formato directo sin prefijo
+      const binString = atob(base64);
+      const bytes = Uint8Array.from(binString, (char) => char.charCodeAt(0));
+      jsonStr = new TextDecoder().decode(bytes);
+    }
+  } catch (err) {
+    console.error("Error al decodificar grano:", err);
+    throw new Error("No se pudo descifrar el grano compartido. Asegúrate de que el enlace esté completo.", { cause: err });
+  }
+
+  const minified = JSON.parse(jsonStr);
+
+  if (!minified.n) {
+    throw new Error("Estructura de grano de café inválida");
+  }
+
+  return {
+    name: minified.n,
+    roaster: minified.r || '',
+    origin: minified.o || '',
+    process: minified.p || 'Lavado',
+    variety: minified.v || '',
+    roast_level: minified.l || 'Medio',
+    roast_date: minified.d || '',
+    sca_score: minified.s || '',
+    altitude: minified.a || '',
+    tasting_notes: minified.t || [],
+    notes: minified.x || ''
+  };
+};
+

@@ -1,0 +1,125 @@
+import { describe, test, expect, vi, beforeEach } from 'vitest';
+import { render, screen, fireEvent, act } from '@testing-library/react';
+import ShareBeanModal from '../src/components/ShareBeanModal';
+
+vi.mock('qrcode', () => ({
+  default: {
+    toCanvas: vi.fn((canvas, text, options, cb) => {
+      if (cb) cb(null);
+    })
+  }
+}));
+
+describe('ShareBeanModal Component Tests', () => {
+  const mockBean = {
+    id: 'bean-1',
+    name: 'Geisha Suprema',
+    roaster: 'Tostaduría Gourmet',
+    origin: 'Colombia',
+    process: 'Lavado',
+    variety: 'Geisha',
+    roast_level: 'Medio',
+    roast_date: '2026-07-01',
+    sca_score: 88.5,
+    altitude: '1600m',
+    tasting_notes: ['Fresa', 'Chocolate'],
+    notes: 'Grano muy aromático.'
+  };
+
+  const mockOnClose = vi.fn();
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    // Mock navigator clipboard
+    Object.defineProperty(navigator, 'clipboard', {
+      value: {
+        writeText: vi.fn().mockResolvedValue()
+      },
+      writable: true,
+      configurable: true
+    });
+    // Mock navigator share as undefined by default
+    Object.defineProperty(navigator, 'share', {
+      value: undefined,
+      writable: true,
+      configurable: true
+    });
+  });
+
+  test('renders bean name and roaster, and closes on clicking close button', async () => {
+    await act(async () => {
+      render(<ShareBeanModal bean={mockBean} onClose={mockOnClose} />);
+    });
+
+    expect(screen.getByText('Compartir Grano')).toBeInTheDocument();
+    expect(screen.getByText('Geisha Suprema (Tostaduría Gourmet)')).toBeInTheDocument();
+
+    const closeBtn = screen.getByLabelText('Cerrar modal');
+    fireEvent.click(closeBtn);
+    expect(mockOnClose).toHaveBeenCalled();
+  });
+
+  test('allows copying link to clipboard', async () => {
+    await act(async () => {
+      render(<ShareBeanModal bean={mockBean} onClose={mockOnClose} />);
+    });
+
+    const copyBtn = screen.getByText('Copiar Enlace');
+    await act(async () => {
+      fireEvent.click(copyBtn);
+    });
+
+    expect(navigator.clipboard.writeText).toHaveBeenCalled();
+    expect(screen.getByText('¡Enlace Copiado!')).toBeInTheDocument();
+  });
+
+  test('allows downloading JSON bean file', async () => {
+    await act(async () => {
+      render(<ShareBeanModal bean={mockBean} onClose={mockOnClose} />);
+    });
+
+    const mockClick = vi.fn();
+    const mockAnchor = {
+      setAttribute: vi.fn(),
+      click: mockClick,
+      remove: vi.fn()
+    };
+    
+    const spy = vi.spyOn(document, 'createElement').mockImplementation((tagName) => {
+      if (tagName === 'a') {
+        return mockAnchor;
+      }
+    });
+
+    const mockAppendChild = vi.spyOn(document.body, 'appendChild').mockImplementation(() => {});
+    
+    try {
+      const downloadBtn = screen.getByText('Descargar archivo');
+      fireEvent.click(downloadBtn);
+
+      expect(mockClick).toHaveBeenCalled();
+    } finally {
+      spy.mockRestore();
+      mockAppendChild.mockRestore();
+    }
+  });
+
+  test('supports web share api if available', async () => {
+    const mockShare = vi.fn().mockResolvedValue(true);
+    Object.defineProperty(navigator, 'share', {
+      value: mockShare,
+      writable: true,
+      configurable: true
+    });
+
+    await act(async () => {
+      render(<ShareBeanModal bean={mockBean} onClose={mockOnClose} />);
+    });
+
+    const shareBtn = screen.getByText('Compartir en Móvil');
+    expect(shareBtn).toBeInTheDocument();
+
+    fireEvent.click(shareBtn);
+    expect(mockShare).toHaveBeenCalled();
+  });
+});

@@ -92,7 +92,7 @@ describe('ShareModal Component Tests', () => {
     const mockRemoveChild = vi.spyOn(document.body, 'removeChild').mockImplementation(() => {});
     
     try {
-      const downloadBtn = screen.getByText('Descargar archivo JSON');
+      const downloadBtn = screen.getByText('Descargar archivo');
       fireEvent.click(downloadBtn);
 
       expect(mockClick).toHaveBeenCalled();

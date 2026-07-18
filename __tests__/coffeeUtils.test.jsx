@@ -1,6 +1,6 @@
 import { describe, test, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render } from '@testing-library/react';
-import { getMethodIcon, playBeep, compressRecipe, decompressRecipe } from '../src/utils/coffeeUtils';
+import { getMethodIcon, playBeep, compressRecipe, decompressRecipe, compressBean, decompressBean } from '../src/utils/coffeeUtils';
 
 describe('coffeeUtils', () => {
   describe('getMethodIcon', () => {
@@ -145,6 +145,79 @@ describe('coffeeUtils', () => {
 
     test('should throw error for invalid formatted string', async () => {
       await expect(decompressRecipe('invalid_string')).rejects.toThrow();
+    });
+  });
+
+  describe('Bean Compression & Decompression', () => {
+    const testBean = {
+      name: 'Geisha de Panamá',
+      roaster: 'Specialty Roasters',
+      origin: 'Boquete, Panamá',
+      process: 'Honey',
+      variety: 'Geisha',
+      roast_level: 'Claro',
+      roast_date: '2026-07-10',
+      sca_score: 90.5,
+      altitude: '1800 msnm',
+      tasting_notes: ['Jazmín', 'Melocotón', 'Cítrico'],
+      notes: 'Café excepcional con notas florales muy marcadas.'
+    };
+
+    test('should compress and decompress a bean successfully maintaining data integrity', async () => {
+      const compressed = await compressBean(testBean);
+      expect(typeof compressed).toBe('string');
+      expect(compressed.startsWith('bc1_') || compressed.startsWith('br1_')).toBe(true);
+
+      const decompressed = await decompressBean(compressed);
+      expect(decompressed.name).toBe(testBean.name);
+      expect(decompressed.roaster).toBe(testBean.roaster);
+      expect(decompressed.origin).toBe(testBean.origin);
+      expect(decompressed.process).toBe(testBean.process);
+      expect(decompressed.variety).toBe(testBean.variety);
+      expect(decompressed.roast_level).toBe(testBean.roast_level);
+      expect(decompressed.roast_date).toBe(testBean.roast_date);
+      expect(decompressed.sca_score).toBe(testBean.sca_score);
+      expect(decompressed.altitude).toBe(testBean.altitude);
+      expect(decompressed.tasting_notes).toEqual(testBean.tasting_notes);
+      expect(decompressed.notes).toBe(testBean.notes);
+    });
+
+    test('should work with UTF-8 characters like accents and special characters', async () => {
+      const specialBean = {
+        name: 'Café Cariño de Ñuble',
+        roaster: 'Tostaduría Cafeto',
+        origin: 'Chile',
+        process: 'Lavado',
+        variety: 'Caturra',
+        roast_level: 'Medio',
+        roast_date: '2026-07-12',
+        sca_score: 83.5,
+        altitude: '1200m',
+        tasting_notes: ['Limón', 'Mora'],
+        notes: 'Una dulzura sutil.'
+      };
+
+      const compressed = await compressBean(specialBean);
+      const decompressed = await decompressBean(compressed);
+      expect(decompressed.name).toBe(specialBean.name);
+      expect(decompressed.notes).toBe(specialBean.notes);
+      expect(decompressed.tasting_notes).toEqual(specialBean.tasting_notes);
+    });
+
+    test('should throw error for invalid formatted bean string', async () => {
+      await expect(decompressBean('invalid_bean_string')).rejects.toThrow();
+    });
+
+    test('should throw error if decompressed bean does not have a name', async () => {
+      const noNamePayload = 'br1_e30='; // base64 de '{}' es 'e30='
+      await expect(decompressBean(noNamePayload)).rejects.toThrow("Estructura de grano de café inválida");
+    });
+
+    test('should decompress a bean even without a prefix', async () => {
+      const rawBean = { n: 'Geisha' };
+      const rawBase64 = btoa(JSON.stringify(rawBean));
+      const decompressed = await decompressBean(rawBase64);
+      expect(decompressed.name).toBe('Geisha');
     });
   });
 });

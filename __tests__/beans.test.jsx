@@ -1,6 +1,15 @@
 import { describe, test, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import App from '../src/App';
+import { compressBean } from '../src/utils/coffeeUtils';
+
+vi.mock('qrcode', () => ({
+  default: {
+    toCanvas: vi.fn((canvas, text, options, cb) => {
+      if (cb) cb(null);
+    })
+  }
+}));
 
 describe('Coffee Beans Management Tests', () => {
   beforeEach(() => {
@@ -272,5 +281,64 @@ describe('Coffee Beans Management Tests', () => {
     fireEvent.click(historyTabBtn);
     expect(screen.getByText('V60 para Historial')).toBeInTheDocument();
     expect(screen.getByText('🫘 Etiopía Sidamo')).toBeInTheDocument();
+  });
+
+  test('should open Share modal on clicking share button', async () => {
+    render(<App />);
+
+    const beansTabBtn = screen.getByRole('button', { name: /Granos/ });
+    fireEvent.click(beansTabBtn);
+
+    const shareBtn = screen.getByTitle('Compartir grano');
+    fireEvent.click(shareBtn);
+
+    expect(screen.getByText('Compartir Grano')).toBeInTheDocument();
+    expect(screen.getByText('Etiopía Sidamo (Tostaduría Artesanal)')).toBeInTheDocument();
+
+    const closeBtn = screen.getByLabelText('Cerrar modal');
+    fireEvent.click(closeBtn);
+    expect(screen.queryByText('Compartir Grano')).not.toBeInTheDocument();
+  });
+
+  test('should parse bean URL parameter and import bean successfully', async () => {
+    const newBeanToImport = {
+      name: 'Imported Geisha',
+      roaster: 'Panama Farms',
+      origin: 'Boquete',
+      process: 'Natural',
+      variety: 'Geisha',
+      roast_level: 'Claro',
+      roast_date: '2026-07-05',
+      sca_score: 89.5,
+      altitude: '1700m',
+      tasting_notes: ['Jazmín', 'Bergamota'],
+      notes: 'Super dulce'
+    };
+
+    const compressed = await compressBean(newBeanToImport);
+
+    const originalLocation = window.location;
+    delete window.location;
+    window.location = new URL(`http://localhost/?bean=${compressed}`);
+
+    render(<App />);
+
+    expect(await screen.findByText('Importar Grano de Café')).toBeInTheDocument();
+    expect(screen.getByText('Imported Geisha')).toBeInTheDocument();
+    expect(screen.getByText('Tostador: Panama Farms')).toBeInTheDocument();
+    expect(screen.getByText('📍 Boquete')).toBeInTheDocument();
+    expect(screen.getByText('⚙️ Natural')).toBeInTheDocument();
+    expect(screen.getByText('🏆 89.5')).toBeInTheDocument();
+
+    const confirmBtn = screen.getByRole('button', { name: 'Guardar Grano' });
+    fireEvent.click(confirmBtn);
+
+    expect(screen.getByText('Grano de café importado correctamente como "Imported Geisha".')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /aceptar/i }));
+
+    expect(screen.getByText('Imported Geisha')).toBeInTheDocument();
+    expect(screen.getByText('Panama Farms')).toBeInTheDocument();
+
+    window.location = originalLocation;
   });
 });

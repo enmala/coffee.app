@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
-import { getMethodIcon, COFFEE_DESCRIPTORS, decompressRecipe } from './utils/coffeeUtils';
+import { getMethodIcon, COFFEE_DESCRIPTORS, decompressRecipe, decompressBean } from './utils/coffeeUtils';
 import TimerComponent from './components/TimerComponent';
 import ShareModal from './components/ShareModal';
+import ShareBeanModal from './components/ShareBeanModal';
 import ImportConfirmationModal from './components/ImportConfirmationModal';
+import ImportBeanConfirmationModal from './components/ImportBeanConfirmationModal';
 import NotificationModal from './components/NotificationModal';
 import { version } from '../package.json';
 
@@ -112,6 +114,8 @@ export default function App() {
   const [summaryRecipe, setSummaryRecipe] = useState(null);
   const [recipeToShare, setRecipeToShare] = useState(null);
   const [recipeToImport, setRecipeToImport] = useState(null);
+  const [beanToShare, setBeanToShare] = useState(null);
+  const [beanToImport, setBeanToImport] = useState(null);
   const [saveSuccessMessage, setSaveSuccessMessage] = useState(null);
   const [recipeToDelete, setRecipeToDelete] = useState(null);
   const [customAlert, setCustomAlert] = useState(null); // { message, type, title }
@@ -264,6 +268,13 @@ export default function App() {
       setRecipeToShare(null);
     }
 
+    if (state.view === 'share-bean' && state.beanId) {
+      const bn = beans.find((b) => b.id === state.beanId);
+      setBeanToShare(bn || null);
+    } else {
+      setBeanToShare(null);
+    }
+
     if (state.view === 'delete-recipe' && state.recipeId) {
       const rec = recipes.find((r) => r.id === state.recipeId);
       setRecipeToDelete(rec || null);
@@ -289,6 +300,10 @@ export default function App() {
     
     if (state.view !== 'import') {
       setRecipeToImport(null);
+    }
+
+    if (state.view !== 'import-bean') {
+      setBeanToImport(null);
     }
   }
 
@@ -364,6 +379,29 @@ export default function App() {
         }
       }
       decodeUrlRecipe();
+    }
+
+    const beanParam = params.get('bean');
+    if (beanParam) {
+      async function decodeUrlBean() {
+        try {
+          const decodedBean = await decompressBean(beanParam);
+          setBeanToImport(decodedBean);
+          navigateTo('import-bean');
+          
+          const url = new URL(window.location.href);
+          url.searchParams.delete('bean');
+          window.history.replaceState({ view: 'import-bean' }, '', url.pathname + url.search);
+        } catch (err) {
+          console.error("Error al decodificar el grano de café de la URL:", err);
+          showAlert(err.message || "No se pudo importar el grano de café desde la URL.", "error");
+          
+          const url = new URL(window.location.href);
+          url.searchParams.delete('bean');
+          window.history.replaceState({ view: 'main' }, '', url.pathname + url.search);
+        }
+      }
+      decodeUrlBean();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -449,6 +487,16 @@ export default function App() {
   const closeImport = () => {
     setRecipeToImport(null);
     safeBack('import');
+  };
+
+  const closeShareBean = () => {
+    setBeanToShare(null);
+    safeBack('share-bean');
+  };
+
+  const closeImportBean = () => {
+    setBeanToImport(null);
+    safeBack('import-bean');
   };
 
   const closeDeleteRecipe = () => {
@@ -700,6 +748,33 @@ export default function App() {
     setRecipes((prev) => [...prev, updated]);
     showAlert(`Receta importada correctamente como "${recipeName}".`, "success");
     closeImport();
+  };
+
+  const confirmImportBean = () => {
+    if (!beanToImport) return;
+
+    const uniqueId = `imported-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+    let beanName = beanToImport.name.trim();
+
+    const nameExists = beans.some((b) => b.name.toLowerCase() === beanName.toLowerCase());
+    if (nameExists) {
+      let counter = 1;
+      while (beans.some((b) => b.name.toLowerCase() === `${beanName} (${counter})`.toLowerCase())) {
+        counter++;
+      }
+      beanName = `${beanName} (${counter})`;
+    }
+
+    const updated = {
+      ...beanToImport,
+      id: uniqueId,
+      name: beanName
+    };
+
+    setBeans((prev) => [updated, ...prev]);
+    showAlert(`Grano de café importado correctamente como "${beanName}".`, "success");
+    closeImportBean();
+    setActiveTab('beans');
   };
 
   const handleExportJson = (recipe) => {
@@ -1419,6 +1494,19 @@ export default function App() {
                           
                           {/* Botones de acción */}
                           <div className="flex gap-2">
+                            <button
+                              onClick={() => navigateTo('share-bean', { beanId: bean.id })}
+                              className="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded transition text-slate-500 dark:text-slate-400 hover:text-amber-850 dark:hover:text-amber-500 cursor-pointer flex items-center justify-center"
+                              title="Compartir grano"
+                            >
+                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 overflow-visible">
+                                <circle cx="18" cy="5" r="3" />
+                                <circle cx="6" cy="12" r="3" />
+                                <circle cx="18" cy="19" r="3" />
+                                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+                                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+                              </svg>
+                            </button>
                             <button
                               onClick={() => handleStartEditBean(bean)}
                               className="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded transition text-xs cursor-pointer"
@@ -2208,6 +2296,23 @@ export default function App() {
             existingRecipes={recipes}
             onConfirm={confirmImportRecipe}
             onCancel={closeImport}
+          />
+        )}
+
+        {beanToShare && (
+          <ShareBeanModal
+            bean={beanToShare}
+            onClose={closeShareBean}
+            onAlert={showAlert}
+          />
+        )}
+
+        {beanToImport && (
+          <ImportBeanConfirmationModal
+            bean={beanToImport}
+            existingBeans={beans}
+            onConfirm={confirmImportBean}
+            onCancel={closeImportBean}
           />
         )}
 

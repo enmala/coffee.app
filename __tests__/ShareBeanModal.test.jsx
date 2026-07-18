@@ -1,6 +1,6 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, act } from '@testing-library/react';
-import ShareModal from '../src/components/ShareModal';
+import ShareBeanModal from '../src/components/ShareBeanModal';
 
 vi.mock('qrcode', () => ({
   default: {
@@ -10,17 +10,20 @@ vi.mock('qrcode', () => ({
   }
 }));
 
-describe('ShareModal Component Tests', () => {
-  const mockRecipe = {
-    id: 'recipe-1',
-    name: 'V60 Dulce',
-    method: 'V60',
-    coffee_g: 15,
-    grind_size: 'Medium',
-    water_temp_c: 92,
-    steps: [
-      { step_number: 1, title: 'Preinfusion', water_g: 50, duration_s: 30, instruction: 'Pour 50g' }
-    ]
+describe('ShareBeanModal Component Tests', () => {
+  const mockBean = {
+    id: 'bean-1',
+    name: 'Geisha Suprema',
+    roaster: 'Tostaduría Gourmet',
+    origin: 'Colombia',
+    process: 'Lavado',
+    variety: 'Geisha',
+    roast_level: 'Medio',
+    roast_date: '2026-07-01',
+    sca_score: 88.5,
+    altitude: '1600m',
+    tasting_notes: ['Fresa', 'Chocolate'],
+    notes: 'Grano muy aromático.'
   };
 
   const mockOnClose = vi.fn();
@@ -43,13 +46,13 @@ describe('ShareModal Component Tests', () => {
     });
   });
 
-  test('renders recipe name and method, and closes on clicking close button', async () => {
+  test('renders bean name and roaster, and closes on clicking close button', async () => {
     await act(async () => {
-      render(<ShareModal recipe={mockRecipe} onClose={mockOnClose} />);
+      render(<ShareBeanModal bean={mockBean} onClose={mockOnClose} />);
     });
 
-    expect(screen.getByText('Compartir Receta')).toBeInTheDocument();
-    expect(screen.getByText('V60 Dulce (V60)')).toBeInTheDocument();
+    expect(screen.getByText('Compartir Grano')).toBeInTheDocument();
+    expect(screen.getByText('Geisha Suprema (Tostaduría Gourmet)')).toBeInTheDocument();
 
     const closeBtn = screen.getByLabelText('Cerrar modal');
     fireEvent.click(closeBtn);
@@ -58,7 +61,7 @@ describe('ShareModal Component Tests', () => {
 
   test('allows copying link to clipboard', async () => {
     await act(async () => {
-      render(<ShareModal recipe={mockRecipe} onClose={mockOnClose} />);
+      render(<ShareBeanModal bean={mockBean} onClose={mockOnClose} />);
     });
 
     const copyBtn = screen.getByText('Copiar Enlace');
@@ -70,9 +73,9 @@ describe('ShareModal Component Tests', () => {
     expect(screen.getByText('¡Enlace Copiado!')).toBeInTheDocument();
   });
 
-  test('allows downloading JSON recipe file', async () => {
+  test('allows downloading JSON bean file', async () => {
     await act(async () => {
-      render(<ShareModal recipe={mockRecipe} onClose={mockOnClose} />);
+      render(<ShareBeanModal bean={mockBean} onClose={mockOnClose} />);
     });
 
     const mockClick = vi.fn();
@@ -89,7 +92,6 @@ describe('ShareModal Component Tests', () => {
     });
 
     const mockAppendChild = vi.spyOn(document.body, 'appendChild').mockImplementation(() => {});
-    const mockRemoveChild = vi.spyOn(document.body, 'removeChild').mockImplementation(() => {});
     
     try {
       const downloadBtn = screen.getByText('Descargar archivo');
@@ -99,7 +101,6 @@ describe('ShareModal Component Tests', () => {
     } finally {
       spy.mockRestore();
       mockAppendChild.mockRestore();
-      mockRemoveChild.mockRestore();
     }
   });
 
@@ -112,7 +113,7 @@ describe('ShareModal Component Tests', () => {
     });
 
     await act(async () => {
-      render(<ShareModal recipe={mockRecipe} onClose={mockOnClose} />);
+      render(<ShareBeanModal bean={mockBean} onClose={mockOnClose} />);
     });
 
     const shareBtn = screen.getByText('Compartir en Móvil');
@@ -133,7 +134,7 @@ describe('ShareModal Component Tests', () => {
     });
 
     await act(async () => {
-      render(<ShareModal recipe={mockRecipe} onClose={mockOnClose} onAlert={mockOnAlert} />);
+      render(<ShareBeanModal bean={mockBean} onClose={mockOnClose} onAlert={mockOnAlert} />);
     });
 
     const copyBtn = screen.getByText('Copiar Enlace');
@@ -155,7 +156,7 @@ describe('ShareModal Component Tests', () => {
     });
 
     await act(async () => {
-      render(<ShareModal recipe={mockRecipe} onClose={mockOnClose} />);
+      render(<ShareBeanModal bean={mockBean} onClose={mockOnClose} />);
     });
 
     const copyBtn = screen.getByText('Copiar Enlace');
@@ -174,7 +175,7 @@ describe('ShareModal Component Tests', () => {
     });
 
     await act(async () => {
-      render(<ShareModal recipe={mockRecipe} onClose={mockOnClose} />);
+      render(<ShareBeanModal bean={mockBean} onClose={mockOnClose} />);
     });
 
     expect(await screen.findByText('Error al renderizar el código QR.')).toBeInTheDocument();
@@ -191,7 +192,7 @@ describe('ShareModal Component Tests', () => {
     const spyConsoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     await act(async () => {
-      render(<ShareModal recipe={mockRecipe} onClose={mockOnClose} />);
+      render(<ShareBeanModal bean={mockBean} onClose={mockOnClose} />);
     });
 
     const shareBtn = screen.getByText('Compartir en Móvil');
@@ -203,12 +204,12 @@ describe('ShareModal Component Tests', () => {
     spyConsoleError.mockRestore();
   });
 
-  test('handles recipe compression error in useEffect', async () => {
+  test('handles bean compression error in useEffect', async () => {
     const coffeeUtils = await import('../src/utils/coffeeUtils');
-    const spyCompress = vi.spyOn(coffeeUtils, 'compressRecipe').mockRejectedValue(new Error('Compression failed'));
+    const spyCompress = vi.spyOn(coffeeUtils, 'compressBean').mockRejectedValue(new Error('Compression failed'));
 
     await act(async () => {
-      render(<ShareModal recipe={mockRecipe} onClose={mockOnClose} />);
+      render(<ShareBeanModal bean={mockBean} onClose={mockOnClose} />);
     });
 
     expect(await screen.findByText('No se pudo generar el enlace de compartir.')).toBeInTheDocument();

@@ -49,3 +49,4 @@ Los agentes de IA deben leer este archivo para saber qué implementar a continua
 - [x] Gestión de Navegación de Retroceso (History API) para vistas y diálogos internos, mostrando confirmación al salir de la aplicación.
 - [x] Mejoras de UI/UX y accesibilidad en el editor de recetas (autoguardado de pasos en progreso, totales dinámicos en tiempo real y aumento de tamaño de tipografía).
 - [x] Optimización UX/UI de la vista de resumen de receta, auto-start en el temporizador y acordeón de grano de café asociado (v1.4.0).
+- [x] Configuración, documentación y preparación de empaquetado TWA (Google Play Store) usando Bubblewrap (v1.4.2).

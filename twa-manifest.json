@@ -1,0 +1,31 @@
+{
+  "packageId": "com.enmala.baristatimer",
+  "host": "barista.bitslab.cl",
+  "name": "Barista Timer",
+  "shortName": "BaristaTimer",
+  "themeColor": "#1E1B4B",
+  "navigationColor": "#1E1B4B",
+  "navigationColorDark": "#1E1B4B",
+  "navigationDividerColor": "#000000",
+  "navigationDividerColorDark": "#000000",
+  "backgroundColor": "#F8FAFC",
+  "enableNotifications": false,
+  "startUrl": "/",
+  "iconUrl": "https://barista.bitslab.cl/pwa-512x512.png",
+  "maskableIconUrl": "https://barista.bitslab.cl/pwa-512x512.png",
+  "splashFadeOutDuration": 300,
+  "signingKey": {
+    "path": "./android.keystore",
+    "alias": "android"
+  },
+  "appVersionName": "1.4.2",
+  "appVersionCode": 1,
+  "display": "standalone",
+  "orientation": "portrait",
+  "fallbackType": "customtabs",
+  "features": {},
+  "alphaDependencies": false,
+  "enablePlayBilling": false,
+  "shortcuts": [],
+  "webManifestUrl": "https://barista.bitslab.cl/manifest.webmanifest"
+}

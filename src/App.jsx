@@ -1747,15 +1747,7 @@ export default function App() {
                       <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
                     </svg>
                   </button>
-                  <button
-                    onClick={() => handleExportJson(summaryRecipe)}
-                    className="p-1.5 text-slate-400 dark:text-slate-400 hover:text-amber-800 dark:hover:text-amber-500 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
-                    title="Exportar receta JSON"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
-                    </svg>
-                  </button>
+
                   <button
                     onClick={closeSummary}
                     className="p-1.5 text-slate-400 dark:text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"

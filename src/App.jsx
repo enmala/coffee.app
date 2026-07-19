@@ -724,6 +724,29 @@ export default function App() {
     e.target.value = '';
   };
 
+  const handleImportBeanJson = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const imported = JSON.parse(event.target.result);
+        if (!imported.name) {
+          showAlert("El archivo JSON no tiene una estructura válida de grano de café.", "error");
+          return;
+        }
+
+        setBeanToImport(imported);
+      } catch (err) {
+        console.error("Error al leer el archivo JSON de grano:", err);
+        showAlert("Ocurrió un error al leer el archivo JSON.", "error");
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  };
+
   const confirmImportRecipe = () => {
     if (!recipeToImport) return;
 
@@ -1443,12 +1466,23 @@ export default function App() {
               <div className="space-y-6">
                 <div className="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-3">
                   <h2 className="text-xl font-bold text-slate-900 dark:text-white">Tus Granos</h2>
-                  <button
-                    onClick={handleStartNewBean}
-                    className="px-3.5 py-2 bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-800 text-white text-xs font-bold rounded-xl shadow-sm transition flex items-center gap-1 cursor-pointer"
-                  >
-                    + Agregar Grano
-                  </button>
+                  <div className="flex gap-2">
+                    <label className="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold rounded-lg cursor-pointer transition flex items-center justify-center border border-slate-200 dark:border-slate-700">
+                      Importar
+                      <input
+                        type="file"
+                        accept=".json"
+                        onChange={handleImportBeanJson}
+                        className="hidden"
+                      />
+                    </label>
+                    <button
+                      onClick={handleStartNewBean}
+                      className="px-3 py-1.5 bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-800 text-white text-xs font-bold rounded-lg transition cursor-pointer"
+                    >
+                      + Agregar Grano
+                    </button>
+                  </div>
                 </div>
 
                 {/* Buscador de granos */}

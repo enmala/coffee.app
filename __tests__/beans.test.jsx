@@ -341,4 +341,107 @@ describe('Coffee Beans Management Tests', () => {
 
     window.location = originalLocation;
   });
+
+  test('should import a bean from local JSON file using the Import button', async () => {
+    class ValidBeanFileReaderMock {
+      constructor() {
+        this.onload = null;
+      }
+      readAsText() {
+        setTimeout(() => {
+          if (this.onload) {
+            this.onload({
+              target: {
+                result: JSON.stringify({
+                  name: 'Grano JSON Importado',
+                  roaster: 'Tostaduría Local',
+                  origin: 'Ecuador',
+                  process: 'Lavado',
+                  variety: 'Typica',
+                  roast_level: 'Medio',
+                  roast_date: '2026-07-15',
+                  sca_score: 85.5,
+                  altitude: '1500m',
+                  tasting_notes: ['Caramelo', 'Manzana'],
+                  notes: 'Sabor residual largo.'
+                })
+              }
+            });
+          }
+        }, 20);
+      }
+    }
+
+    const originalFileReader = window.FileReader;
+    window.FileReader = ValidBeanFileReaderMock;
+
+    render(<App />);
+
+    const beansTabBtn = screen.getByRole('button', { name: /Granos/ });
+    fireEvent.click(beansTabBtn);
+
+    const importLabel = screen.getByText('Importar');
+    expect(importLabel).toBeInTheDocument();
+
+    const fileInput = importLabel.querySelector('input[type="file"]');
+    expect(fileInput).toBeInTheDocument();
+
+    const dummyFile = new File(['{}'], 'grano.json', { type: 'application/json' });
+    fireEvent.change(fileInput, { target: { files: [dummyFile] } });
+
+    expect(await screen.findByText('Importar Grano de Café')).toBeInTheDocument();
+    expect(screen.getByText('Grano JSON Importado')).toBeInTheDocument();
+    expect(screen.getByText('Tostador: Tostaduría Local')).toBeInTheDocument();
+    expect(screen.getByText('📍 Ecuador')).toBeInTheDocument();
+
+    const confirmBtn = screen.getByRole('button', { name: 'Guardar Grano' });
+    fireEvent.click(confirmBtn);
+
+    expect(await screen.findByText('Grano de café importado correctamente como "Grano JSON Importado".')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /aceptar/i }));
+
+    expect(screen.getByText('Grano JSON Importado')).toBeInTheDocument();
+
+    window.FileReader = originalFileReader;
+  });
+
+  test('should show error when importing an invalid bean JSON file', async () => {
+    class InvalidBeanFileReaderMock {
+      constructor() {
+        this.onload = null;
+      }
+      readAsText() {
+        setTimeout(() => {
+          if (this.onload) {
+            this.onload({
+              target: {
+                result: JSON.stringify({
+                  roaster: 'Tostaduría Local'
+                })
+              }
+            });
+          }
+        }, 20);
+      }
+    }
+
+    const originalFileReader = window.FileReader;
+    window.FileReader = InvalidBeanFileReaderMock;
+
+    render(<App />);
+
+    const beansTabBtn = screen.getByRole('button', { name: /Granos/ });
+    fireEvent.click(beansTabBtn);
+
+    const importLabel = screen.getByText('Importar');
+    const fileInput = importLabel.querySelector('input[type="file"]');
+
+    const dummyFile = new File(['{}'], 'invalid.json', { type: 'application/json' });
+    fireEvent.change(fileInput, { target: { files: [dummyFile] } });
+
+    expect(await screen.findByText('El archivo JSON no tiene una estructura válida de grano de café.')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /aceptar/i }));
+
+    window.FileReader = originalFileReader;
+  });
 });

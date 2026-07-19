@@ -51,4 +51,5 @@ Los agentes de IA deben leer este archivo para saber qué implementar a continua
 - [x] Optimización UX/UI de la vista de resumen de receta, auto-start en el temporizador y acordeón de grano de café asociado (v1.4.0).
 - [x] Configuración, documentación y preparación de empaquetado TWA (Google Play Store) usando Bubblewrap (v1.4.2).
 - [x] Opciones para compartir granos de café (Base64 URL, código QR, descarga JSON, copiado de enlace e importación automática desde la URL) (v1.5.0).
+- [x] Opción para importar granos de café desde archivos JSON locales y coherencia visual en los botones de la pestaña Granos (v1.5.1).
 

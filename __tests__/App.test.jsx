@@ -188,6 +188,7 @@ describe('App Component', () => {
 
   test('imports a recipe from JSON file', async () => {
     render(<App />);
+    fireEvent.click(screen.getByTitle('Configuración'));
     const importInput = screen.getByText('Importar').querySelector('input');
     
     const file = new File(['{}'], 'recipe.json', { type: 'application/json' });
@@ -440,17 +441,18 @@ describe('App Component', () => {
 
   test('JSON import edge cases: missing files, invalid structure, duplicate name', async () => {
     render(<App />);
+    fireEvent.click(screen.getByTitle('Configuración'));
     const importInput = screen.getByText('Importar').querySelector('input');
 
     // 1. Missing files
     fireEvent.change(importInput, { target: { files: [] } });
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
 
-    // 2. Invalid JSON structure (missing steps)
+    // 2. Invalid JSON structure (missing name)
     class InvalidFileReaderMock {
       readAsText() {
         setTimeout(() => {
-          this.onload({ target: { result: JSON.stringify({ name: 'Sin Pasos' }) } });
+          this.onload({ target: { result: JSON.stringify({ wrongField: 'Sin Nombre' }) } });
         }, 10);
       }
     }
@@ -459,7 +461,7 @@ describe('App Component', () => {
     const file = new File(['{}'], 'recipe.json', { type: 'application/json' });
     fireEvent.change(importInput, { target: { files: [file] } });
     await waitFor(() => {
-      expect(screen.getByText('El archivo JSON no tiene una estructura válida de receta.')).toBeInTheDocument();
+      expect(screen.getByText("El archivo JSON debe tener un nombre válido ('name').")).toBeInTheDocument();
     });
     fireEvent.click(screen.getByRole('button', { name: /aceptar/i }));
 
@@ -695,6 +697,7 @@ describe('App Component', () => {
     ]));
     
     render(<App />);
+    fireEvent.click(screen.getByTitle('Configuración'));
     const importInput = screen.getByText('Importar').querySelector('input');
 
     class MultiDuplicateFileReaderMock {
@@ -834,6 +837,7 @@ describe('App Component', () => {
   test('App additional branch coverage tests', async () => {
     // 1. JSON import invalid file contents error scenario (triggers catch in handleImportJson)
     render(<App />);
+    fireEvent.click(screen.getByTitle('Configuración'));
     const importInput = screen.getByText('Importar').querySelector('input');
     class InvalidJsonFileReaderMock {
       readAsText() {

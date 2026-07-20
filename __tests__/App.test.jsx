@@ -33,6 +33,7 @@ class FileReaderMock {
 describe('App Component', () => {
   beforeEach(() => {
     localStorage.clear();
+    sessionStorage.clear();
     window.FileReader = FileReaderMock;
     window.confirm = vi.fn().mockReturnValue(true);
     window.alert = vi.fn();
@@ -86,6 +87,41 @@ describe('App Component', () => {
     const closeBtn = screen.getAllByText('Cerrar').find(btn => btn.tagName === 'BUTTON');
     fireEvent.click(closeBtn);
     expect(screen.queryByText(/Enrique Maldonado/)).not.toBeInTheDocument();
+  });
+
+  test('hides the Ko-fi donation button when running inside Android TWA context', () => {
+    const originalReferrer = document.referrer;
+    Object.defineProperty(document, 'referrer', {
+      value: 'android-app://com.enmala.baristatimer',
+      configurable: true
+    });
+
+    render(<App />);
+
+    const aboutBtn = screen.getByTitle('Acerca de');
+    fireEvent.click(aboutBtn);
+
+    expect(screen.getByText(/Enrique Maldonado/)).toBeInTheDocument();
+    expect(screen.getByText('Repositorio en GitHub')).toBeInTheDocument();
+    expect(screen.queryByText('Apoya el proyecto en Ko-fi')).not.toBeInTheDocument();
+
+    Object.defineProperty(document, 'referrer', {
+      value: originalReferrer,
+      configurable: true
+    });
+  });
+
+  test('hides the Ko-fi donation button when utm_source=twa query parameter is present', () => {
+    vi.stubGlobal('location', new URL('https://localhost/?utm_source=twa'));
+
+    render(<App />);
+
+    const aboutBtn = screen.getByTitle('Acerca de');
+    fireEvent.click(aboutBtn);
+
+    expect(screen.queryByText('Apoya el proyecto en Ko-fi')).not.toBeInTheDocument();
+
+    vi.unstubAllGlobals();
   });
 
   test('switches tabs between Recipes and History', () => {

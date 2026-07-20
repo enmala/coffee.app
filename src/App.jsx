@@ -120,6 +120,7 @@ export default function App() {
   const [saveSuccessMessage, setSaveSuccessMessage] = useState(null);
   const [recipeToDelete, setRecipeToDelete] = useState(null);
   const [customAlert, setCustomAlert] = useState(null); // { message, type, title }
+  const [isTwa, setIsTwa] = useState(false);
   const [isBeanExpanded, setIsBeanExpanded] = useState(false);
   const [autoStartTimer, setAutoStartTimer] = useState(false);
 
@@ -359,6 +360,16 @@ export default function App() {
     }
 
     const params = new URLSearchParams(window.location.search);
+    
+    // Detección de TWA (Trusted Web Activity)
+    const isReferrerTWA = document.referrer && document.referrer.startsWith('android-app://');
+    const isParamTWA = params.get('utm_source') === 'twa';
+    const isCachedTWA = sessionStorage.getItem('is_twa') === 'true';
+
+    if (isReferrerTWA || isParamTWA || isCachedTWA) {
+      setIsTwa(true);
+      sessionStorage.setItem('is_twa', 'true');
+    }
     const recipeParam = params.get('recipe');
     if (recipeParam) {
       async function decodeUrlRecipe() {
@@ -2360,15 +2371,17 @@ export default function App() {
                   <span>Repositorio en GitHub</span>
                 </a>
 
-                <a
-                  href="https://ko-fi.com/enmala"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 w-full py-2.5 bg-rose-500 hover:bg-rose-600 text-white rounded-xl font-bold text-xs transition shadow-sm cursor-pointer"
-                >
-                  <span>☕</span>
-                  <span>Apoya el proyecto en Ko-fi</span>
-                </a>
+                {!isTwa && (
+                  <a
+                    href="https://ko-fi.com/enmala"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-2 w-full py-2.5 bg-rose-500 hover:bg-rose-600 text-white rounded-xl font-bold text-xs transition shadow-sm cursor-pointer"
+                  >
+                    <span>☕</span>
+                    <span>Apoya el proyecto en Ko-fi</span>
+                  </a>
+                )}
               </div>
 
               <div className="pt-2 border-t border-slate-100 dark:border-slate-800">

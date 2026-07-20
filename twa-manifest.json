@@ -12,7 +12,7 @@
   "navigationDividerColorDark": "#000000",
   "backgroundColor": "#1E1B4B",
   "enableNotifications": false,
-  "startUrl": "/",
+  "startUrl": "/?utm_source=twa",
   "iconUrl": "https://barista.bitslab.cl/pwa-512x512.png",
   "maskableIconUrl": "https://barista.bitslab.cl/pwa-512x512.png",
   "splashScreenFadeOutDuration": 300,
@@ -20,8 +20,8 @@
     "path": "./android.keystore",
     "alias": "android"
   },
-  "appVersionName": "1.6.1",
-  "appVersionCode": 16,
+  "appVersionName": "1.6.2",
+  "appVersionCode": 17,
   "shortcuts": [],
   "generatorApp": "bubblewrap-cli",
   "webManifestUrl": "https://barista.bitslab.cl/manifest.webmanifest",
@@ -39,5 +39,5 @@
   "additionalTrustedOrigins": [],
   "retainedBundles": [],
   "displayOverride": [],
-  "appVersion": "1.6.1"
+  "appVersion": "1.6.2"
 }

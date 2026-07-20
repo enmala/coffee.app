@@ -120,7 +120,22 @@ export default function App() {
   const [saveSuccessMessage, setSaveSuccessMessage] = useState(null);
   const [recipeToDelete, setRecipeToDelete] = useState(null);
   const [customAlert, setCustomAlert] = useState(null); // { message, type, title }
-  const [isTwa, setIsTwa] = useState(false);
+  const [isTwa] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const isReferrerTWA = document.referrer && document.referrer.startsWith('android-app://');
+      const isParamTWA = params.get('utm_source') === 'twa';
+      const isCachedTWA = sessionStorage.getItem('is_twa') === 'true';
+      const isTwaActive = !!(isReferrerTWA || isParamTWA || isCachedTWA);
+      if (isTwaActive) {
+        sessionStorage.setItem('is_twa', 'true');
+      }
+      return isTwaActive;
+    } catch {
+      return false;
+    }
+  });
   const [isBeanExpanded, setIsBeanExpanded] = useState(false);
   const [autoStartTimer, setAutoStartTimer] = useState(false);
 
@@ -361,15 +376,7 @@ export default function App() {
 
     const params = new URLSearchParams(window.location.search);
     
-    // Detección de TWA (Trusted Web Activity)
-    const isReferrerTWA = document.referrer && document.referrer.startsWith('android-app://');
-    const isParamTWA = params.get('utm_source') === 'twa';
-    const isCachedTWA = sessionStorage.getItem('is_twa') === 'true';
-
-    if (isReferrerTWA || isParamTWA || isCachedTWA) {
-      setIsTwa(true);
-      sessionStorage.setItem('is_twa', 'true');
-    }
+    // Detección de TWA realizada en el inicializador de estado de isTwa
     const recipeParam = params.get('recipe');
     if (recipeParam) {
       async function decodeUrlRecipe() {

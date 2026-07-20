@@ -1349,9 +1349,13 @@ export default function App() {
                 className={`flex-1 pb-2.5 text-center font-bold text-sm border-b-2 transition cursor-pointer flex items-center justify-center gap-1.5 ${activeTab === 'beans' ? 'border-amber-800 dark:border-amber-500 text-amber-900 dark:text-amber-500' : 'border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'}`}
               >
                 <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                  <path d="M17.5 6.5a6.36 6.36 0 0 0-9 0c-3.15 3.15-2.5 8 1 11.5s8.35 4.15 11.5 1c3.15-3.15 1.65-8.65-3.5-13.5z" opacity="0.15" fill="currentColor" />
-                  <path d="M17.5 6.5a6.36 6.36 0 0 0-9 0c-3.15 3.15-2.5 8 1 11.5s8.35 4.15 11.5 1c3.15-3.15 1.65-8.65-3.5-13.5z" />
-                  <path d="M6.5 17.5c2.5-1.5 4.5-2.5 6-4s2.5-3.5 4.5-6" />
+                  {/* Left bean */}
+                  <path d="M9.5 7.5a4.24 4.24 0 0 0-6 0c-2.12 2.12-1.68 5.4 0.7 7.78s5.66 2.82 7.78.7a4.24 4.24 0 0 0 0-6z" fill="currentColor" fillOpacity="0.15" />
+                  <path d="M3.5 13.5c1.5-1 3-1.5 4.5-3" />
+                  
+                  {/* Right bean */}
+                  <path d="M14.5 9.5a4.24 4.24 0 0 1 6 0c2.12 2.12 1.68 5.4-0.7 7.78s-5.66 2.82-7.78.7a4.24 4.24 0 0 1 0-6z" fill="currentColor" fillOpacity="0.15" />
+                  <path d="M20.5 13.5c-1.5-1-3-1.5-4.5-3" />
                 </svg>
                 <span>Granos</span>
               </button>

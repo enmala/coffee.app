@@ -62,4 +62,5 @@ Los agentes de IA deben leer este archivo para saber qué implementar a continua
 - [x] Mejoras técnicas de UX/UI: Contraste mejorado en modo oscuro, estandarización de tamaños de fuente, reemplazo de emojis con SVG, mejora de estados deshabilitados y optimización de overflow en listas (v1.5.2).
 - [x] Unificación de importación de JSON (recetas y granos) a un único botón en Configuración con detección automática de tipo de archivo (v1.6.0).
 - [x] Rediseño estético y mejora de representatividad de los iconos SVG en el header y los selectores de pestañas (v1.6.1).
+- [x] Ocultamiento dinámico del botón de donaciones Ko-fi en el contexto de Android TWA para cumplimiento con las políticas de Google Play Store (v1.6.2).
 

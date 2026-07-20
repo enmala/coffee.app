@@ -1029,11 +1029,16 @@ export default function App() {
         <div className="text-left">
           <div className="flex items-center gap-2">
             <svg viewBox="0 0 24 24" className="w-8 h-8 md:w-9 md:h-9 fill-current text-amber-900 dark:text-amber-500" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              {/* Vapor lines */}
               <path d="M8.5 2.5c.3.5.3 1.1 0 1.5s-.6 1-.3 1.5" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
               <path d="M12 2c.3.5.3 1.1 0 1.5s-.6 1-.3 1.5" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
               <path d="M15.5 2.5c.3.5.3 1.1 0 1.5s-.6 1-.3 1.5" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              {/* Cup */}
               <path d="M5 8h12a1 1 0 0 1 1 1v6a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V9a1 1 0 0 1 1-1z" />
+              {/* Cup handle */}
               <path d="M18 10.5h1.5a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2H18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              {/* Saucer */}
+              <ellipse cx="12" cy="20" rx="8" ry="1.5" />
             </svg>
             <h1 className="text-2xl md:text-3xl font-extrabold text-amber-900 dark:text-amber-500 tracking-tight">Barista Timer</h1>
           </div>

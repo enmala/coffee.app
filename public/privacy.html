@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,6 +14,7 @@
       --text-title: #1e293b;
       --border-color: #e2e8f0;
     }
+
     @media (prefers-color-scheme: dark) {
       :root {
         --primary-color: #f59e0b;
@@ -23,6 +25,7 @@
         --border-color: #334155;
       }
     }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       line-height: 1.6;
@@ -32,6 +35,7 @@
       padding: 0;
       transition: background-color 0.3s ease, color 0.3s ease;
     }
+
     .container {
       max-width: 650px;
       margin: 40px auto;
@@ -41,6 +45,7 @@
       border-radius: 16px;
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
     }
+
     .header {
       display: flex;
       align-items: center;
@@ -49,6 +54,7 @@
       padding-bottom: 20px;
       margin-bottom: 24px;
     }
+
     .logo {
       width: 48px;
       height: 48px;
@@ -56,12 +62,14 @@
       fill: none;
       stroke: currentColor;
     }
+
     .title-group h1 {
       font-size: 26px;
       font-weight: 800;
       color: var(--text-title);
       margin: 0;
     }
+
     .title-group p {
       font-size: 13px;
       color: var(--primary-color);
@@ -70,6 +78,7 @@
       letter-spacing: 0.05em;
       text-transform: uppercase;
     }
+
     h2 {
       font-size: 18px;
       color: var(--text-title);
@@ -79,16 +88,21 @@
       border-left: 3px solid var(--primary-color);
       padding-left: 10px;
     }
-    p, li {
+
+    p,
+    li {
       font-size: 15px;
       color: var(--text-main);
     }
+
     ul {
       padding-left: 20px;
     }
+
     li {
       margin-bottom: 8px;
     }
+
     .footer {
       margin-top: 40px;
       border-top: 1px solid var(--border-color);
@@ -99,14 +113,17 @@
     }
   </style>
 </head>
+
 <body>
   <div class="container">
     <header class="header">
-      <svg class="logo" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+      <svg class="logo" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+        xmlns="http://www.w3.org/2000/svg">
         <path d="M8.5 3c.5.8.5 1.5 0 2.3s-.8 1.5-.4 2.3" />
         <path d="M12 2.5c.5.8.5 1.5 0 2.3s-.8 1.5-.4 2.3" />
         <path d="M15.5 3c.5.8.5 1.5 0 2.3s-.8 1.5-.4 2.3" />
-        <path d="M6 11h12a1 1 0 0 1 1 1v1.5a5.5 5.5 0 0 1-5.5 5.5h-3A5.5 5.5 0 0 1 5 13.5V12a1 1 0 0 1 1-1z" fill="currentColor" fill-opacity="0.15" />
+        <path d="M6 11h12a1 1 0 0 1 1 1v1.5a5.5 5.5 0 0 1-5.5 5.5h-3A5.5 5.5 0 0 1 5 13.5V12a1 1 0 0 1 1-1z"
+          fill="currentColor" fill-opacity="0.15" />
         <path d="M19 12.5h1a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2h-1" />
         <path d="M4.5 20.5c0 .5 3.36 1 7.5 1s7.5-.5 7.5-1" />
       </svg>
@@ -119,11 +136,14 @@
     <main>
       <p><em>Última actualización: 20 de julio de 2026</em></p>
 
-      <p>En <strong>Barista Timer</strong>, nos tomamos muy en serio la privacidad de nuestros usuarios. Esta Política de Privacidad detalla cómo se gestiona la información en nuestra aplicación.</p>
+      <p>En <strong>Barista Timer</strong>, nos tomamos muy en serio la privacidad de nuestros usuarios. Esta Política
+        de Privacidad detalla cómo se gestiona la información en nuestra aplicación.</p>
 
       <h2>1. Recopilación de Datos</h2>
-      <p><strong>Barista Timer no recopila, almacena, transmite ni comparte ningún tipo de información personal o datos del usuario.</strong></p>
-      <p>No contamos con servidores externos para almacenar tu información personal ni requerimos el registro de cuentas de usuario. La aplicación funciona de manera 100% autónoma y local.</p>
+      <p><strong>Barista Timer no recopila, almacena, transmite ni comparte ningún tipo de información personal o datos
+          del usuario.</strong></p>
+      <p>No contamos con servidores externos para almacenar tu información personal ni requerimos el registro de cuentas
+        de usuario. La aplicación funciona de manera 100% autónoma y local.</p>
 
       <h2>2. Almacenamiento Local</h2>
       <p>Toda la información necesaria para el funcionamiento de la aplicación, incluyendo:</p>
@@ -132,24 +152,32 @@
         <li>Tus granos de café registrados</li>
         <li>El historial y estadísticas de tus extracciones</li>
       </ul>
-      <p>se guarda de manera exclusiva en el almacenamiento local de tu propio dispositivo (utilizando la tecnología <code>localStorage</code> del navegador web). Estos datos permanecen en tu control en todo momento y no son enviados a ningún servidor.</p>
+      <p>se guarda de manera exclusiva en el almacenamiento local de tu propio dispositivo (utilizando la tecnología
+        <code>localStorage</code> del navegador web). Estos datos permanecen en tu control en todo momento y no son
+        enviados a ningún servidor.</p>
 
       <h2>3. Permisos Utilizados</h2>
       <p>La aplicación puede requerir ciertos accesos técnicos que se gestionan bajo tu autorización:</p>
       <ul>
-        <li><strong>Audio (Web Audio API):</strong> Utilizado localmente para emitir las alertas sonoras que indican el cambio de etapa durante el temporizador de extracción de café.</li>
-        <li><strong>Vibración:</strong> Utilizado de forma opcional para proveer retroalimentación háptica (vibración) en tu dispositivo al cambiar de etapa.</li>
+        <li><strong>Audio (Web Audio API):</strong> Utilizado localmente para emitir las alertas sonoras que indican el
+          cambio de etapa durante el temporizador de extracción de café.</li>
+        <li><strong>Vibración:</strong> Utilizado de forma opcional para proveer retroalimentación háptica (vibración)
+          en tu dispositivo al cambiar de etapa.</li>
       </ul>
 
       <h2>4. Servicios de Terceros</h2>
-      <p>Barista Timer no integra SDKs de análisis de terceros, plataformas de publicidad, ni rastreadores (trackers). Es una aplicación limpia diseñada con el único objetivo de asistir en la preparación de café.</p>
+      <p>Barista Timer no integra SDKs de análisis de terceros, plataformas de publicidad, ni rastreadores (trackers).
+        Es una aplicación limpia diseñada con el único objetivo de asistir en la preparación de café.</p>
 
       <h2>5. Modificaciones a esta Política</h2>
-      <p>Nos reservamos el derecho de modificar esta política de privacidad en cualquier momento. Cualquier cambio se publicará directamente en esta página. Si se añaden características que requieran el tratamiento de datos en el futuro, se te informará debidamente dentro de la aplicación para obtener tu consentimiento.</p>
+      <p>Nos reservamos el derecho de modificar esta política de privacidad en cualquier momento. Cualquier cambio se
+        publicará directamente en esta página. Si se añaden características que requieran el tratamiento de datos en el
+        futuro, se te informará debidamente dentro de la aplicación para obtener tu consentimiento.</p>
 
       <h2>6. Contacto</h2>
-      <p>Si tienes alguna pregunta o inquietud respecto a esta Política de Privacidad, puedes ponerte en contacto con nosotros a través de:</p>
-      <p><strong>Correo electrónico:</strong> enmala@gmail.com</p>
+      <p>Si tienes alguna pregunta o inquietud respecto a esta Política de Privacidad, puedes ponerte en contacto con
+        nosotros a través de:</p>
+      <p><strong>Correo electrónico:</strong> enrique.maldonado@protonmail.com</p>
     </main>
 
     <footer class="footer">
@@ -157,4 +185,5 @@
     </footer>
   </div>
 </body>
+
 </html>

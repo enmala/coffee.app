@@ -703,7 +703,7 @@ export default function App() {
     localStorage.setItem('coffee_recipes_v1', JSON.stringify(recipes));
   }, [recipes]);
 
-  const handleImportJson = (e) => {
+  const handleUnifiedImportJson = (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
@@ -711,37 +711,42 @@ export default function App() {
     reader.onload = (event) => {
       try {
         const imported = JSON.parse(event.target.result);
-        if (!imported.name || !imported.steps || !Array.isArray(imported.steps)) {
-          showAlert("El archivo JSON no tiene una estructura válida de receta.", "error");
+        if (!imported || typeof imported !== 'object' || Array.isArray(imported)) {
+          showAlert("El archivo JSON no tiene un formato estructurado válido.", "error");
           return;
         }
 
-        setRecipeToImport(imported);
-      } catch (err) {
-        console.error("Error al leer el archivo JSON:", err);
-        showAlert("Ocurrió un error al leer el archivo JSON.", "error");
-      }
-    };
-    reader.readAsText(file);
-    e.target.value = '';
-  };
-
-  const handleImportBeanJson = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      try {
-        const imported = JSON.parse(event.target.result);
-        if (!imported.name) {
-          showAlert("El archivo JSON no tiene una estructura válida de grano de café.", "error");
+        if (!imported.name || typeof imported.name !== 'string' || !imported.name.trim()) {
+          showAlert("El archivo JSON debe tener un nombre válido ('name').", "error");
           return;
         }
 
-        setBeanToImport(imported);
+        // Detección: ¿Es una Receta?
+        if ('steps' in imported && Array.isArray(imported.steps)) {
+          if (imported.steps.length === 0) {
+            showAlert("La receta debe contener al menos un paso para ser válida.", "error");
+            return;
+          }
+          setIsSettingsOpen(false);
+          setRecipeToImport(imported);
+          navigateTo('import');
+          return;
+        }
+
+        // Detección: ¿Es un Grano de café?
+        const beanKeys = ['roaster', 'origin', 'process', 'variety', 'roast_level', 'tasting_notes', 'notes', 'sca_score', 'altitude'];
+        const hasBeanAttributes = Object.keys(imported).some(key => beanKeys.includes(key));
+        
+        if (hasBeanAttributes || !('steps' in imported)) {
+          setIsSettingsOpen(false);
+          setBeanToImport(imported);
+          navigateTo('import-bean');
+          return;
+        }
+
+        showAlert("El archivo JSON no corresponde a una receta ni a un grano de café válido.", "error");
       } catch (err) {
-        console.error("Error al leer el archivo JSON de grano:", err);
+        console.error("Error al leer el archivo JSON unificado:", err);
         showAlert("Ocurrió un error al leer el archivo JSON.", "error");
       }
     };
@@ -772,7 +777,11 @@ export default function App() {
 
     setRecipes((prev) => [...prev, updated]);
     showAlert(`Receta importada correctamente como "${recipeName}".`, "success");
-    closeImport();
+    
+    setRecipeToImport(null);
+    window.history.replaceState({ view: 'main' }, '');
+    syncStateWithHistory({ view: 'main' });
+    setActiveTab('recipes');
   };
 
   const confirmImportBean = () => {
@@ -798,7 +807,10 @@ export default function App() {
 
     setBeans((prev) => [updated, ...prev]);
     showAlert(`Grano de café importado correctamente como "${beanName}".`, "success");
-    closeImportBean();
+    
+    setBeanToImport(null);
+    window.history.replaceState({ view: 'main' }, '');
+    syncStateWithHistory({ view: 'main' });
     setActiveTab('beans');
   };
 
@@ -1361,15 +1373,6 @@ export default function App() {
                   <h2 className="text-xl font-bold text-slate-900 dark:text-white">Tus Recetas</h2>
 
                   <div className="flex gap-2">
-                    <label className="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold rounded-lg cursor-pointer transition flex items-center justify-center border border-slate-200 dark:border-slate-700">
-                      Importar
-                      <input
-                        type="file"
-                        accept=".json"
-                        onChange={handleImportJson}
-                        className="hidden"
-                      />
-                    </label>
                     <button
                       onClick={handleNewRecipeClick}
                       className="px-3 py-1.5 bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-800 text-white text-xs font-bold rounded-lg transition cursor-pointer"
@@ -1499,15 +1502,6 @@ export default function App() {
                 <div className="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-3">
                   <h2 className="text-xl font-bold text-slate-900 dark:text-white">Tus Granos</h2>
                   <div className="flex gap-2">
-                    <label className="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold rounded-lg cursor-pointer transition flex items-center justify-center border border-slate-200 dark:border-slate-700">
-                      Importar
-                      <input
-                        type="file"
-                        accept=".json"
-                        onChange={handleImportBeanJson}
-                        className="hidden"
-                      />
-                    </label>
                     <button
                       onClick={handleStartNewBean}
                       className="px-3 py-1.5 bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-800 text-white text-xs font-bold rounded-lg transition cursor-pointer"
@@ -2273,6 +2267,23 @@ export default function App() {
                       </select>
                     </div>
                   )}
+                </div>
+
+                {/* Importar Datos */}
+                <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-800/60">
+                  <div className="text-left">
+                    <span className="text-sm font-bold text-slate-800 dark:text-slate-200 block">Importar Datos</span>
+                    <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Carga receta o grano desde archivo .json</span>
+                  </div>
+                  <label className="px-3 py-1.5 bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-800 text-white text-xs font-bold rounded-lg cursor-pointer transition flex items-center justify-center shadow-sm select-none">
+                    Importar
+                    <input
+                      type="file"
+                      accept=".json"
+                      onChange={handleUnifiedImportJson}
+                      className="hidden"
+                    />
+                  </label>
                 </div>
 
                 {/* About link */}

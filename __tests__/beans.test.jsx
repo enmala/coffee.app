@@ -377,8 +377,8 @@ describe('Coffee Beans Management Tests', () => {
 
     render(<App />);
 
-    const beansTabBtn = screen.getByRole('button', { name: /Granos/ });
-    fireEvent.click(beansTabBtn);
+    // Open settings modal to access unified import button
+    fireEvent.click(screen.getByTitle('Configuración'));
 
     const importLabel = screen.getByText('Importar');
     expect(importLabel).toBeInTheDocument();
@@ -430,8 +430,8 @@ describe('Coffee Beans Management Tests', () => {
 
     render(<App />);
 
-    const beansTabBtn = screen.getByRole('button', { name: /Granos/ });
-    fireEvent.click(beansTabBtn);
+    // Open settings modal to access unified import button
+    fireEvent.click(screen.getByTitle('Configuración'));
 
     const importLabel = screen.getByText('Importar');
     const fileInput = importLabel.querySelector('input[type="file"]');
@@ -439,7 +439,7 @@ describe('Coffee Beans Management Tests', () => {
     const dummyFile = new File(['{}'], 'invalid.json', { type: 'application/json' });
     fireEvent.change(fileInput, { target: { files: [dummyFile] } });
 
-    expect(await screen.findByText('El archivo JSON no tiene una estructura válida de grano de café.')).toBeInTheDocument();
+    expect(await screen.findByText("El archivo JSON debe tener un nombre válido ('name').")).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: /aceptar/i }));
 
     window.FileReader = originalFileReader;

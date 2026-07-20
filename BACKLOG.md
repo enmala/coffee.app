@@ -61,4 +61,5 @@ Los agentes de IA deben leer este archivo para saber qué implementar a continua
 - [x] Opción para importar granos de café desde archivos JSON locales y coherencia visual en los botones de la pestaña Granos (v1.5.1).
 - [x] Mejoras técnicas de UX/UI: Contraste mejorado en modo oscuro, estandarización de tamaños de fuente, reemplazo de emojis con SVG, mejora de estados deshabilitados y optimización de overflow en listas (v1.5.2).
 - [x] Unificación de importación de JSON (recetas y granos) a un único botón en Configuración con detección automática de tipo de archivo (v1.6.0).
+- [x] Rediseño estético y mejora de representatividad de los iconos SVG en el header y los selectores de pestañas (v1.6.1).
 

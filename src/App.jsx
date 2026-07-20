@@ -1042,17 +1042,17 @@ export default function App() {
       <header className="w-full max-w-md mb-4 mt-2 md:mb-6 md:mt-4 flex justify-between items-center px-1">
         <div className="text-left">
           <div className="flex items-center gap-2">
-            <svg viewBox="0 0 24 24" className="w-8 h-8 md:w-9 md:h-9 fill-current text-amber-900 dark:text-amber-500" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              {/* Vapor lines */}
-              <path d="M8.5 2.5c.3.5.3 1.1 0 1.5s-.6 1-.3 1.5" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-              <path d="M12 2c.3.5.3 1.1 0 1.5s-.6 1-.3 1.5" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-              <path d="M15.5 2.5c.3.5.3 1.1 0 1.5s-.6 1-.3 1.5" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-              {/* Cup */}
-              <path d="M5 8h12a1 1 0 0 1 1 1v6a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V9a1 1 0 0 1 1-1z" />
+            <svg viewBox="0 0 24 24" className="w-8 h-8 md:w-9 md:h-9 text-amber-900 dark:text-amber-500" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              {/* Steam lines */}
+              <path d="M8.5 3c.5.8.5 1.5 0 2.3s-.8 1.5-.4 2.3" />
+              <path d="M12 2.5c.5.8.5 1.5 0 2.3s-.8 1.5-.4 2.3" />
+              <path d="M15.5 3c.5.8.5 1.5 0 2.3s-.8 1.5-.4 2.3" />
+              {/* Cup body */}
+              <path d="M6 11h12a1 1 0 0 1 1 1v1.5a5.5 5.5 0 0 1-5.5 5.5h-3A5.5 5.5 0 0 1 5 13.5V12a1 1 0 0 1 1-1z" fill="currentColor" fillOpacity="0.15" />
               {/* Cup handle */}
-              <path d="M18 10.5h1.5a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2H18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              <path d="M19 12.5h1a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2h-1" />
               {/* Saucer */}
-              <ellipse cx="12" cy="20" rx="8" ry="1.5" />
+              <path d="M4.5 20.5c0 .5 3.36 1 7.5 1s7.5-.5 7.5-1" />
             </svg>
             <h1 className="text-2xl md:text-3xl font-extrabold text-amber-900 dark:text-amber-500 tracking-tight">Barista Timer</h1>
           </div>
@@ -1335,11 +1335,12 @@ export default function App() {
                 onClick={() => setActiveTab('recipes')}
                 className={`flex-1 pb-2.5 text-center font-bold text-sm border-b-2 transition cursor-pointer flex items-center justify-center gap-1.5 ${activeTab === 'recipes' ? 'border-amber-800 dark:border-amber-500 text-amber-900 dark:text-amber-500' : 'border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'}`}
               >
-                <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                  <path d="M5 2h14a1 1 0 0 1 1 1v2h-2V4H6v2H4V3a1 1 0 0 1 1-1z" />
-                  <path d="M3 8h18v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8z" opacity="0.3" />
-                  <line x1="3" y1="8" x2="21" y2="8" stroke="currentColor" strokeWidth="1.5" />
-                  <path d="M10 12v8M14 12v8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                  <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                  {/* Grabado de taza */}
+                  <path d="M9 10h4a1 1 0 0 1 1 1v1.5a2.5 2.5 0 0 1-5 0V11z" />
+                  <path d="M14 11h1a1 1 0 0 1 1 1v0a1 1 0 0 1-1 1h-1" />
                 </svg>
                 <span>Recetas</span>
               </button>
@@ -1347,10 +1348,10 @@ export default function App() {
                 onClick={() => setActiveTab('beans')}
                 className={`flex-1 pb-2.5 text-center font-bold text-sm border-b-2 transition cursor-pointer flex items-center justify-center gap-1.5 ${activeTab === 'beans' ? 'border-amber-800 dark:border-amber-500 text-amber-900 dark:text-amber-500' : 'border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'}`}
               >
-                <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                  <ellipse cx="12" cy="6" rx="6" ry="3" />
-                  <path d="M6 6v6c0 1.7 2.7 3 6 3s6-1.3 6-3V6" fill="none" stroke="currentColor" strokeWidth="1.5" />
-                  <path d="M6 12v6c0 1.7 2.7 3 6 3s6-1.3 6-3v-6" fill="none" stroke="currentColor" strokeWidth="1.5" />
+                <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M17.5 6.5a6.36 6.36 0 0 0-9 0c-3.15 3.15-2.5 8 1 11.5s8.35 4.15 11.5 1c3.15-3.15 1.65-8.65-3.5-13.5z" opacity="0.15" fill="currentColor" />
+                  <path d="M17.5 6.5a6.36 6.36 0 0 0-9 0c-3.15 3.15-2.5 8 1 11.5s8.35 4.15 11.5 1c3.15-3.15 1.65-8.65-3.5-13.5z" />
+                  <path d="M6.5 17.5c2.5-1.5 4.5-2.5 6-4s2.5-3.5 4.5-6" />
                 </svg>
                 <span>Granos</span>
               </button>
@@ -1358,10 +1359,10 @@ export default function App() {
                 onClick={() => setActiveTab('history')}
                 className={`flex-1 pb-2.5 text-center font-bold text-sm border-b-2 transition cursor-pointer flex items-center justify-center gap-1.5 ${activeTab === 'history' ? 'border-amber-800 dark:border-amber-500 text-amber-900 dark:text-amber-500' : 'border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'}`}
               >
-                <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                  <path d="M3 4v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V4H3z" />
-                  <line x1="3" y1="8" x2="21" y2="8" stroke="currentColor" strokeWidth="1.5" />
-                  <path d="M7 12h2M11 12h2M15 12h2M7 16h2M11 16h2M15 16h2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                  <path d="M3 3v5h5" />
+                  <path d="M12 7v5l4 2" />
                 </svg>
                 <span>Historial</span>
               </button>

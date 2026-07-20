@@ -145,24 +145,29 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
         <h3 className="text-lg font-bold text-slate-900 dark:text-white">{recipe.name}</h3>
         <span className="text-xs bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-350 px-2 py-0.5 rounded font-bold uppercase tracking-wider">{recipe.method}</span>
         {beanName && (
-          <div className="text-xs text-amber-800 dark:text-amber-500 font-bold mt-1 select-none">
-            🫘 {beanName}
+          <div className="text-xs text-amber-800 dark:text-amber-300 font-bold mt-1 select-none flex items-center justify-center gap-1">
+            <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-current" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <ellipse cx="12" cy="6" rx="6" ry="3" />
+              <path d="M6 6v6c0 1.7 2.7 3 6 3s6-1.3 6-3V6" fill="none" stroke="currentColor" strokeWidth="1.5" />
+              <path d="M6 12v6c0 1.7 2.7 3 6 3s6-1.3 6-3v-6" fill="none" stroke="currentColor" strokeWidth="1.5" />
+            </svg>
+            <span>{beanName}</span>
           </div>
         )}
       </div>
 
-      <div className="grid grid-cols-3 gap-2 bg-slate-50 dark:bg-slate-800/40 p-2 rounded-xl text-[11px] text-slate-600 dark:text-slate-300 border border-slate-100 dark:border-slate-800">
+      <div className="grid grid-cols-3 gap-2 bg-slate-50 dark:bg-slate-800/40 p-2 rounded-xl text-xs text-slate-600 dark:text-slate-300 border border-slate-100 dark:border-slate-800">
         <div>
-          <span className="block text-slate-400 dark:text-slate-400 text-[9px] uppercase font-bold">Café</span>
-          <span className="font-semibold text-xs">{recipe.coffee_g}g</span>
+          <span className="block text-slate-500 dark:text-slate-300 text-[10px] uppercase font-bold">Café</span>
+          <span className="font-semibold text-sm">{recipe.coffee_g}g</span>
         </div>
         <div>
-          <span className="block text-slate-400 dark:text-slate-400 text-[9px] uppercase font-bold">Molienda</span>
-          <span className="font-semibold text-xs truncate block">{recipe.grind_size || 'N/D'}</span>
+          <span className="block text-slate-500 dark:text-slate-300 text-[10px] uppercase font-bold">Molienda</span>
+          <span className="font-semibold text-sm truncate block">{recipe.grind_size || 'N/D'}</span>
         </div>
         <div>
-          <span className="block text-slate-400 dark:text-slate-400 text-[9px] uppercase font-bold">Temp.</span>
-          <span className="font-semibold text-xs">{recipe.water_temp_c}°C</span>
+          <span className="block text-slate-500 dark:text-slate-300 text-[10px] uppercase font-bold">Temp.</span>
+          <span className="font-semibold text-sm">{recipe.water_temp_c}°C</span>
         </div>
       </div>
 
@@ -193,13 +198,13 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
         </svg>
         {/* Inner details */}
         <div className="absolute flex flex-col items-center justify-center space-y-1">
-          <span className="text-[9px] text-slate-500 dark:text-slate-400 uppercase font-bold tracking-widest max-w-[110px] truncate">
+          <span className="text-[10px] text-slate-500 dark:text-slate-300 uppercase font-bold tracking-widest max-w-[110px] truncate">
             {currentStep.title}
           </span>
           <span className="text-3xl font-mono font-bold text-slate-900 dark:text-white select-none tracking-tight">
             {formatTime(timeLeft)}
           </span>
-          <span className="text-[9px] text-amber-800 dark:text-amber-300 font-bold bg-amber-50 dark:bg-amber-950/30 px-2 py-0.5 rounded-full uppercase">
+          <span className="text-[10px] text-amber-800 dark:text-amber-300 font-bold bg-amber-50 dark:bg-amber-950/30 px-2 py-0.5 rounded-full uppercase">
             Paso {currentStepIndex + 1} de {recipe.steps.length}
           </span>
         </div>
@@ -216,12 +221,12 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
         
         <div className="grid grid-cols-2 gap-3 pt-1">
           <div className="bg-amber-50/50 dark:bg-amber-950/20 p-3 rounded-xl border border-amber-200/10 dark:border-amber-900/20 shadow-sm">
-            <span className="text-slate-500 dark:text-slate-400 block text-[10px] uppercase font-bold tracking-wider mb-1">Verter ahora</span>
-            <span className="font-extrabold text-amber-800 dark:text-amber-400 text-2xl">+{currentStep.water_g}g</span>
+            <span className="text-slate-500 dark:text-slate-300 block text-[10px] uppercase font-bold tracking-wider mb-1">Verter ahora</span>
+            <span className="font-extrabold text-amber-800 dark:text-amber-300 text-2xl">+{currentStep.water_g}g</span>
           </div>
           <div className="bg-amber-50/50 dark:bg-amber-950/20 p-3 rounded-xl border border-amber-200/10 dark:border-amber-900/20 shadow-sm">
-            <span className="text-slate-500 dark:text-slate-400 block text-[10px] uppercase font-bold tracking-wider mb-1">Agua acumulada</span>
-            <span className="font-extrabold text-amber-800 dark:text-amber-400 text-2xl">{cumulativeWater}g</span>
+            <span className="text-slate-500 dark:text-slate-300 block text-[10px] uppercase font-bold tracking-wider mb-1">Agua acumulada</span>
+            <span className="font-extrabold text-amber-800 dark:text-amber-300 text-2xl">{cumulativeWater}g</span>
           </div>
         </div>
       </div>
@@ -232,11 +237,14 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
             type="button"
             onClick={handleSkipPrev} 
             disabled={currentStepIndex === 0}
-            className="p-2 text-slate-400 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 disabled:opacity-30 disabled:hover:text-slate-400 dark:disabled:hover:text-slate-600 text-xl cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-500 dark:focus:ring-amber-400 focus:ring-offset-2"
+            className="p-2 text-slate-500 dark:text-slate-300 hover:text-slate-800 dark:hover:text-slate-100 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:text-slate-500 dark:disabled:hover:text-slate-300 cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-500 dark:focus:ring-amber-400 focus:ring-offset-2 rounded-full"
             title="Paso anterior"
             aria-label="Paso anterior"
           >
-            ⏮️
+            <svg viewBox="0 0 24 24" className="w-6 h-6 fill-current" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M7 5v14L18 12 7 5z" />
+              <rect x="4" y="5" width="2" height="14" rx="0.5" />
+            </svg>
           </button>
           
           <button 
@@ -255,11 +263,14 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
             type="button"
             onClick={handleSkipNext} 
             disabled={currentStepIndex === recipe.steps.length - 1}
-            className="p-2 text-slate-400 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 disabled:opacity-30 disabled:hover:text-slate-400 dark:disabled:hover:text-slate-600 text-xl cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-500 dark:focus:ring-amber-400 focus:ring-offset-2"
+            className="p-2 text-slate-500 dark:text-slate-300 hover:text-slate-800 dark:hover:text-slate-100 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:text-slate-500 dark:disabled:hover:text-slate-300 cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-500 dark:focus:ring-amber-400 focus:ring-offset-2 rounded-full"
             title="Siguiente paso"
             aria-label="Siguiente paso"
           >
-            ⏭️
+            <svg viewBox="0 0 24 24" className="w-6 h-6 fill-current" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M17 5v14L6 12 17 5z" />
+              <rect x="18" y="5" width="2" height="14" rx="0.5" />
+            </svg>
           </button>
         </div>
 
@@ -267,7 +278,7 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
           <button 
             type="button"
             onClick={handleReset}
-            className="text-[11px] text-slate-400 dark:text-slate-400 hover:text-slate-600 dark:hover:text-slate-350 underline cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-500 dark:focus:ring-amber-400 focus:ring-offset-2"
+            className="text-xs text-slate-500 dark:text-slate-300 hover:text-slate-700 dark:hover:text-slate-100 underline cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-500 dark:focus:ring-amber-400 focus:ring-offset-2 rounded"
             aria-label="Reiniciar cronómetro"
           >
             Reiniciar cronómetro

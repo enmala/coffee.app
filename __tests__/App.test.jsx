@@ -45,7 +45,7 @@ describe('App Component', () => {
 
   test('renders header and initial default recipes', () => {
     render(<App />);
-    expect(screen.getByText('☕ Barista Timer')).toBeInTheDocument();
+    expect(screen.getByText('Barista Timer')).toBeInTheDocument();
     expect(screen.getByText('Método 4:6 (Tetsu Kasuya)')).toBeInTheDocument();
     expect(screen.getByText('Aeropress Tradicional')).toBeInTheDocument();
   });
@@ -90,8 +90,8 @@ describe('App Component', () => {
 
   test('switches tabs between Recipes and History', () => {
     render(<App />);
-    const recipesTab = screen.getByText('📋 Recetas');
-    const historyTab = screen.getByText('📜 Historial');
+    const recipesTab = screen.getByText('Recetas');
+    const historyTab = screen.getByText('Historial');
     
     // Switch to history
     fireEvent.click(historyTab);
@@ -267,7 +267,7 @@ describe('App Component', () => {
     
     // Switch to history tab to verify entry exists
     vi.useRealTimers();
-    const historyTab = screen.getByText('📜 Historial');
+    const historyTab = screen.getByText('Historial');
     fireEvent.click(historyTab);
     
     expect(screen.getByText('Método 4:6 (Tetsu Kasuya)')).toBeInTheDocument();
@@ -363,7 +363,7 @@ describe('App Component', () => {
     render(<App />);
     
     // Go to history
-    fireEvent.click(screen.getByText('📜 Historial'));
+    fireEvent.click(screen.getByText('Historial'));
     
     // Toggle auto log checkbox
     const autoLogCheckbox = screen.getByLabelText(/Reg. Auto./i);
@@ -417,7 +417,7 @@ describe('App Component', () => {
     expect(screen.queryByText('Método 4:6 (Tetsu Kasuya)')).not.toBeInTheDocument();
 
     // History tab should have 1 item
-    fireEvent.click(screen.getByText('📜 Historial'));
+    fireEvent.click(screen.getByText('Historial'));
     expect(screen.getByText(/Sabor amargo/i)).toBeInTheDocument();
   });
 
@@ -574,7 +574,7 @@ describe('App Component', () => {
     ]));
     render(<App />);
     
-    fireEvent.click(screen.getByText('📜 Historial'));
+    fireEvent.click(screen.getByText('Historial'));
     
     const deleteEntryBtn = screen.getByTitle('Eliminar registro');
     fireEvent.click(deleteEntryBtn);
@@ -606,7 +606,7 @@ describe('App Component', () => {
     ]));
     render(<App />);
     
-    fireEvent.click(screen.getByText('📜 Historial'));
+    fireEvent.click(screen.getByText('Historial'));
     
     const deleteEntryBtn = screen.getByTitle('Eliminar registro');
     fireEvent.click(deleteEntryBtn);
@@ -638,7 +638,7 @@ describe('App Component', () => {
     ]));
     render(<App />);
     
-    fireEvent.click(screen.getByText('📜 Historial'));
+    fireEvent.click(screen.getByText('Historial'));
     
     // Click edit pencil button
     const editNotesBtn = screen.getByTitle('Editar observaciones');
@@ -770,7 +770,7 @@ describe('App Component', () => {
       }
     ]));
     render(<App />);
-    fireEvent.click(screen.getByText('📜 Historial'));
+    fireEvent.click(screen.getByText('Historial'));
     
     const clearAllBtn = screen.getByText('Limpiar todo');
     fireEvent.click(clearAllBtn);
@@ -801,7 +801,7 @@ describe('App Component', () => {
       }
     ]));
     render(<App />);
-    fireEvent.click(screen.getByText('📜 Historial'));
+    fireEvent.click(screen.getByText('Historial'));
     
     const clearAllBtn = screen.getByText('Limpiar todo');
     fireEvent.click(clearAllBtn);
@@ -1024,7 +1024,7 @@ describe('App Component', () => {
     render(<App />);
 
     // Go to history tab
-    fireEvent.click(screen.getByText('📜 Historial'));
+    fireEvent.click(screen.getByText('Historial'));
 
     // Verify grind_size fallback: "Molienda N/D"
     expect(screen.getByText(/Molienda N\/D/i)).toBeInTheDocument();
@@ -1131,7 +1131,7 @@ describe('App Component', () => {
     render(<App />);
     
     // Switch to history
-    fireEvent.click(screen.getByText('📜 Historial'));
+    fireEvent.click(screen.getByText('Historial'));
     expect(screen.getByText('Aeropress Tradicional')).toBeInTheDocument();
     
     // Edit notes via the edit pencil button

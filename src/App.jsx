@@ -112,6 +112,7 @@ export default function App() {
   const [editingStepIndex, setEditingStepIndex] = useState(null);
   const [menuOpenRecipeId, setMenuOpenRecipeId] = useState(null);
   const [summaryRecipe, setSummaryRecipe] = useState(null);
+  const [isRecipeNameExpanded, setIsRecipeNameExpanded] = useState(false);
   const [recipeToShare, setRecipeToShare] = useState(null);
   const [recipeToImport, setRecipeToImport] = useState(null);
   const [beanToShare, setBeanToShare] = useState(null);
@@ -475,6 +476,7 @@ export default function App() {
 
   const closeSummary = () => {
     setSummaryRecipe(null);
+    setIsRecipeNameExpanded(false);
     setIsBeanExpanded(false);
     safeBack('summary');
   };
@@ -1873,7 +1875,21 @@ export default function App() {
               {/* Header Fijo */}
               <div className="p-5 pb-3 border-b border-slate-200 dark:border-slate-800 flex justify-between items-start shrink-0 bg-white dark:bg-slate-900">
                 <div className="min-w-0 flex-1">
-                  <h3 className="text-base font-bold text-slate-900 dark:text-white pr-4 truncate" title={summaryRecipe.name}>{summaryRecipe.name}</h3>
+                  <div className="flex items-start gap-2">
+                    <h3 className={`font-bold text-slate-900 dark:text-white ${isRecipeNameExpanded ? 'text-sm leading-snug' : 'text-base truncate'}`}>
+                      {summaryRecipe.name}
+                    </h3>
+                    <button
+                      onClick={() => setIsRecipeNameExpanded(!isRecipeNameExpanded)}
+                      className="p-0.5 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 shrink-0 transition cursor-pointer"
+                      title={isRecipeNameExpanded ? "Contraer nombre" : "Expandir nombre"}
+                      aria-label={isRecipeNameExpanded ? "Contraer nombre" : "Expandir nombre"}
+                    >
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`w-4 h-4 transition-transform duration-200 ${isRecipeNameExpanded ? 'rotate-180' : ''}`} xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                      </svg>
+                    </button>
+                  </div>
                   <span className="inline-block text-[10px] bg-amber-50 dark:bg-amber-950/20 text-amber-900 dark:text-amber-300 border border-amber-200 dark:border-amber-900/30 px-2 py-0.5 rounded font-bold uppercase tracking-wider mt-1">{summaryRecipe.method}</span>
                 </div>
                 <div className="flex items-center gap-1 shrink-0 ml-2">

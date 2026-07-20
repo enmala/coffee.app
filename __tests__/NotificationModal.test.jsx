@@ -16,7 +16,8 @@ describe('NotificationModal Component Tests', () => {
 
     expect(screen.getByText('Título de prueba')).toBeInTheDocument();
     expect(screen.getByText('Mensaje de prueba')).toBeInTheDocument();
-    expect(screen.getByText('ℹ️')).toBeInTheDocument();
+    // Verify SVG icon is rendered
+    expect(screen.getByRole('dialog').querySelector('svg')).toBeInTheDocument();
 
     const acceptBtn = screen.getByRole('button', { name: /aceptar/i });
     fireEvent.click(acceptBtn);
@@ -33,7 +34,8 @@ describe('NotificationModal Component Tests', () => {
       />
     );
     expect(screen.getByText('Éxito')).toBeInTheDocument();
-    expect(screen.getByText('✅')).toBeInTheDocument();
+    // Verify SVG icon is rendered
+    expect(screen.getByRole('dialog').querySelector('svg')).toBeInTheDocument();
 
     rerender(
       <NotificationModal
@@ -43,7 +45,8 @@ describe('NotificationModal Component Tests', () => {
       />
     );
     expect(screen.getByText('Error')).toBeInTheDocument();
-    expect(screen.getByText('❌')).toBeInTheDocument();
+    // Verify SVG icon is rendered
+    expect(screen.getByRole('dialog').querySelector('svg')).toBeInTheDocument();
   });
 
   test('returns null if message is empty', () => {

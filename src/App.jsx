@@ -112,6 +112,7 @@ export default function App() {
   const [editingStepIndex, setEditingStepIndex] = useState(null);
   const [menuOpenRecipeId, setMenuOpenRecipeId] = useState(null);
   const [summaryRecipe, setSummaryRecipe] = useState(null);
+  const [isRecipeNameExpanded, setIsRecipeNameExpanded] = useState(false);
   const [recipeToShare, setRecipeToShare] = useState(null);
   const [recipeToImport, setRecipeToImport] = useState(null);
   const [beanToShare, setBeanToShare] = useState(null);
@@ -475,6 +476,7 @@ export default function App() {
 
   const closeSummary = () => {
     setSummaryRecipe(null);
+    setIsRecipeNameExpanded(false);
     setIsBeanExpanded(false);
     safeBack('summary');
   };
@@ -1027,8 +1029,22 @@ export default function App() {
     <div className="min-h-screen bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 p-3 md:p-4 font-sans flex flex-col items-center transition-colors duration-300">
       <header className="w-full max-w-md mb-4 mt-2 md:mb-6 md:mt-4 flex justify-between items-center px-1">
         <div className="text-left">
-          <h1 className="text-2xl md:text-3xl font-extrabold text-amber-900 dark:text-amber-500 tracking-tight">☕ Barista Timer</h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Administra tus recetas y tiempos de extracción</p>
+          <div className="flex items-center gap-2">
+            <svg viewBox="0 0 24 24" className="w-8 h-8 md:w-9 md:h-9 fill-current text-amber-900 dark:text-amber-500" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              {/* Vapor lines */}
+              <path d="M8.5 2.5c.3.5.3 1.1 0 1.5s-.6 1-.3 1.5" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              <path d="M12 2c.3.5.3 1.1 0 1.5s-.6 1-.3 1.5" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              <path d="M15.5 2.5c.3.5.3 1.1 0 1.5s-.6 1-.3 1.5" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              {/* Cup */}
+              <path d="M5 8h12a1 1 0 0 1 1 1v6a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V9a1 1 0 0 1 1-1z" />
+              {/* Cup handle */}
+              <path d="M18 10.5h1.5a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2H18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              {/* Saucer */}
+              <ellipse cx="12" cy="20" rx="8" ry="1.5" />
+            </svg>
+            <h1 className="text-2xl md:text-3xl font-extrabold text-amber-900 dark:text-amber-500 tracking-tight">Barista Timer</h1>
+          </div>
+          <p className="text-xs text-slate-500 dark:text-slate-300 mt-1">Administra tus recetas y tiempos de extracción</p>
         </div>
         <div className="flex gap-2">
           <button
@@ -1037,7 +1053,7 @@ export default function App() {
               setIsAboutOpen(true);
               navigateTo('about');
             }}
-            className="px-2.5 py-2 bg-white/90 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition cursor-pointer text-slate-700 dark:text-slate-200 flex items-center justify-center gap-1.5 text-[11px] font-semibold"
+            className="px-2.5 py-2 bg-white/90 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition cursor-pointer text-slate-700 dark:text-slate-200 flex items-center justify-center gap-1.5 text-xs font-semibold"
             title="Acerca de"
           >
             <span className="text-sm">ⓘ</span>
@@ -1305,21 +1321,37 @@ export default function App() {
             <div className="flex border-b border-slate-200 dark:border-slate-800">
               <button
                 onClick={() => setActiveTab('recipes')}
-                className={`flex-1 pb-2.5 text-center font-bold text-sm border-b-2 transition cursor-pointer ${activeTab === 'recipes' ? 'border-amber-800 dark:border-amber-500 text-amber-900 dark:text-amber-500' : 'border-transparent text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'}`}
+                className={`flex-1 pb-2.5 text-center font-bold text-sm border-b-2 transition cursor-pointer flex items-center justify-center gap-1.5 ${activeTab === 'recipes' ? 'border-amber-800 dark:border-amber-500 text-amber-900 dark:text-amber-500' : 'border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'}`}
               >
-                📋 Recetas
+                <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M5 2h14a1 1 0 0 1 1 1v2h-2V4H6v2H4V3a1 1 0 0 1 1-1z" />
+                  <path d="M3 8h18v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8z" opacity="0.3" />
+                  <line x1="3" y1="8" x2="21" y2="8" stroke="currentColor" strokeWidth="1.5" />
+                  <path d="M10 12v8M14 12v8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                </svg>
+                <span>Recetas</span>
               </button>
               <button
                 onClick={() => setActiveTab('beans')}
-                className={`flex-1 pb-2.5 text-center font-bold text-sm border-b-2 transition cursor-pointer ${activeTab === 'beans' ? 'border-amber-800 dark:border-amber-500 text-amber-900 dark:text-amber-500' : 'border-transparent text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'}`}
+                className={`flex-1 pb-2.5 text-center font-bold text-sm border-b-2 transition cursor-pointer flex items-center justify-center gap-1.5 ${activeTab === 'beans' ? 'border-amber-800 dark:border-amber-500 text-amber-900 dark:text-amber-500' : 'border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'}`}
               >
-                🫘 Granos
+                <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <ellipse cx="12" cy="6" rx="6" ry="3" />
+                  <path d="M6 6v6c0 1.7 2.7 3 6 3s6-1.3 6-3V6" fill="none" stroke="currentColor" strokeWidth="1.5" />
+                  <path d="M6 12v6c0 1.7 2.7 3 6 3s6-1.3 6-3v-6" fill="none" stroke="currentColor" strokeWidth="1.5" />
+                </svg>
+                <span>Granos</span>
               </button>
               <button
                 onClick={() => setActiveTab('history')}
-                className={`flex-1 pb-2.5 text-center font-bold text-sm border-b-2 transition cursor-pointer ${activeTab === 'history' ? 'border-amber-800 dark:border-amber-500 text-amber-900 dark:text-amber-500' : 'border-transparent text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'}`}
+                className={`flex-1 pb-2.5 text-center font-bold text-sm border-b-2 transition cursor-pointer flex items-center justify-center gap-1.5 ${activeTab === 'history' ? 'border-amber-800 dark:border-amber-500 text-amber-900 dark:text-amber-500' : 'border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'}`}
               >
-                📜 Historial
+                <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M3 4v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V4H3z" />
+                  <line x1="3" y1="8" x2="21" y2="8" stroke="currentColor" strokeWidth="1.5" />
+                  <path d="M7 12h2M11 12h2M15 12h2M7 16h2M11 16h2M15 16h2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                </svg>
+                <span>Historial</span>
               </button>
             </div>
 
@@ -1347,9 +1379,9 @@ export default function App() {
                   </div>
                 </div>
 
-                <div className="space-y-5 max-h-[480px] overflow-y-auto pr-1 pb-24">
+                <div className="space-y-5 max-h-[480px] overflow-y-auto pr-1 pb-32">
                   {Object.keys(groupedRecipes).length === 0 ? (
-                    <p className="text-sm text-slate-400 dark:text-slate-400 text-center py-8">No tienes recetas guardadas.</p>
+                    <p className="text-sm text-slate-500 dark:text-slate-300 text-center py-8">No tienes recetas guardadas.</p>
                   ) : (
                     Object.keys(groupedRecipes).map((method) => {
                       const isCollapsed = !!collapsedMethods[method];
@@ -1386,10 +1418,10 @@ export default function App() {
                                 >
                                   <div className="space-y-1 min-w-0 flex-1 pr-2">
                                     <span className="font-semibold text-slate-950 dark:text-slate-100 text-sm block truncate">{recipe.name}</span>
-                                    <p className="text-[11px] text-slate-500 dark:text-slate-300">
+                                    <p className="text-xs text-slate-500 dark:text-slate-300">
                                       {recipe.coffee_g}g • {recipe.grind_size || 'Molienda N/D'} • {recipe.water_temp_c}°C
                                     </p>
-                                    <p className="text-[10px] text-amber-800 dark:text-amber-400 font-medium">
+                                    <p className="text-[10px] text-amber-800 dark:text-amber-300 font-medium">
                                       {recipe.steps.length} pasos • {recipe.steps.reduce((acc, s) => acc + s.water_g, 0)}g agua
                                     </p>
                                   </div>
@@ -1494,18 +1526,21 @@ export default function App() {
                     onChange={(e) => setBeanSearchQuery(e.target.value)}
                     className="w-full px-3 py-2 pl-9 border border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50 dark:bg-slate-800/40 text-slate-900 dark:text-slate-100 text-xs focus:outline-none focus:ring-1 focus:ring-amber-500"
                   />
-                  <span className="absolute left-3 top-2.5 text-slate-400 select-none">🔍</span>
+                  <svg className="absolute left-3 top-2.5 w-4 h-4 text-slate-500 dark:text-slate-300 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <circle cx="11" cy="11" r="8" />
+                    <path d="m21 21-4.35-4.35" />
+                  </svg>
                 </div>
 
                 {/* Listado de granos */}
-                <div className="space-y-3 max-h-[480px] overflow-y-auto pr-1 pb-24">
+                <div className="space-y-3 max-h-[480px] overflow-y-auto pr-1 pb-32">
                   {beans.filter(b => 
                     b.name.toLowerCase().includes(beanSearchQuery.toLowerCase()) ||
                     (b.roaster && b.roaster.toLowerCase().includes(beanSearchQuery.toLowerCase())) ||
                     (b.origin && b.origin.toLowerCase().includes(beanSearchQuery.toLowerCase())) ||
                     (b.variety && b.variety.toLowerCase().includes(beanSearchQuery.toLowerCase()))
                   ).length === 0 ? (
-                    <p className="text-sm text-slate-400 dark:text-slate-400 text-center py-8 font-sans">
+                    <p className="text-sm text-slate-500 dark:text-slate-300 text-center py-8 font-sans">
                       {beans.length === 0 
                         ? 'No tienes granos registrados aún. ¡Registra uno nuevo para empezar!'
                         : 'No se encontraron granos que coincidan con la búsqueda.'}
@@ -1646,9 +1681,9 @@ export default function App() {
                     )}
                   </div>
                 </div>
-                <div className="space-y-3 max-h-[480px] overflow-y-auto pr-1 pb-24">
+                <div className="space-y-3 max-h-[480px] overflow-y-auto pr-1 pb-32">
                   {history.length === 0 ? (
-                    <p className="text-sm text-slate-400 dark:text-slate-400 text-center py-8">
+                    <p className="text-sm text-slate-500 dark:text-slate-300 text-center py-8">
                       No tienes preparaciones registradas aún. ¡Completa tu primer timer para inaugurar tu historial!
                     </p>
                   ) : (
@@ -1840,13 +1875,29 @@ export default function App() {
               {/* Header Fijo */}
               <div className="p-5 pb-3 border-b border-slate-200 dark:border-slate-800 flex justify-between items-start shrink-0 bg-white dark:bg-slate-900">
                 <div className="min-w-0 flex-1">
-                  <h3 className="text-base font-bold text-slate-900 dark:text-white pr-4 truncate" title={summaryRecipe.name}>{summaryRecipe.name}</h3>
+                  <div className="flex items-start gap-2">
+                    <h3 className={`font-bold text-base text-slate-900 dark:text-white ${isRecipeNameExpanded ? 'leading-snug' : 'truncate'}`}>
+                      {summaryRecipe.name}
+                    </h3>
+                    {summaryRecipe.name.length > 40 && (
+                      <button
+                        onClick={() => setIsRecipeNameExpanded(!isRecipeNameExpanded)}
+                        className="p-0.5 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 shrink-0 transition cursor-pointer"
+                        title={isRecipeNameExpanded ? "Contraer nombre" : "Expandir nombre"}
+                        aria-label={isRecipeNameExpanded ? "Contraer nombre" : "Expandir nombre"}
+                      >
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`w-4 h-4 transition-transform duration-200 ${isRecipeNameExpanded ? 'rotate-180' : ''}`} xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                          <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                      </button>
+                    )}
+                  </div>
                   <span className="inline-block text-[10px] bg-amber-50 dark:bg-amber-950/20 text-amber-900 dark:text-amber-300 border border-amber-200 dark:border-amber-900/30 px-2 py-0.5 rounded font-bold uppercase tracking-wider mt-1">{summaryRecipe.method}</span>
                 </div>
                 <div className="flex items-center gap-1 shrink-0 ml-2">
                   <button
                     onClick={() => navigateTo('share', { recipeId: summaryRecipe.id })}
-                    className="p-1.5 text-slate-400 dark:text-slate-400 hover:text-amber-800 dark:hover:text-amber-500 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+                    className="p-1.5 text-slate-500 dark:text-slate-300 hover:text-amber-800 dark:hover:text-amber-500 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
                     title="Compartir receta"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 overflow-visible">
@@ -1860,7 +1911,7 @@ export default function App() {
 
                   <button
                     onClick={closeSummary}
-                    className="p-1.5 text-slate-400 dark:text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+                    className="p-1.5 text-slate-500 dark:text-slate-300 hover:text-slate-700 dark:hover:text-slate-100 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
                     title="Cerrar"
                   >
                     <span className="hidden">×</span>
@@ -1877,25 +1928,25 @@ export default function App() {
                 {/* Parámetros Físicos */}
                 <div className="grid grid-cols-2 gap-2 text-xs bg-slate-50 dark:bg-slate-800/40 p-3 rounded-xl border border-slate-100 dark:border-slate-800/80">
                   <div>
-                    <span className="text-slate-400 dark:text-slate-400 block font-semibold text-[10px] uppercase">Café Inicial</span>
+                    <span className="text-slate-500 dark:text-slate-300 block font-semibold text-[10px] uppercase">Café Inicial</span>
                     <span className="text-sm font-bold text-slate-800 dark:text-slate-200">{summaryRecipe.coffee_g}g</span>
                   </div>
                   <div>
-                    <span className="text-slate-400 dark:text-slate-400 block font-semibold text-[10px] uppercase">Molienda</span>
+                    <span className="text-slate-500 dark:text-slate-300 block font-semibold text-[10px] uppercase">Molienda</span>
                     <span className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate block">{summaryRecipe.grind_size || 'N/D'}</span>
                   </div>
                   <div className="mt-1">
-                    <span className="text-slate-400 dark:text-slate-400 block font-semibold text-[10px] uppercase">Temperatura</span>
+                    <span className="text-slate-500 dark:text-slate-300 block font-semibold text-[10px] uppercase">Temperatura</span>
                     <span className="text-sm font-bold text-slate-800 dark:text-slate-200">{summaryRecipe.water_temp_c}°C</span>
                   </div>
                   <div className="mt-1">
-                    <span className="text-slate-400 dark:text-slate-400 block font-semibold text-[10px] uppercase">Agua Total</span>
+                    <span className="text-slate-500 dark:text-slate-300 block font-semibold text-[10px] uppercase">Agua Total</span>
                     <span className="text-sm font-bold text-slate-800 dark:text-slate-200">
                       {summaryRecipe.steps.reduce((acc, s) => acc + s.water_g, 0)}g
                     </span>
                   </div>
                   <div className="col-span-2 mt-2 pt-2 border-t border-slate-200 dark:border-slate-700 flex justify-between">
-                    <span className="text-slate-400 dark:text-slate-400 font-semibold text-[10px] uppercase">Tiempo Total Estimado</span>
+                    <span className="text-slate-500 dark:text-slate-300 font-semibold text-[10px] uppercase">Tiempo Total Estimado</span>
                     <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
                       {formatSecondsToMinutes(summaryRecipe.steps.reduce((acc, s) => acc + s.duration_s, 0))}
                     </span>

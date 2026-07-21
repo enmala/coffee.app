@@ -63,4 +63,5 @@ Los agentes de IA deben leer este archivo para saber qué implementar a continua
 - [x] Unificación de importación de JSON (recetas y granos) a un único botón en Configuración con detección automática de tipo de archivo (v1.6.0).
 - [x] Rediseño estético y mejora de representatividad de los iconos SVG en el header y los selectores de pestañas (v1.6.1).
 - [x] Ocultamiento dinámico del botón de donaciones Ko-fi en el contexto de Android TWA para cumplimiento con las políticas de Google Play Store (v1.6.2).
+- [x] Inclusión de la receta predeterminada de Moka italiana estándar a la lista de recetas predeterminadas de la app (v1.6.3).
 

@@ -36,6 +36,25 @@ const DEFAULT_RECIPES = [
       { step_number: 2, title: 'Reposo', water_g: 0, duration_s: 50, instruction: 'Coloca el émbolo ligeramente para hacer vacío y espera.' },
       { step_number: 3, title: 'Prensado', water_g: 0, duration_s: 30, instruction: 'Presiona el émbolo suavemente hacia abajo durante 30 segundos.' }
     ]
+  },
+  {
+    id: 'moka-estandar',
+    name: 'Moka - Estándar',
+    method: 'Moka',
+    coffee_g: 18,
+    grind_size: 'Fina',
+    water_temp_c: 70,
+    steps: [
+      { step_number: 1, title: 'Llenar agua', water_g: 250, duration_s: 0, instruction: 'Verter agua caliente hasta justo debajo de la válvula de seguridad.' },
+      { step_number: 2, title: 'Colocar cesta', water_g: 0, duration_s: 0, instruction: 'Insertar el filtro de la cesta sin mojar el café.' },
+      { step_number: 3, title: 'Agregar café', water_g: 0, duration_s: 0, instruction: 'Rellenar la cesta con 18g. Nivelar con dedo, no apretar.' },
+      { step_number: 4, title: 'Ensamblar', water_g: 0, duration_s: 0, instruction: 'Cerrar la moka firmemente. Usar paño si está caliente.' },
+      { step_number: 5, title: 'Calentar', water_g: 0, duration_s: 240, instruction: 'Colocar a fuego bajo-medio. Dejar tapa abierta.' },
+      { step_number: 6, title: 'Monitorear', water_g: 0, duration_s: 60, instruction: 'Cuando el café suba con burbujas doradas, reducir fuego.' },
+      { step_number: 7, title: 'Retirar', water_g: 0, duration_s: 0, instruction: 'Antes de que termine el siseo fuerte, retirar del fuego.' },
+      { step_number: 8, title: 'Enfriar', water_g: 0, duration_s: 10, instruction: 'Sumergir base en agua fría o envolver con paño húmedo para detener extracción.' },
+      { step_number: 9, title: 'Servir', water_g: 0, duration_s: 0, instruction: 'Verter inmediatamente. No dejar reposar en la moka.' }
+    ]
   }
 ];
 

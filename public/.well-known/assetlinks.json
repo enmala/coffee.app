@@ -7,7 +7,8 @@
       "namespace": "android_app",
       "package_name": "com.enmala.baristatimer",
       "sha256_cert_fingerprints": [
-        "4A:6D:82:BD:68:E9:5E:D9:11:5B:94:35:49:3B:3A:F6:1D:61:DB:4E:A7:3F:14:64:38:88:E7:75:A0:5E:8A:40"
+        "4A:6D:82:BD:68:E9:5E:D9:11:5B:94:35:49:3B:3A:F6:1D:61:DB:4E:A7:3F:14:64:38:88:E7:75:A0:5E:8A:40",
+        "9D:DE:B8:A9:C7:D5:91:D5:1B:28:7C:7D:57:2D:C5:E5:1A:35:A0:F1:59:9E:9D:D1:D9:9A:BE:3C:19:6B:55:F1"
       ]
     }
   }

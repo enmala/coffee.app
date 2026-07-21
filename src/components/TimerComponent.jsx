@@ -237,12 +237,12 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
             type="button"
             onClick={handleSkipPrev} 
             disabled={currentStepIndex === 0}
-            className="p-2 text-slate-500 dark:text-slate-300 hover:text-slate-800 dark:hover:text-slate-100 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:text-slate-500 dark:disabled:hover:text-slate-300 cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-500 dark:focus:ring-amber-400 focus:ring-offset-2 rounded-full"
+            className="p-2 text-slate-500 dark:text-slate-300 hover:text-slate-800 dark:hover:text-slate-100 disabled:invisible disabled:opacity-0 disabled:pointer-events-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-500 dark:focus:ring-amber-400 focus:ring-offset-2 rounded-full transition-all"
             title="Paso anterior"
             aria-label="Paso anterior"
           >
             <svg viewBox="0 0 24 24" className="w-6 h-6 fill-current" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              <path d="M7 5v14L18 12 7 5z" />
+              <path d="M17 5v14L6 12 17 5z" />
               <rect x="4" y="5" width="2" height="14" rx="0.5" />
             </svg>
           </button>
@@ -263,12 +263,12 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
             type="button"
             onClick={handleSkipNext} 
             disabled={currentStepIndex === recipe.steps.length - 1}
-            className="p-2 text-slate-500 dark:text-slate-300 hover:text-slate-800 dark:hover:text-slate-100 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:text-slate-500 dark:disabled:hover:text-slate-300 cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-500 dark:focus:ring-amber-400 focus:ring-offset-2 rounded-full"
+            className="p-2 text-slate-500 dark:text-slate-300 hover:text-slate-800 dark:hover:text-slate-100 disabled:invisible disabled:opacity-0 disabled:pointer-events-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-500 dark:focus:ring-amber-400 focus:ring-offset-2 rounded-full transition-all"
             title="Siguiente paso"
             aria-label="Siguiente paso"
           >
             <svg viewBox="0 0 24 24" className="w-6 h-6 fill-current" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              <path d="M17 5v14L6 12 17 5z" />
+              <path d="M7 5v14L18 12 7 5z" />
               <rect x="18" y="5" width="2" height="14" rx="0.5" />
             </svg>
           </button>

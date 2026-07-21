@@ -37,7 +37,7 @@ Los agentes de IA deben leer este archivo para saber qué implementar a continua
   - En la edición de recetas mostrar un resumen en tiempo real (pasos totales, agua acumulada, tiempo total)
   - Mejorar la visualización del timer especialmente en pantallas muy pequeñas
   - Diferenciar tab de historial de los de recetas y granos
-  - Mejorar el icono svg del tab de historial
+
 
 ---
 

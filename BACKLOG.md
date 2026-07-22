@@ -67,4 +67,6 @@ Los agentes de IA deben leer este archivo para saber qué implementar a continua
 - [x] Corrección de la orientación de los iconos de los botones avanzar/retroceder en la vista del temporizador y ocultamiento visual al llegar al primer/último paso (v1.6.4).
 - [x] Actualización del nivel de compatibilidad objetivo de Android a API 36 (Android 16) en la configuración TWA y Gradle (v1.6.5).
 - [x] Refactorización de las listas de constantes predeterminadas (DEFAULT_RECIPES, DEFAULT_BEANS, DEFAULT_TASTING_NOTES) a src/constants/defaultData.js e inclusión de la receta por defecto para Prensa Francesa (Técnica Hoffmann) (v1.6.6).
+- [x] Refactorización modular de `App.jsx` extrayendo componentes modales (`AboutModal`, `SettingsModal`, `RecipeSummaryModal`, `RecipeFormModal`, `BeanFormModal`) a `src/components/modals/` y componentes de pestañas (`RecipesTab`, `BeansTab`, `HistoryTab`) a `src/components/tabs/`, reduciendo la complejidad del archivo principal sin alterar la suite de tests (v1.6.7).
+
 

@@ -1,13 +1,20 @@
 import { useState, useEffect } from 'react';
-import { getMethodIcon, COFFEE_DESCRIPTORS, decompressRecipe, decompressBean } from './utils/coffeeUtils';
+import { decompressRecipe, decompressBean } from './utils/coffeeUtils';
 import TimerComponent from './components/TimerComponent';
 import ShareModal from './components/ShareModal';
 import ShareBeanModal from './components/ShareBeanModal';
 import ImportConfirmationModal from './components/ImportConfirmationModal';
 import ImportBeanConfirmationModal from './components/ImportBeanConfirmationModal';
 import NotificationModal from './components/NotificationModal';
+import AboutModal from './components/modals/AboutModal';
+import SettingsModal from './components/modals/SettingsModal';
+import RecipeSummaryModal from './components/modals/RecipeSummaryModal';
+import RecipeFormModal from './components/modals/RecipeFormModal';
+import BeanFormModal from './components/modals/BeanFormModal';
+import RecipesTab from './components/tabs/RecipesTab';
+import BeansTab from './components/tabs/BeansTab';
+import HistoryTab from './components/tabs/HistoryTab';
 import { DEFAULT_RECIPES, DEFAULT_BEANS, DEFAULT_TASTING_NOTES } from './constants/defaultData';
-import { version } from '../package.json';
 
 export default function App() {
   const [recipes, setRecipes] = useState(() => {
@@ -60,7 +67,6 @@ export default function App() {
   const [editingStepIndex, setEditingStepIndex] = useState(null);
   const [menuOpenRecipeId, setMenuOpenRecipeId] = useState(null);
   const [summaryRecipe, setSummaryRecipe] = useState(null);
-  const [isRecipeNameExpanded, setIsRecipeNameExpanded] = useState(false);
   const [recipeToShare, setRecipeToShare] = useState(null);
   const [recipeToImport, setRecipeToImport] = useState(null);
   const [beanToShare, setBeanToShare] = useState(null);
@@ -84,7 +90,6 @@ export default function App() {
       return false;
     }
   });
-  const [isBeanExpanded, setIsBeanExpanded] = useState(false);
   const [autoStartTimer, setAutoStartTimer] = useState(false);
 
   const [activeTab, setActiveTab] = useState('recipes'); // 'recipes', 'beans', or 'history'
@@ -152,10 +157,6 @@ export default function App() {
     
     if (state.view !== 'timer') {
       setAutoStartTimer(false);
-    }
-    
-    if (state.view !== 'summary') {
-      setIsBeanExpanded(false);
     }
 
     // Active Recipe / Timer
@@ -442,8 +443,6 @@ export default function App() {
 
   const closeSummary = () => {
     setSummaryRecipe(null);
-    setIsRecipeNameExpanded(false);
-    setIsBeanExpanded(false);
     safeBack('summary');
   };
 
@@ -1095,204 +1094,21 @@ export default function App() {
             />
           </div>
         ) : isCreating ? (
-          <div>
-            <div className="flex justify-between items-center mb-4 border-b border-slate-200 dark:border-slate-800 pb-2">
-              <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-                {editingRecipeId ? 'Editar Receta' : 'Nueva Receta'}
-              </h2>
-            </div>
-
-            <form onSubmit={handleSaveRecipe} className="space-y-4">
-              <div>
-                <label htmlFor="recipe-name-input" className="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Nombre de la receta</label>
-                <input
-                  id="recipe-name-input"
-                  type="text"
-                  value={newRecipe.name}
-                  onChange={(e) => setNewRecipe({ ...newRecipe, name: e.target.value })}
-                  className="w-full p-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm"
-                  placeholder="Ej: Mi V60 Balanceado"
-                  required
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Método</label>
-                  <select
-                    value={newRecipe.method}
-                    onChange={(e) => setNewRecipe({ ...newRecipe, method: e.target.value })}
-                    className="w-full p-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
-                  >
-                    <option value="V60">V60</option>
-                    <option value="Aeropress">Aeropress</option>
-                    <option value="Chemex">Chemex</option>
-                    <option value="Hario Switch">Hario Switch</option>
-                    <option value="Moka">Moka</option>
-                    <option value="Origami">Origami</option>
-                    <option value="Prensa Francesa">Prensa Francesa</option>
-                    <option value="Otro">Otro</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Molienda</label>
-                  <input
-                    type="text"
-                    value={newRecipe.grind_size}
-                    onChange={(e) => setNewRecipe({ ...newRecipe, grind_size: e.target.value })}
-                    className="w-full p-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
-                    placeholder="Ej: Fina, Media, 15 clicks"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Café Inicial (g)</label>
-                  <input
-                    type="number"
-                    value={newRecipe.coffee_g}
-                    onChange={(e) => setNewRecipe({ ...newRecipe, coffee_g: parseFloat(e.target.value) || 0 })}
-                    className="w-full p-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
-                    min="1"
-                    step="0.1"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Temperatura (°C)</label>
-                  <input
-                    type="number"
-                    value={newRecipe.water_temp_c}
-                    onChange={(e) => setNewRecipe({ ...newRecipe, water_temp_c: parseInt(e.target.value) || 0 })}
-                    className="w-full p-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
-                    min="1"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label htmlFor="recipe-bean-input" className="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Grano de Café (Opcional)</label>
-                <select
-                  id="recipe-bean-input"
-                  value={newRecipe.bean_id || ''}
-                  onChange={(e) => setNewRecipe({ ...newRecipe, bean_id: e.target.value })}
-                  className="w-full p-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
-                >
-                  <option value="">-- Sin grano asociado --</option>
-                  {beans.map((b) => (
-                    <option key={b.id} value={b.id}>
-                      {b.name} {b.roaster ? `(${b.roaster})` : ''}
-                    </option>
-                  ))}
-                </select>
-                {beans.length === 0 && (
-                  <p className="text-[10px] text-amber-805 dark:text-amber-500 mt-1 font-semibold">
-                    No tienes granos registrados. Puedes agregarlos en la pestaña "Granos".
-                  </p>
-                )}
-              </div>
-
-              <div className="border-t border-slate-200 dark:border-slate-800 pt-3 mt-2 text-left">
-                <div className="flex justify-between items-center mb-3">
-                  <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200">
-                    Pasos Añadidos ({newRecipe.steps.length})
-                  </h3>
-                  {newRecipe.steps.length > 0 && (
-                    <span className="text-xs font-semibold text-amber-900 dark:text-amber-400 bg-amber-100/60 dark:bg-amber-955/20 px-2 py-0.5 rounded-lg border border-amber-200/20">
-                      ⏱️ {totalStepsTime}s • 💧 {totalStepsWater}g
-                    </span>
-                  )}
-                </div>
-
-                {newRecipe.steps.length > 0 && (
-                  <ul className="mb-4 bg-slate-50 dark:bg-slate-800 rounded-xl p-2.5 divide-y divide-slate-200/80 dark:divide-slate-800/80 border border-slate-200/40 dark:border-slate-800/60">
-                    {newRecipe.steps.map((s, idx) => (
-                      <li key={idx} className={`py-2 px-2.5 flex justify-between items-center rounded-lg transition ${editingStepIndex === idx ? 'bg-amber-100/40 dark:bg-amber-900/10 border border-amber-500/20' : 'hover:bg-slate-100/50 dark:hover:bg-slate-800/30'}`}>
-                        <div
-                          className="flex-1 cursor-pointer pr-3 select-none text-left"
-                          onClick={() => handleOpenStepEditor(idx)}
-                          title="Haz clic para editar este paso"
-                        >
-                          <span className="font-bold text-sm text-slate-900 dark:text-white block">
-                            {s.step_number}. {s.title}
-                          </span>
-                          <span className="text-xs text-slate-500 dark:text-slate-400 block mt-0.5">
-                            ⏱️ {s.duration_s}s • 💧 {s.water_g}g {s.instruction ? `• "${s.instruction}"` : ''}
-                          </span>
-                        </div>
-
-                        <div className="flex items-center gap-1 shrink-0">
-                          <button
-                            type="button"
-                            onClick={() => handleMoveStep(idx, 'up')}
-                            disabled={idx === 0}
-                            className="p-1 hover:bg-slate-200/60 dark:hover:bg-slate-700 disabled:opacity-20 rounded-lg text-xs cursor-pointer font-bold transition text-slate-500 dark:text-slate-400"
-                            title="Mover arriba"
-                          >
-                            ▲
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => handleMoveStep(idx, 'down')}
-                            disabled={idx === newRecipe.steps.length - 1}
-                            className="p-1 hover:bg-slate-200/60 dark:hover:bg-slate-700 disabled:opacity-20 rounded-lg text-xs cursor-pointer font-bold transition text-slate-500 dark:text-slate-400"
-                            title="Mover abajo"
-                          >
-                            ▼
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setNewRecipe(prev => {
-                                const updatedSteps = prev.steps.filter((_, i) => i !== idx).map((step, i) => ({
-                                  ...step,
-                                  step_number: i + 1
-                                }));
-                                return { ...prev, steps: updatedSteps };
-                              });
-                              if (editingStepIndex === idx) {
-                                handleCloseStepEditor();
-                              } else if (editingStepIndex > idx) {
-                                setEditingStepIndex(editingStepIndex - 1);
-                              }
-                            }}
-                            className="p-1 text-red-500 hover:bg-red-50 dark:hover:bg-red-955/20 rounded-lg font-bold text-xs cursor-pointer transition"
-                            title="Eliminar paso"
-                          >
-                            ✕
-                          </button>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-
-                <button
-                  type="button"
-                  onClick={() => handleOpenStepEditor(null)}
-                  className="w-full py-3 border-2 border-dashed border-slate-200 dark:border-slate-800 hover:border-amber-500 dark:hover:border-amber-600 rounded-xl text-xs font-bold text-slate-500 dark:text-slate-400 hover:text-amber-800 dark:hover:text-amber-500 hover:bg-amber-50/10 dark:hover:bg-amber-955/5 transition cursor-pointer flex items-center justify-center gap-1.5"
-                >
-                  + Agregar Paso
-                </button>
-              </div>
-
-              <div className="flex gap-3 pt-4 border-t border-slate-200 dark:border-slate-800">
-                <button
-                  type="button"
-                  onClick={handleCancelForm}
-                  className="flex-1 py-2.5 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-655 dark:text-slate-350 rounded-xl font-bold text-sm transition cursor-pointer text-center"
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="submit"
-                  className="flex-1 py-2.5 bg-emerald-700 hover:bg-emerald-800 dark:bg-emerald-600 dark:hover:bg-emerald-700 text-white rounded-xl font-bold text-sm transition shadow-sm cursor-pointer text-center"
-                >
-                  Guardar Receta
-                </button>
-              </div>
-            </form>
-          </div>
+          <RecipeFormModal
+            editingRecipeId={editingRecipeId}
+            newRecipe={newRecipe}
+            setNewRecipe={setNewRecipe}
+            beans={beans}
+            editingStepIndex={editingStepIndex}
+            setEditingStepIndex={setEditingStepIndex}
+            totalStepsTime={totalStepsTime}
+            totalStepsWater={totalStepsWater}
+            handleSaveRecipe={handleSaveRecipe}
+            handleOpenStepEditor={handleOpenStepEditor}
+            handleCloseStepEditor={handleCloseStepEditor}
+            handleMoveStep={handleMoveStep}
+            handleCancelForm={handleCancelForm}
+          />
         ) : (
           <div className="space-y-4">
             {/* Tab Selector */}
@@ -1339,701 +1155,84 @@ export default function App() {
             </div>
 
             {activeTab === 'recipes' && (
-              <div className="space-y-6">
-                <div className="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-3">
-                  <h2 className="text-xl font-bold text-slate-900 dark:text-white">Tus Recetas</h2>
-
-                  <div className="flex gap-2">
-                    <button
-                      onClick={handleNewRecipeClick}
-                      className="px-3 py-1.5 bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-800 text-white text-xs font-bold rounded-lg transition cursor-pointer"
-                    >
-                      + Nueva Receta
-                    </button>
-                  </div>
-                </div>
-
-                <div className="space-y-5 max-h-[480px] overflow-y-auto pr-1 pb-32">
-                  {Object.keys(groupedRecipes).length === 0 ? (
-                    <p className="text-sm text-slate-500 dark:text-slate-300 text-center py-8">No tienes recetas guardadas.</p>
-                  ) : (
-                    Object.keys(groupedRecipes).map((method) => {
-                      const isCollapsed = !!collapsedMethods[method];
-                      return (
-                        <div 
-                          key={method} 
-                          className={`space-y-2 ${
-                            groupedRecipes[method].some((r) => r.id === menuOpenRecipeId) ? 'relative z-30' : ''
-                          }`}
-                        >
-                          <h3
-                            onClick={() => toggleMethodCollapse(method)}
-                            className="text-xs font-extrabold text-slate-400 dark:text-slate-300 hover:text-amber-800 dark:hover:text-amber-500 uppercase tracking-wider pl-1 pt-1 flex justify-between items-center cursor-pointer select-none transition-colors duration-200"
-                          >
-                            <span className="flex items-center gap-1.5">
-                              <span className="text-sm select-none">{getMethodIcon(method)}</span>
-                              <span>{method} ({groupedRecipes[method].length})</span>
-                            </span>
-                            <span className="text-[10px] transform transition-transform duration-200 mr-1">
-                              {isCollapsed ? '▶' : '▼'}
-                            </span>
-                          </h3>
-
-                          {!isCollapsed && (
-                            <div className="space-y-2">
-                              {groupedRecipes[method].map((recipe) => (
-                                <div
-                                  key={recipe.id}
-                                  onClick={() => {
-                                    setSummaryRecipe(recipe);
-                                    navigateTo('summary', { recipeId: recipe.id });
-                                  }}
-                                  className="p-3 bg-slate-50 dark:bg-slate-800/30 hover:bg-amber-50/20 dark:hover:bg-amber-900/10 border border-slate-200 dark:border-slate-800 hover:border-amber-200 dark:hover:border-amber-800/30 rounded-xl cursor-pointer transition flex justify-between items-center group"
-                                >
-                                  <div className="space-y-1 min-w-0 flex-1 pr-2">
-                                    <span className="font-semibold text-slate-950 dark:text-slate-100 text-sm block truncate">{recipe.name}</span>
-                                    <p className="text-xs text-slate-500 dark:text-slate-300">
-                                      {recipe.coffee_g}g • {recipe.grind_size || 'Molienda N/D'} • {recipe.water_temp_c}°C
-                                    </p>
-                                    <p className="text-[10px] text-amber-800 dark:text-amber-300 font-medium">
-                                      {recipe.steps.length} pasos • {recipe.steps.reduce((acc, s) => acc + s.water_g, 0)}g agua
-                                    </p>
-                                  </div>
-
-                                  <div className="flex gap-1.5 transition items-center opacity-85 group-hover:opacity-100 shrink-0">
-                                    <button
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        setActiveRecipe(recipe);
-                                        setAutoStartTimer(true);
-                                        navigateTo('timer', { recipeId: recipe.id });
-                                      }}
-                                      className="p-2 bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/20 dark:hover:bg-amber-950/40 text-amber-800 dark:text-amber-500 rounded-xl transition cursor-pointer flex items-center justify-center border border-amber-200/10 dark:border-amber-900/10"
-                                      title="Iniciar preparación inmediatamente (auto-start)"
-                                    >
-                                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
-                                        <path fillRule="evenodd" d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z" clipRule="evenodd" />
-                                      </svg>
-                                    </button>
-
-                                    {/* Elementos ocultos para compatibilidad con tests automatizados */}
-                                    <div className="hidden" aria-hidden="true">
-                                      <button
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          setSummaryRecipe(recipe);
-                                          navigateTo('summary', { recipeId: recipe.id });
-                                        }}
-                                        title="Ver Resumen"
-                                      >
-                                        📋
-                                      </button>
-                                      <button
-                                        data-menu-trigger={recipe.id}
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          setMenuOpenRecipeId(menuOpenRecipeId === recipe.id ? null : recipe.id);
-                                        }}
-                                        title="Más opciones"
-                                      >
-                                        •••
-                                      </button>
-                                      {menuOpenRecipeId === recipe.id && (
-                                        <div data-menu-content={recipe.id}>
-                                          <button onClick={(e) => { e.stopPropagation(); handleEditRecipe(recipe); setMenuOpenRecipeId(null); }}>
-                                            ✏️ Editar
-                                          </button>
-                                          <button onClick={(e) => { e.stopPropagation(); navigateTo('share', { recipeId: recipe.id }); setMenuOpenRecipeId(null); }}>
-                                            🔗 Compartir
-                                          </button>
-                                          <button onClick={(e) => { e.stopPropagation(); handleExportJson(recipe); setMenuOpenRecipeId(null); }}>
-                                            📥 Exportar
-                                          </button>
-                                          <button onClick={(e) => { e.stopPropagation(); handleDeleteRecipe(recipe, e); setMenuOpenRecipeId(null); }}>
-                                            🗑️ Eliminar
-                                          </button>
-                                        </div>
-                                      )}
-                                    </div>
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })
-                  )}
-                </div>
-              </div>
+              <RecipesTab
+                groupedRecipes={groupedRecipes}
+                collapsedMethods={collapsedMethods}
+                toggleMethodCollapse={toggleMethodCollapse}
+                menuOpenRecipeId={menuOpenRecipeId}
+                setMenuOpenRecipeId={setMenuOpenRecipeId}
+                onNewRecipe={handleNewRecipeClick}
+                onSelectSummary={(recipe) => {
+                  setSummaryRecipe(recipe);
+                  navigateTo('summary', { recipeId: recipe.id });
+                }}
+                onStartTimerImmediate={(recipe) => {
+                  setActiveRecipe(recipe);
+                  setAutoStartTimer(true);
+                  navigateTo('timer', { recipeId: recipe.id });
+                }}
+                onEditRecipe={(recipe) => handleEditRecipe(recipe)}
+                onShareRecipe={(recipe) => navigateTo('share', { recipeId: recipe.id })}
+                onExportJson={(recipe) => handleExportJson(recipe)}
+                onDeleteRecipe={(recipe, e) => handleDeleteRecipe(recipe, e)}
+              />
             )}
 
             {activeTab === 'beans' && (
-              <div className="space-y-6">
-                <div className="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-3">
-                  <h2 className="text-xl font-bold text-slate-900 dark:text-white">Tus Granos</h2>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={handleStartNewBean}
-                      className="px-3 py-1.5 bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-800 text-white text-xs font-bold rounded-lg transition cursor-pointer"
-                    >
-                      + Agregar Grano
-                    </button>
-                  </div>
-                </div>
-
-                {/* Buscador de granos */}
-                <div className="relative">
-                  <input
-                    type="text"
-                    placeholder="Buscar por nombre, origen, tostaduría..."
-                    value={beanSearchQuery}
-                    onChange={(e) => setBeanSearchQuery(e.target.value)}
-                    className="w-full px-3 py-2 pl-9 border border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50 dark:bg-slate-800/40 text-slate-900 dark:text-slate-100 text-xs focus:outline-none focus:ring-1 focus:ring-amber-500"
-                  />
-                  <svg className="absolute left-3 top-2.5 w-4 h-4 text-slate-500 dark:text-slate-300 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                    <circle cx="11" cy="11" r="8" />
-                    <path d="m21 21-4.35-4.35" />
-                  </svg>
-                </div>
-
-                {/* Listado de granos */}
-                <div className="space-y-3 max-h-[480px] overflow-y-auto pr-1 pb-32">
-                  {beans.filter(b => 
-                    b.name.toLowerCase().includes(beanSearchQuery.toLowerCase()) ||
-                    (b.roaster && b.roaster.toLowerCase().includes(beanSearchQuery.toLowerCase())) ||
-                    (b.origin && b.origin.toLowerCase().includes(beanSearchQuery.toLowerCase())) ||
-                    (b.variety && b.variety.toLowerCase().includes(beanSearchQuery.toLowerCase()))
-                  ).length === 0 ? (
-                    <p className="text-sm text-slate-500 dark:text-slate-300 text-center py-8 font-sans">
-                      {beans.length === 0 
-                        ? 'No tienes granos registrados aún. ¡Registra uno nuevo para empezar!'
-                        : 'No se encontraron granos que coincidan con la búsqueda.'}
-                    </p>
-                  ) : (
-                    beans.filter(b => 
-                      b.name.toLowerCase().includes(beanSearchQuery.toLowerCase()) ||
-                      (b.roaster && b.roaster.toLowerCase().includes(beanSearchQuery.toLowerCase())) ||
-                      (b.origin && b.origin.toLowerCase().includes(beanSearchQuery.toLowerCase())) ||
-                      (b.variety && b.variety.toLowerCase().includes(beanSearchQuery.toLowerCase()))
-                    ).map((bean) => (
-                      <div key={bean.id} className="p-4 bg-slate-50 dark:bg-slate-800/30 border border-slate-200 dark:border-slate-800 rounded-2xl space-y-2 text-left relative group">
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <h3 className="font-bold text-slate-900 dark:text-white text-base leading-tight">{bean.name}</h3>
-                            {bean.roaster && (
-                              <p className="text-xs text-slate-550 dark:text-slate-400 font-medium">{bean.roaster}</p>
-                            )}
-                          </div>
-                          
-                          {/* Botones de acción */}
-                          <div className="flex gap-2">
-                            <button
-                              onClick={() => navigateTo('share-bean', { beanId: bean.id })}
-                              className="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded transition text-slate-500 dark:text-slate-400 hover:text-amber-850 dark:hover:text-amber-500 cursor-pointer flex items-center justify-center"
-                              title="Compartir grano"
-                            >
-                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 overflow-visible">
-                                <circle cx="18" cy="5" r="3" />
-                                <circle cx="6" cy="12" r="3" />
-                                <circle cx="18" cy="19" r="3" />
-                                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
-                                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
-                              </svg>
-                            </button>
-                            <button
-                              onClick={() => handleStartEditBean(bean)}
-                              className="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded transition text-xs cursor-pointer"
-                              title="Editar grano"
-                            >
-                              ✏️
-                            </button>
-                            <button
-                              onClick={() => handleDeleteBeanClick(bean)}
-                              className="p-1 hover:bg-red-50 dark:hover:bg-red-950/20 rounded transition text-xs cursor-pointer"
-                              title="Eliminar grano"
-                            >
-                              🗑️
-                            </button>
-                          </div>
-                        </div>
-
-                        {/* Atributos técnicos en badges */}
-                        <div className="flex flex-wrap gap-1.5 pt-1">
-                          {bean.origin && (
-                            <span className="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded text-[10px] font-semibold">
-                              📍 {bean.origin}
-                            </span>
-                          )}
-                          {bean.process && (
-                            <span className="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded text-[10px] font-semibold">
-                              ⚙️ {bean.process}
-                            </span>
-                          )}
-                          {bean.roast_level && (
-                            <span className="px-2 py-0.5 bg-amber-50 dark:bg-amber-950/20 text-amber-900 dark:text-amber-300 border border-amber-200/30 rounded text-[10px] font-semibold">
-                              🔥 Tueste {bean.roast_level}
-                            </span>
-                          )}
-                          {bean.variety && (
-                            <span className="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded text-[10px] font-semibold">
-                              🌱 {bean.variety}
-                            </span>
-                          )}
-                          {bean.altitude && (
-                            <span className="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded text-[10px] font-semibold">
-                              🏔️ {bean.altitude}
-                            </span>
-                          )}
-                          {bean.sca_score && (
-                            <span className="px-2 py-0.5 bg-emerald-50 dark:bg-emerald-950/20 text-emerald-805 dark:text-emerald-300 border border-emerald-200/20 rounded text-[10px] font-bold">
-                              🏆 SCA: {bean.sca_score}
-                            </span>
-                          )}
-                        </div>
-
-                        {/* Notas de cata */}
-                        {bean.tasting_notes && bean.tasting_notes.length > 0 && (
-                          <div className="flex flex-wrap gap-1 pt-1.5">
-                            {bean.tasting_notes.map((note) => (
-                              <span key={note} className="px-2 py-0.5 bg-amber-50 dark:bg-amber-950/20 text-amber-900 dark:text-amber-300 border border-amber-200/20 rounded-full text-[9px] font-bold">
-                                {note}
-                              </span>
-                            ))}
-                          </div>
-                        )}
-
-                        {/* Notas generales */}
-                        {bean.notes && (
-                          <p className="text-xs text-slate-600 dark:text-slate-400 pt-1.5 border-t border-slate-150 dark:border-slate-800 italic">
-                            "{bean.notes}"
-                          </p>
-                        )}
-
-                        {bean.roast_date && (
-                          <div className="text-[9px] text-slate-400 dark:text-slate-500 pt-1 text-right">
-                            Tostado el: {bean.roast_date}
-                          </div>
-                        )}
-                      </div>
-                    ))
-                  )}
-                </div>
-              </div>
+              <BeansTab
+                beans={beans}
+                beanSearchQuery={beanSearchQuery}
+                setBeanSearchQuery={setBeanSearchQuery}
+                onAddBean={handleStartNewBean}
+                onEditBean={handleStartEditBean}
+                onDeleteBean={handleDeleteBeanClick}
+                onShareBean={(beanId) => navigateTo('share-bean', { beanId })}
+              />
             )}
 
             {activeTab === 'history' && (
-              <div className="space-y-6">
-                <div className="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-3">
-                  <h2 className="text-xl font-bold text-slate-900 dark:text-white">Historial</h2>
-                  <div className="flex items-center gap-3">
-                    <label className="flex items-center gap-1.5 cursor-pointer text-xs text-slate-500 dark:text-slate-400 select-none font-medium">
-                      <input
-                        type="checkbox"
-                        checked={autoLogEnabled}
-                        onChange={(e) => setAutoLogEnabled(e.target.checked)}
-                        className="rounded border-slate-350 dark:border-slate-700 text-amber-800 focus:ring-amber-500 w-3.5 h-3.5"
-                      />
-                      Reg. Auto.
-                    </label>
-                    {history.length > 0 && (
-                      <button
-                        onClick={() => setShowClearHistoryConfirm(true)}
-                        className="text-xs text-red-500 hover:text-red-700 dark:hover:text-red-400 underline cursor-pointer"
-                      >
-                        Limpiar todo
-                      </button>
-                    )}
-                  </div>
-                </div>
-                <div className="space-y-3 max-h-[480px] overflow-y-auto pr-1 pb-32">
-                  {history.length === 0 ? (
-                    <p className="text-sm text-slate-500 dark:text-slate-300 text-center py-8">
-                      No tienes preparaciones registradas aún. ¡Completa tu primer timer para inaugurar tu historial!
-                    </p>
-                  ) : (
-                    history.map((entry) => {
-                      const isEditingNote = editingHistoryId === entry.id;
-                      const dateFormatted = new Date(entry.date).toLocaleString([], {
-                        day: '2-digit',
-                        month: '2-digit',
-                        year: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                      });
-
-                      return (
-                        <div key={entry.id} className="p-3 bg-slate-50 dark:bg-slate-800/30 border border-slate-200 dark:border-slate-800 rounded-xl space-y-2 relative group">
-                          <div className="flex justify-between items-start">
-                            <div className="text-left">
-                              <span className="text-[10px] text-slate-400 dark:text-slate-500 block font-semibold">{dateFormatted}</span>
-                              <span className="font-bold text-slate-950 dark:text-slate-100 text-sm flex items-center gap-1.5">
-                                <span className="w-5 h-5 flex items-center justify-center select-none">{getMethodIcon(entry.method)}</span>
-                                {entry.recipeName}
-                              </span>
-
-                              {/* Display Star Rating */}
-                              {entry.rating > 0 && (
-                                <div className="flex items-center gap-0.5 text-amber-500 text-xs mt-0.5" title={`Puntuación: ${entry.rating}/5`}>
-                                  {'★'.repeat(entry.rating)}{'☆'.repeat(5 - entry.rating)}
-                                </div>
-                              )}
-
-                              <p className="text-[11px] text-slate-505 dark:text-slate-350 mt-1">
-                                {entry.coffee_g}g • {entry.grind_size || 'Molienda N/D'} • {entry.water_g}g agua
-                              </p>
-
-                              {entry.bean_name && (
-                                <p className="text-[11px] text-amber-805 dark:text-amber-500 font-bold mt-0.5 flex items-center gap-1 select-none">
-                                  🫘 {entry.bean_name}
-                                </p>
-                              )}
-
-                              {/* Display Flavor Tags */}
-                              {entry.descriptors && entry.descriptors.length > 0 && (
-                                <div className="flex flex-wrap gap-1 mt-1.5">
-                                  {entry.descriptors.map((desc) => (
-                                    <span key={desc} className="px-1.5 py-0.5 bg-amber-50 dark:bg-amber-950/20 text-amber-805 dark:text-amber-300 border border-amber-100 dark:border-amber-900/20 rounded-full text-[9px] font-bold font-sans">
-                                      {desc}
-                                    </span>
-                                  ))}
-                                </div>
-                              )}
-                            </div>
-
-                            <div className="flex gap-1 opacity-60 group-hover:opacity-100 transition">
-                              <button
-                                onClick={() => handleStartEditHistory(entry)}
-                                className="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded text-slate-500 dark:text-slate-300 cursor-pointer"
-                                title="Editar observaciones"
-                              >
-                                ✏️
-                              </button>
-                              <button
-                                onClick={() => handleDeleteHistoryEntry(entry)}
-                                className="p-1 hover:bg-red-50 dark:hover:bg-red-950/20 rounded text-red-500 dark:text-red-400 cursor-pointer"
-                                title="Eliminar registro"
-                              >
-                                🗑️
-                              </button>
-                            </div>
-                          </div>
-
-                          {isEditingNote ? (
-                            <div className="space-y-3 pt-1 text-left">
-                              {/* Edit Rating */}
-                              <div className="flex items-center gap-1.5">
-                                <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Puntuación:</span>
-                                <div className="flex gap-1">
-                                  {[1, 2, 3, 4, 5].map((star) => (
-                                    <button
-                                      key={star}
-                                      type="button"
-                                      onClick={() => setEditingHistoryRating(star)}
-                                      className="text-lg focus:outline-none cursor-pointer transition transform active:scale-125"
-                                      title={`Puntuar ${star} estrella${star > 1 ? 's' : ''}`}
-                                    >
-                                      <span className={star <= editingHistoryRating ? 'text-amber-500' : 'text-slate-300 dark:text-slate-700'}>
-                                        ★
-                                      </span>
-                                    </button>
-                                  ))}
-                                </div>
-                              </div>
-
-                              {/* Edit Flavor Tags */}
-                              <div className="space-y-1">
-                                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 block">Descriptores de sabor:</span>
-                                <div className="flex flex-wrap gap-1">
-                                  {COFFEE_DESCRIPTORS.map((desc) => {
-                                    const isSelected = editingHistoryDescriptors.includes(desc);
-                                    return (
-                                      <button
-                                        key={desc}
-                                        type="button"
-                                        onClick={() => {
-                                          setEditingHistoryDescriptors(prev =>
-                                            prev.includes(desc) ? prev.filter(d => d !== desc) : [...prev, desc]
-                                          );
-                                        }}
-                                        className={`px-2 py-0.5 rounded-full text-[9px] font-bold border transition cursor-pointer ${
-                                          isSelected
-                                            ? 'bg-amber-100 dark:bg-amber-950/40 border-amber-300 dark:border-amber-900/60 text-amber-900 dark:text-amber-300'
-                                            : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700'
-                                        }`}
-                                      >
-                                        {desc}
-                                      </button>
-                                    );
-                                  })}
-                                </div>
-                              </div>
-
-                              {/* Edit Notes */}
-                              <div className="space-y-1">
-                                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 block">Observaciones:</span>
-                                <textarea
-                                  value={editingHistoryNotes}
-                                  onChange={(e) => setEditingHistoryNotes(e.target.value)}
-                                  placeholder="Ej: Salió un poco dulce, moler más fino la próxima vez..."
-                                  className="w-full p-2 border border-slate-200 dark:border-slate-700 rounded bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:outline-none focus:ring-1 focus:ring-amber-500"
-                                  rows="2"
-                                />
-                              </div>
-
-                              <div className="flex gap-2 justify-end">
-                                <button
-                                  onClick={() => {
-                                    setEditingHistoryId(null);
-                                    safeBack('edit-history');
-                                  }}
-                                  className="px-2 py-1 text-[10px] border border-slate-200 dark:border-slate-700 text-slate-550 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded font-semibold cursor-pointer"
-                                >
-                                  Cancelar
-                                </button>
-                                <button
-                                  onClick={() => {
-                                    handleUpdateHistoryEntry(entry.id, editingHistoryNotes, editingHistoryRating, editingHistoryDescriptors);
-                                    setEditingHistoryId(null);
-                                    safeBack('edit-history');
-                                  }}
-                                  className="px-2 py-1 text-[10px] bg-emerald-700 hover:bg-emerald-800 text-white rounded font-semibold cursor-pointer"
-                                >
-                                  Guardar
-                                </button>
-                              </div>
-                            </div>
-                          ) : entry.notes || entry.rating || (entry.descriptors && entry.descriptors.length > 0) ? (
-                            <div className="space-y-1 bg-amber-500/5 dark:bg-amber-500/10 border-l-2 border-amber-600/50 p-2 rounded-r text-left">
-                              {entry.notes && (
-                                <p className="text-xs text-slate-650 dark:text-slate-350 italic">
-                                  "{entry.notes}"
-                                </p>
-                              )}
-                            </div>
-                          ) : (
-                            <button
-                              onClick={() => {
-                                setEditingHistoryId(entry.id);
-                                setEditingHistoryNotes('');
-                                setEditingHistoryRating(entry.rating || 0);
-                                setEditingHistoryDescriptors(entry.descriptors || []);
-                              }}
-                              className="text-[10px] text-slate-400 dark:text-slate-500 hover:text-amber-800 dark:hover:text-amber-500 italic block pl-1 hover:underline cursor-pointer text-left"
-                            >
-                              + Registrar catación (puntuación y descriptores)
-                            </button>
-                          )}
-                        </div>
-                      );
-                    })
-                  )}
-                </div>
-              </div>
+              <HistoryTab
+                history={history}
+                autoLogEnabled={autoLogEnabled}
+                setAutoLogEnabled={setAutoLogEnabled}
+                onClearHistory={() => setShowClearHistoryConfirm(true)}
+                editingHistoryId={editingHistoryId}
+                setEditingHistoryId={setEditingHistoryId}
+                editingHistoryNotes={editingHistoryNotes}
+                setEditingHistoryNotes={setEditingHistoryNotes}
+                editingHistoryRating={editingHistoryRating}
+                setEditingHistoryRating={setEditingHistoryRating}
+                editingHistoryDescriptors={editingHistoryDescriptors}
+                setEditingHistoryDescriptors={setEditingHistoryDescriptors}
+                onStartEditHistory={handleStartEditHistory}
+                onDeleteHistoryEntry={handleDeleteHistoryEntry}
+                onUpdateHistoryEntry={handleUpdateHistoryEntry}
+                safeBack={safeBack}
+              />
             )}
           </div>
         )}
 
-        {summaryRecipe && (
-          <div className="fixed inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
-            <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-sm w-full shadow-xl max-h-[85vh] border border-slate-100 dark:border-slate-800 flex flex-col overflow-hidden text-left">
-              {/* Header Fijo */}
-              <div className="p-5 pb-3 border-b border-slate-200 dark:border-slate-800 flex justify-between items-start shrink-0 bg-white dark:bg-slate-900">
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-start gap-2">
-                    <h3 className={`font-bold text-base text-slate-900 dark:text-white ${isRecipeNameExpanded ? 'leading-snug' : 'truncate'}`}>
-                      {summaryRecipe.name}
-                    </h3>
-                    {summaryRecipe.name.length > 40 && (
-                      <button
-                        onClick={() => setIsRecipeNameExpanded(!isRecipeNameExpanded)}
-                        className="p-0.5 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 shrink-0 transition cursor-pointer"
-                        title={isRecipeNameExpanded ? "Contraer nombre" : "Expandir nombre"}
-                        aria-label={isRecipeNameExpanded ? "Contraer nombre" : "Expandir nombre"}
-                      >
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`w-4 h-4 transition-transform duration-200 ${isRecipeNameExpanded ? 'rotate-180' : ''}`} xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                          <polyline points="6 9 12 15 18 9"></polyline>
-                        </svg>
-                      </button>
-                    )}
-                  </div>
-                  <span className="inline-block text-[10px] bg-amber-50 dark:bg-amber-950/20 text-amber-900 dark:text-amber-300 border border-amber-200 dark:border-amber-900/30 px-2 py-0.5 rounded font-bold uppercase tracking-wider mt-1">{summaryRecipe.method}</span>
-                </div>
-                <div className="flex items-center gap-1 shrink-0 ml-2">
-                  <button
-                    onClick={() => navigateTo('share', { recipeId: summaryRecipe.id })}
-                    className="p-1.5 text-slate-500 dark:text-slate-300 hover:text-amber-800 dark:hover:text-amber-500 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
-                    title="Compartir receta"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 overflow-visible">
-                      <circle cx="18" cy="5" r="3" />
-                      <circle cx="6" cy="12" r="3" />
-                      <circle cx="18" cy="19" r="3" />
-                      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
-                      <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
-                    </svg>
-                  </button>
-
-                  <button
-                    onClick={closeSummary}
-                    className="p-1.5 text-slate-500 dark:text-slate-300 hover:text-slate-700 dark:hover:text-slate-100 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
-                    title="Cerrar"
-                  >
-                    <span className="hidden">×</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
-                  <button onClick={closeSummary} className="hidden">Cerrar</button>
-                </div>
-              </div>
-
-              {/* Cuerpo Scrollable Único */}
-              <div className="p-5 py-4 overflow-y-auto flex-1 space-y-4">
-                {/* Parámetros Físicos */}
-                <div className="grid grid-cols-2 gap-2 text-xs bg-slate-50 dark:bg-slate-800/40 p-3 rounded-xl border border-slate-100 dark:border-slate-800/80">
-                  <div>
-                    <span className="text-slate-500 dark:text-slate-300 block font-semibold text-[10px] uppercase">Café Inicial</span>
-                    <span className="text-sm font-bold text-slate-800 dark:text-slate-200">{summaryRecipe.coffee_g}g</span>
-                  </div>
-                  <div>
-                    <span className="text-slate-500 dark:text-slate-300 block font-semibold text-[10px] uppercase">Molienda</span>
-                    <span className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate block">{summaryRecipe.grind_size || 'N/D'}</span>
-                  </div>
-                  <div className="mt-1">
-                    <span className="text-slate-500 dark:text-slate-300 block font-semibold text-[10px] uppercase">Temperatura</span>
-                    <span className="text-sm font-bold text-slate-800 dark:text-slate-200">{summaryRecipe.water_temp_c}°C</span>
-                  </div>
-                  <div className="mt-1">
-                    <span className="text-slate-500 dark:text-slate-300 block font-semibold text-[10px] uppercase">Agua Total</span>
-                    <span className="text-sm font-bold text-slate-800 dark:text-slate-200">
-                      {summaryRecipe.steps.reduce((acc, s) => acc + s.water_g, 0)}g
-                    </span>
-                  </div>
-                  <div className="col-span-2 mt-2 pt-2 border-t border-slate-200 dark:border-slate-700 flex justify-between">
-                    <span className="text-slate-500 dark:text-slate-300 font-semibold text-[10px] uppercase">Tiempo Total Estimado</span>
-                    <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
-                      {formatSecondsToMinutes(summaryRecipe.steps.reduce((acc, s) => acc + s.duration_s, 0))}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Acordeón de Grano de Café */}
-                {summaryRecipe.bean_id && beans.find(b => b.id === summaryRecipe.bean_id) && (
-                  (() => {
-                    const bean = beans.find(b => b.id === summaryRecipe.bean_id);
-                    return (
-                      <div className="border border-amber-200/20 rounded-xl overflow-hidden bg-amber-50/30 dark:bg-amber-950/5">
-                        <button
-                          onClick={() => setIsBeanExpanded(!isBeanExpanded)}
-                          className="w-full flex justify-between items-center p-3 text-xs text-left cursor-pointer transition-all hover:bg-amber-50/50 dark:hover:bg-amber-950/15"
-                        >
-                          <div className="space-y-0.5">
-                            <div className="font-extrabold text-[10px] text-amber-800 dark:text-amber-500 uppercase tracking-wider flex items-center gap-1">
-                              <span>🫘</span> Grano de Café
-                            </div>
-                            <div className="font-bold text-slate-800 dark:text-slate-200">
-                              {bean.name} {bean.roaster && <span className="text-[11px] font-normal text-slate-500 dark:text-slate-400 inline-block ml-1">({bean.roaster})</span>}
-                            </div>
-                          </div>
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 20 20"
-                            fill="currentColor"
-                            className={`w-4 h-4 text-slate-405 transition-transform duration-200 ${isBeanExpanded ? 'rotate-180' : ''}`}
-                          >
-                            <path fillRule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clipRule="evenodd" />
-                          </svg>
-                        </button>
-                        {isBeanExpanded && (
-                          <div className="px-3 pb-3 pt-1.5 border-t border-amber-200/10 dark:border-amber-900/10 space-y-2 text-[11px] animate-fade-in">
-                            <div className="flex flex-wrap gap-1">
-                              {bean.origin && <span className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[9px] px-1.5 py-0.5 rounded font-medium text-slate-600 dark:text-slate-300">📍 {bean.origin}</span>}
-                              {bean.process && <span className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[9px] px-1.5 py-0.5 rounded font-medium text-slate-600 dark:text-slate-300">⚙️ {bean.process}</span>}
-                              {bean.roast_level && <span className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[9px] px-1.5 py-0.5 rounded font-medium text-slate-600 dark:text-slate-300">🔥 Tueste {bean.roast_level}</span>}
-                              {bean.variety && <span className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[9px] px-1.5 py-0.5 rounded font-medium text-slate-600 dark:text-slate-300">🌱 {bean.variety}</span>}
-                              {bean.altitude && <span className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[9px] px-1.5 py-0.5 rounded font-medium text-slate-600 dark:text-slate-300">🏔️ {bean.altitude}</span>}
-                              {bean.sca_score && <span className="bg-emerald-100/50 dark:bg-emerald-950/30 text-emerald-800 dark:text-emerald-400 text-[9px] px-1.5 py-0.5 rounded font-bold border border-emerald-250/10">🏆 SCA {bean.sca_score}</span>}
-                            </div>
-                            {bean.tasting_notes && bean.tasting_notes.length > 0 && (
-                              <div className="flex flex-wrap gap-0.5 pt-1.5 border-t border-amber-200/10 dark:border-amber-900/10">
-                                {bean.tasting_notes.map(note => (
-                                  <span key={note} className="bg-amber-100/40 dark:bg-amber-900/10 text-amber-900 dark:text-amber-300 text-[8px] font-bold px-1.5 py-0.5 rounded-full border border-amber-200/10">
-                                    {note}
-                                  </span>
-                                ))}
-                              </div>
-                            )}
-                            {bean.notes && (
-                              <div className="pt-1.5 border-t border-amber-200/10 dark:border-amber-900/10 text-[10px] text-slate-500 dark:text-slate-400 italic">
-                                "{bean.notes}"
-                              </div>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })()
-                )}
-
-                {/* Pasos */}
-                <div className="space-y-2">
-                  <h4 className="text-xs font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider pl-1">Pasos</h4>
-                  <div className="space-y-2">
-                    {summaryRecipe.steps.map((step, idx) => (
-                      <div key={idx} className="bg-slate-50 dark:bg-slate-800 p-2.5 rounded-lg border border-slate-100 dark:border-slate-800/80 space-y-1 text-xs">
-                        <div className="flex justify-between font-bold text-slate-700 dark:text-slate-300">
-                          <span>Paso {step.step_number}: {step.title}</span>
-                          <span className="text-amber-800 dark:text-amber-400 font-semibold">
-                            {step.water_g > 0 ? `+${step.water_g}g` : 'Sin agua'} ({step.duration_s}s)
-                          </span>
-                        </div>
-                        {step.instruction && (
-                          <p className="text-slate-500 dark:text-slate-400 italic text-[11px]">"{step.instruction}"</p>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* Footer Fijo */}
-              <div className="p-5 pt-3 border-t border-slate-100 dark:border-slate-800 flex gap-2 shrink-0 bg-white dark:bg-slate-900">
-                <button
-                  onClick={(e) => {
-                    handleDeleteRecipe(summaryRecipe, e);
-                    closeSummary();
-                  }}
-                  className="p-2 border border-red-200 dark:border-red-900/30 hover:bg-red-50 dark:hover:bg-red-950/20 text-red-650 dark:text-red-400 rounded-xl transition cursor-pointer flex items-center justify-center shrink-0"
-                  title="Eliminar receta"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-                  </svg>
-                </button>
-                <button
-                  onClick={() => {
-                    handleEditRecipe(summaryRecipe);
-                    closeSummary();
-                  }}
-                  className="flex-1 py-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-650 dark:text-slate-355 rounded-xl font-bold text-xs transition cursor-pointer flex items-center justify-center gap-1"
-                >
-                  ✏️ Editar
-                </button>
-                <button
-                  onClick={() => {
-                    setAutoStartTimer(true);
-                    window.history.replaceState({ view: 'timer', recipeId: summaryRecipe.id }, '');
-                    syncStateWithHistory({ view: 'timer', recipeId: summaryRecipe.id });
-                  }}
-                  className="flex-[1.5] py-2 bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-800 text-white rounded-xl font-bold text-xs transition shadow-sm cursor-pointer flex items-center justify-center gap-1.5"
-                >
-                  <span aria-hidden="true">⏱️ </span>Iniciar Timer
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+        <RecipeSummaryModal
+          summaryRecipe={summaryRecipe}
+          beans={beans}
+          onClose={closeSummary}
+          onShare={(recipeId) => navigateTo('share', { recipeId })}
+          onDelete={(recipe, e) => {
+            handleDeleteRecipe(recipe, e);
+            closeSummary();
+          }}
+          onEdit={(recipe) => {
+            handleEditRecipe(recipe);
+            closeSummary();
+          }}
+          onStartTimer={(recipe) => {
+            setAutoStartTimer(true);
+            window.history.replaceState({ view: 'timer', recipeId: recipe.id }, '');
+            syncStateWithHistory({ view: 'timer', recipeId: recipe.id });
+          }}
+          formatSecondsToMinutes={formatSecondsToMinutes}
+        />
 
         {isStepFormOpen && (
           <div className="fixed inset-0 z-50 flex items-end justify-center md:items-center p-0 md:p-4">
@@ -2131,225 +1330,32 @@ export default function App() {
             </div>
           </div>
         )}
-        {isSettingsOpen && (
-          <div className="fixed inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
-            <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-sm w-full p-6 shadow-xl max-h-[85vh] overflow-y-auto space-y-5 border border-slate-100 dark:border-slate-800 flex flex-col">
-              <div className="flex justify-between items-start border-b border-slate-200 dark:border-slate-800 pb-3">
-                <div className="text-left">
-                  <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
-                    <span>⚙️</span> Configuración
-                  </h3>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Personaliza tu experiencia de preparación</p>
-                </div>
-                <button
-                  onClick={closeSettings}
-                  className="text-slate-400 dark:text-slate-350 hover:text-slate-600 dark:hover:text-slate-200 text-xl font-bold leading-none cursor-pointer"
-                >
-                  &times;
-                </button>
-              </div>
+        <SettingsModal
+          isOpen={isSettingsOpen}
+          onClose={closeSettings}
+          theme={theme}
+          setTheme={setTheme}
+          voiceGuidanceEnabled={voiceGuidanceEnabled}
+          setVoiceGuidanceEnabled={setVoiceGuidanceEnabled}
+          soundEnabled={soundEnabled}
+          setSoundEnabled={setSoundEnabled}
+          vibrationEnabled={vibrationEnabled}
+          setVibrationEnabled={setVibrationEnabled}
+          vibrationType={vibrationType}
+          setVibrationType={setVibrationType}
+          onUnifiedImportJson={handleUnifiedImportJson}
+          onOpenAbout={() => {
+            setIsSettingsOpen(false);
+            setIsAboutOpen(true);
+            navigateTo('about');
+          }}
+        />
 
-              <div className="space-y-4 py-2">
-                {/* Theme selector */}
-                <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-800/60">
-                  <div className="text-left">
-                    <span className="text-sm font-bold text-slate-800 dark:text-slate-200 block">Tema Visual</span>
-                    <span className="text-xs text-slate-500 dark:text-slate-400">Alterna entre modo claro y oscuro</span>
-                  </div>
-                  <button
-                    onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                    className="px-3 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition cursor-pointer text-xs font-bold flex items-center gap-1"
-                    title={theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
-                  >
-                    <span>{theme === 'dark' ? '☀️ Claro' : '🌙 Oscuro'}</span>
-                  </button>
-                </div>
-
-                {/* Modo manos libres */}
-                <div className="space-y-2.5 p-3 bg-amber-50 dark:bg-amber-950/20 rounded-xl border border-amber-200 dark:border-amber-500/20">
-                  <div className="flex items-center justify-between">
-                    <div className="text-left">
-                      <span className="text-sm font-bold text-slate-800 dark:text-slate-200 block">Modo Manos Libres</span>
-                      <span className="text-xs text-slate-500 dark:text-slate-400">Activa narración de pasos mientras el timer corre.</span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => setVoiceGuidanceEnabled(!voiceGuidanceEnabled)}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
-                        voiceGuidanceEnabled
-                          ? 'bg-amber-800 text-white hover:bg-amber-900'
-                          : 'bg-slate-200 dark:bg-slate-700 text-slate-650 dark:text-slate-400 hover:bg-slate-300 dark:hover:bg-slate-700'
-                      }`}
-                    >
-                      {voiceGuidanceEnabled ? 'Activado' : 'Desactivado'}
-                    </button>
-                  </div>
-                </div>
-
-                {/* Sound Alerts */}
-                <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-800/60">
-                  <div className="text-left">
-                    <span className="text-sm font-bold text-slate-800 dark:text-slate-200 block">Alertas de Sonido</span>
-                    <span className="text-xs text-slate-500 dark:text-slate-400">Sonido al cambiar de paso</span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setSoundEnabled(!soundEnabled)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
-                      soundEnabled 
-                        ? 'bg-amber-800 text-white hover:bg-amber-900' 
-                        : 'bg-slate-200 dark:bg-slate-700 text-slate-650 dark:text-slate-400 hover:bg-slate-300 dark:hover:bg-slate-700'
-                    }`}
-                  >
-                    {soundEnabled ? 'Activado' : 'Desactivado'}
-                  </button>
-                </div>
-
-                <div className="space-y-2.5 p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-800/60">
-                  <div className="flex items-center justify-between">
-                    <div className="text-left">
-                      <span className="text-sm font-bold text-slate-800 dark:text-slate-200 block">Vibración Háptica</span>
-                      <span className="text-xs text-slate-500 dark:text-slate-400">Vibrar en transiciones</span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => setVibrationEnabled(!vibrationEnabled)}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
-                        vibrationEnabled 
-                          ? 'bg-amber-800 text-white hover:bg-amber-900' 
-                          : 'bg-slate-200 dark:bg-slate-700 text-slate-650 dark:text-slate-400 hover:bg-slate-300 dark:hover:bg-slate-700'
-                      }`}
-                    >
-                      {vibrationEnabled ? 'Activado' : 'Desactivado'}
-                    </button>
-                  </div>
-                  
-                  {vibrationEnabled && (
-                    <div className="pt-2 border-t border-slate-200/50 dark:border-slate-700/50 flex items-center justify-between gap-2">
-                      <label className="text-xs text-slate-600 dark:text-slate-400 font-semibold">Duración:</label>
-                      <select
-                        value={vibrationType}
-                        onChange={(e) => setVibrationType(e.target.value)}
-                        className="p-1 border border-slate-200 dark:border-slate-700 rounded bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 text-xs focus:outline-none"
-                      >
-                        <option value="short">Corta</option>
-                        <option value="normal">Normal</option>
-                        <option value="long">Larga</option>
-                      </select>
-                    </div>
-                  )}
-                </div>
-
-                {/* Importar Datos */}
-                <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-800/60">
-                  <div className="text-left">
-                    <span className="text-sm font-bold text-slate-800 dark:text-slate-200 block">Importar Datos</span>
-                    <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Carga receta o grano desde archivo .json</span>
-                  </div>
-                  <label className="px-3 py-1.5 bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-800 text-white text-xs font-bold rounded-lg cursor-pointer transition flex items-center justify-center shadow-sm select-none">
-                    Importar
-                    <input
-                      type="file"
-                      accept=".json"
-                      onChange={handleUnifiedImportJson}
-                      className="hidden"
-                    />
-                  </label>
-                </div>
-
-                {/* About link */}
-                <div className="flex justify-center pt-2">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsSettingsOpen(false);
-                      setIsAboutOpen(true);
-                      navigateTo('about');
-                    }}
-                    className="px-4 py-2 rounded-full text-xs font-medium text-amber-800 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/40 hover:bg-amber-100 dark:hover:bg-amber-900/30 transition cursor-pointer flex items-center gap-1.5"
-                  >
-                    <span>ⓘ</span>
-                    <span>Acerca de la aplicación</span>
-                  </button>
-                </div>
-              </div>
-
-              <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
-                <button
-                  onClick={closeSettings}
-                  className="w-full py-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-650 dark:text-slate-300 rounded-xl font-bold text-xs transition cursor-pointer"
-                >
-                  Cerrar
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {isAboutOpen && (
-          <div className="fixed inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
-            <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-sm w-full p-6 shadow-xl max-h-[85vh] overflow-y-auto space-y-5 border border-slate-100 dark:border-slate-800 flex flex-col">
-              <div className="flex justify-between items-start border-b border-slate-200 dark:border-slate-800 pb-3">
-                <div className="text-left">
-                  <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
-                    <span>☕</span> Barista Timer
-                  </h3>
-                  <span className="inline-block text-[10px] bg-amber-50 dark:bg-amber-950/20 text-amber-900 dark:text-amber-300 border border-amber-200 dark:border-amber-900/30 px-2 py-0.5 rounded font-bold uppercase tracking-wider mt-1">v{version}</span>
-                </div>
-                <button
-                  onClick={closeAbout}
-                  className="text-slate-400 dark:text-slate-300 hover:text-slate-600 dark:hover:text-slate-200 text-xl font-bold leading-none cursor-pointer"
-                >
-                  &times;
-                </button>
-              </div>
-
-              <div className="space-y-3 text-sm text-slate-600 dark:text-slate-350 text-left">
-                <p>
-                  Tu compañero de barra para café de especialidad. Crea, guarda y cronometra tus recetas de extracción paso a paso, con alertas, historial y soporte offline.
-                </p>
-                <p className="text-xs text-slate-500 dark:text-slate-400">
-                  Hecho con ☕ por <a className="text-amber-800 dark:text-amber-550 dark:hover:text-amber-405 hover:underline font-semibold">Enrique Maldonado</a>
-                </p>
-              </div>
-
-              <div className="space-y-3 pt-2">
-                <a
-                  href="https://github.com/enmala/coffee.app"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 w-full py-2.5 bg-slate-900 hover:bg-slate-950 dark:bg-slate-800 dark:hover:bg-slate-700 text-white rounded-xl font-bold text-xs transition shadow-sm cursor-pointer"
-                >
-                  <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
-                  </svg>
-                  <span>Repositorio en GitHub</span>
-                </a>
-
-                {!isTwa && (
-                  <a
-                    href="https://ko-fi.com/enmala"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-2 w-full py-2.5 bg-rose-500 hover:bg-rose-600 text-white rounded-xl font-bold text-xs transition shadow-sm cursor-pointer"
-                  >
-                    <span>☕</span>
-                    <span>Apoya el proyecto en Ko-fi</span>
-                  </a>
-                )}
-              </div>
-
-              <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
-                <button
-                  onClick={closeAbout}
-                  className="w-full py-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-650 dark:text-slate-300 rounded-xl font-bold text-xs transition cursor-pointer"
-                >
-                  Cerrar
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+        <AboutModal
+          isOpen={isAboutOpen}
+          onClose={closeAbout}
+          isTwa={isTwa}
+        />
 
         {recipeToShare && (
           <ShareModal
@@ -2414,259 +1420,19 @@ export default function App() {
           </div>
         )}
 
-        {isEditingBean && (
-          <div className="fixed inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
-            <form
-              onSubmit={handleSaveBean}
-              className="bg-white dark:bg-slate-900 rounded-2xl max-w-md w-full p-6 shadow-xl max-h-[85vh] overflow-y-auto space-y-4 border border-slate-100 dark:border-slate-800 text-left"
-            >
-              <div className="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-3">
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-                  {editingBeanId ? 'Editar Grano de Café' : 'Nuevo Grano de Café'}
-                </h3>
-                <button
-                  type="button"
-                  onClick={handleCancelBean}
-                  className="text-slate-400 dark:text-slate-350 hover:text-slate-650 dark:hover:text-slate-200 text-xl font-bold leading-none cursor-pointer"
-                >
-                  &times;
-                </button>
-              </div>
-
-              <div className="space-y-3">
-                {/* Nombre */}
-                <div className="space-y-1">
-                  <label htmlFor="bean-name-input" className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Nombre del Grano*</label>
-                  <input
-                    id="bean-name-input"
-                    type="text"
-                    required
-                    placeholder="Ej: Etiopía Sidamo, Geisha Colombia..."
-                    value={newBean.name}
-                    onChange={(e) => setNewBean({ ...newBean, name: e.target.value })}
-                    className="w-full p-2 border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:outline-none focus:ring-1 focus:ring-amber-500"
-                  />
-                </div>
-
-                {/* Tostaduría y Origen */}
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="space-y-1">
-                    <label htmlFor="bean-roaster-input" className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Tostaduría</label>
-                    <input
-                      id="bean-roaster-input"
-                      type="text"
-                      placeholder="Ej: Nomad, Blue Bottle..."
-                      value={newBean.roaster}
-                      onChange={(e) => setNewBean({ ...newBean, roaster: e.target.value })}
-                      className="w-full p-2 border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:outline-none focus:ring-1 focus:ring-amber-500"
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <label htmlFor="bean-origin-input" className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">País/Origen</label>
-                    <input
-                      id="bean-origin-input"
-                      type="text"
-                      placeholder="Ej: Etiopía, Huila..."
-                      value={newBean.origin}
-                      onChange={(e) => setNewBean({ ...newBean, origin: e.target.value })}
-                      className="w-full p-2 border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:outline-none focus:ring-1 focus:ring-amber-500"
-                    />
-                  </div>
-                </div>
-
-                {/* Variedad y Proceso */}
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="space-y-1">
-                    <label htmlFor="bean-variety-input" className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Variedad</label>
-                    <input
-                      id="bean-variety-input"
-                      type="text"
-                      placeholder="Ej: Caturra, Castillo, Heirloom..."
-                      value={newBean.variety}
-                      onChange={(e) => setNewBean({ ...newBean, variety: e.target.value })}
-                      className="w-full p-2 border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:outline-none focus:ring-1 focus:ring-amber-500"
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <label htmlFor="bean-process-input" className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Proceso de Beneficio</label>
-                    <select
-                      id="bean-process-input"
-                      value={newBean.process}
-                      onChange={(e) => setNewBean({ ...newBean, process: e.target.value })}
-                      className="w-full p-2 border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:outline-none focus:ring-1 focus:ring-amber-500"
-                    >
-                      <option value="Lavado">Lavado</option>
-                      <option value="Natural">Natural</option>
-                      <option value="Honey">Honey</option>
-                      <option value="Anaeróbico">Anaeróbico</option>
-                      <option value="Miel">Miel</option>
-                      <option value="Otro">Otro / Mezcla</option>
-                    </select>
-                  </div>
-                </div>
-
-                {/* Nivel de Tueste y Fecha de Tueste */}
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="space-y-1">
-                    <label htmlFor="bean-roast-level-input" className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Nivel de Tueste</label>
-                    <select
-                      id="bean-roast-level-input"
-                      value={newBean.roast_level}
-                      onChange={(e) => setNewBean({ ...newBean, roast_level: e.target.value })}
-                      className="w-full p-2 border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:outline-none focus:ring-1 focus:ring-amber-500"
-                    >
-                      <option value="Claro">Claro</option>
-                      <option value="Medio-Claro">Medio-Claro</option>
-                      <option value="Medio">Medio</option>
-                      <option value="Medio-Oscuro">Medio-Oscuro</option>
-                      <option value="Oscuro">Oscuro</option>
-                    </select>
-                  </div>
-                  <div className="space-y-1">
-                    <label htmlFor="bean-roast-date-input" className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Fecha de Tueste</label>
-                    <input
-                      id="bean-roast-date-input"
-                      type="date"
-                      value={newBean.roast_date}
-                      onChange={(e) => setNewBean({ ...newBean, roast_date: e.target.value })}
-                      className="w-full p-2 border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:outline-none focus:ring-1 focus:ring-amber-500"
-                    />
-                  </div>
-                </div>
-
-                {/* Puntuación SCA y Altitud */}
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="space-y-1">
-                    <label htmlFor="bean-sca-score-input" className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Puntuación SCA</label>
-                    <input
-                      id="bean-sca-score-input"
-                      type="number"
-                      step="0.25"
-                      min="0"
-                      max="100"
-                      placeholder="Ej: 85.5"
-                      value={newBean.sca_score}
-                      onChange={(e) => setNewBean({ ...newBean, sca_score: e.target.value })}
-                      className="w-full p-2 border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:outline-none focus:ring-1 focus:ring-amber-500"
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <label htmlFor="bean-altitude-input" className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Altitud</label>
-                    <input
-                      id="bean-altitude-input"
-                      type="text"
-                      placeholder="Ej: 1900 msnm"
-                      value={newBean.altitude}
-                      onChange={(e) => setNewBean({ ...newBean, altitude: e.target.value })}
-                      className="w-full p-2 border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:outline-none focus:ring-1 focus:ring-amber-500"
-                    />
-                  </div>
-                </div>
-
-                {/* Perfil de sabor / Notas de Cata */}
-                <div className="space-y-2">
-                  <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Descriptores de Sabor (Notas de Cata)</label>
-                  
-                  {/* Chips añadidos */}
-                  {newBean.tasting_notes.length > 0 && (
-                    <div className="flex flex-wrap gap-1 mb-2 bg-slate-50 dark:bg-slate-800/40 p-2 rounded-xl border border-slate-100 dark:border-slate-800">
-                      {newBean.tasting_notes.map((note) => (
-                        <span key={note} className="px-2 py-0.5 bg-amber-50 dark:bg-amber-950/20 text-amber-900 dark:text-amber-300 border border-amber-200/30 rounded-full text-[10px] font-bold flex items-center gap-1">
-                          {note}
-                          <button
-                            type="button"
-                            onClick={() => handleRemoveTastingNote(note)}
-                            className="text-slate-405 hover:text-red-500 font-extrabold focus:outline-none"
-                          >
-                            &times;
-                          </button>
-                        </span>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* Predefinidos */}
-                  <div className="space-y-1">
-                    <span className="text-[10px] text-slate-400 dark:text-slate-500 block font-semibold">Sugeridos (haz clic para añadir):</span>
-                    <div className="flex flex-wrap gap-1 max-h-[75px] overflow-y-auto border border-slate-100 dark:border-slate-800/60 p-1.5 rounded-lg bg-slate-50/50 dark:bg-slate-800/10">
-                      {DEFAULT_TASTING_NOTES.map((note) => {
-                        const isAdded = newBean.tasting_notes.includes(note);
-                        return (
-                          <button
-                            key={note}
-                            type="button"
-                            disabled={isAdded}
-                            onClick={() => handleAddTastingNote(note)}
-                            className={`px-2 py-0.5 rounded-full text-[9px] font-bold border transition cursor-pointer ${
-                              isAdded
-                                ? 'bg-slate-105 dark:bg-slate-800 text-slate-350 dark:text-slate-600 border-slate-200 dark:border-slate-700/50'
-                                : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-650 dark:text-slate-300 hover:bg-amber-50 dark:hover:bg-amber-950/20'
-                            }`}
-                          >
-                            {note}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  {/* Entrada personalizada */}
-                  <div className="flex gap-1.5 pt-1">
-                    <input
-                      type="text"
-                      placeholder="Agregar nota personalizada..."
-                      value={customTastingNote}
-                      onChange={(e) => setCustomTastingNote(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                          e.preventDefault();
-                          handleAddTastingNote(customTastingNote);
-                        }
-                      }}
-                      className="flex-1 p-2 border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:outline-none focus:ring-1 focus:ring-amber-500"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => handleAddTastingNote(customTastingNote)}
-                      className="px-3 bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-800 text-white rounded-xl text-xs font-bold transition cursor-pointer"
-                    >
-                      +
-                    </button>
-                  </div>
-                </div>
-
-                {/* Notas generales */}
-                <div className="space-y-1">
-                  <label htmlFor="bean-notes-input" className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Notas Generales</label>
-                  <textarea
-                    id="bean-notes-input"
-                    placeholder="Ej: Tueste artesanal para filtro, cuerpo medio, acidez brillante..."
-                    value={newBean.notes}
-                    onChange={(e) => setNewBean({ ...newBean, notes: e.target.value })}
-                    className="w-full p-2 border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:outline-none focus:ring-1 focus:ring-amber-500"
-                    rows="3"
-                  />
-                </div>
-              </div>
-
-              <div className="flex gap-2 pt-2 border-t border-slate-200 dark:border-slate-800">
-                <button
-                  type="button"
-                  onClick={handleCancelBean}
-                  className="flex-1 py-2.5 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-655 dark:text-slate-350 rounded-xl font-bold text-sm transition cursor-pointer"
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="submit"
-                  className="flex-1 py-2.5 bg-emerald-700 hover:bg-emerald-800 dark:bg-emerald-600 dark:hover:bg-emerald-700 text-white rounded-xl font-bold text-sm transition shadow-sm cursor-pointer"
-                >
-                  Guardar Grano
-                </button>
-              </div>
-            </form>
-          </div>
-        )}
+        <BeanFormModal
+          isOpen={isEditingBean}
+          editingBeanId={editingBeanId}
+          newBean={newBean}
+          setNewBean={setNewBean}
+          customTastingNote={customTastingNote}
+          setCustomTastingNote={setCustomTastingNote}
+          DEFAULT_TASTING_NOTES={DEFAULT_TASTING_NOTES}
+          handleSaveBean={handleSaveBean}
+          handleCancelBean={handleCancelBean}
+          handleAddTastingNote={handleAddTastingNote}
+          handleRemoveTastingNote={handleRemoveTastingNote}
+        />
 
         {beanToDelete && (
           <div className="fixed inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">

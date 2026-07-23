@@ -984,6 +984,20 @@ export default function App() {
     handleCancelForm();
   };
 
+  const handleToggleFavorite = (recipeId) => {
+    setRecipes((prevRecipes) => {
+      const updated = prevRecipes.map((r) =>
+        r.id === recipeId ? { ...r, is_favorite: !r.is_favorite } : r
+      );
+      localStorage.setItem('coffee_recipes_v1', JSON.stringify(updated));
+      return updated;
+    });
+
+    if (summaryRecipe && summaryRecipe.id === recipeId) {
+      setSummaryRecipe((prev) => (prev ? { ...prev, is_favorite: !prev.is_favorite } : null));
+    }
+  };
+
   const groupedRecipes = recipes.reduce((groups, recipe) => {
     const method = recipe.method || 'Otros';
     if (!groups[method]) {
@@ -992,6 +1006,13 @@ export default function App() {
     groups[method].push(recipe);
     return groups;
   }, {});
+
+  Object.keys(groupedRecipes).forEach((method) => {
+    groupedRecipes[method].sort((a, b) => {
+      if (!!a.is_favorite === !!b.is_favorite) return 0;
+      return a.is_favorite ? -1 : 1;
+    });
+  });
 
   const formatSecondsToMinutes = (seconds) => {
     const mins = Math.floor(seconds / 60);
@@ -1175,6 +1196,7 @@ export default function App() {
                 onShareRecipe={(recipe) => navigateTo('share', { recipeId: recipe.id })}
                 onExportJson={(recipe) => handleExportJson(recipe)}
                 onDeleteRecipe={(recipe, e) => handleDeleteRecipe(recipe, e)}
+                onToggleFavorite={handleToggleFavorite}
               />
             )}
 
@@ -1232,6 +1254,7 @@ export default function App() {
             syncStateWithHistory({ view: 'timer', recipeId: recipe.id });
           }}
           formatSecondsToMinutes={formatSecondsToMinutes}
+          onToggleFavorite={handleToggleFavorite}
         />
 
         {isStepFormOpen && (

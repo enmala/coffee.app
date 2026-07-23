@@ -112,4 +112,42 @@ describe('Favorite Recipes Tests', () => {
     const saved = JSON.parse(localStorage.getItem('coffee_recipes_v1'));
     expect(saved.some((r) => r.is_favorite === true)).toBe(true);
   });
+
+  it('preserves favorite status when a recipe is edited and saved', () => {
+    const initialRecipes = [
+      {
+        id: 'rec-fav-1',
+        name: 'V60 Favorita',
+        method: 'V60',
+        coffee_g: 15,
+        grind_size: 'Medio',
+        water_temp_c: 92,
+        steps: [{ step_number: 1, title: 'Vertido', water_g: 250, duration_s: 60 }],
+        is_favorite: true,
+      },
+    ];
+    localStorage.setItem('coffee_recipes_v1', JSON.stringify(initialRecipes));
+
+    render(<App />);
+
+    const menuBtns = screen.getAllByTitle('Más opciones');
+    fireEvent.click(menuBtns[0]);
+
+    const editBtn = screen.getByText('✏️ Editar');
+    fireEvent.click(editBtn);
+
+    const nameInput = screen.getByPlaceholderText('Ej: Mi V60 Balanceado');
+    fireEvent.change(nameInput, { target: { value: 'V60 Favorita Modificada' } });
+
+    const saveRecipeBtn = screen.getByText('Guardar Receta');
+    fireEvent.click(saveRecipeBtn);
+
+    const saved = JSON.parse(localStorage.getItem('coffee_recipes_v1'));
+    const editedRecipe = saved.find((r) => r.id === 'rec-fav-1');
+    expect(editedRecipe).toBeDefined();
+    expect(editedRecipe.name).toBe('V60 Favorita Modificada');
+    expect(editedRecipe.is_favorite).toBe(true);
+  });
 });
+
+

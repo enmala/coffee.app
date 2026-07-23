@@ -46,6 +46,7 @@ Los agentes de IA deben leer este archivo para saber qué implementar a continua
 ---
 
 ## ✅ Completado
+- [x] Corrección en la gestión de favoritas: preservación del estado `is_favorite` al editar y guardar recetas existentes (v1.7.1).
 - [x] Sistema de recetas favoritas con ordenamiento prioritario en el listado y botón de toggle en tarjetas y resumen de receta (v1.7.0).
 - [x] Acceso directo y visible a la vista "Acerca de" desde el encabezado, manteniendo la estética del diseño.
 - [x] Refactor del enlace "Acerca de" en el modal de Configuración a diseño de pill badge con icono informativo.

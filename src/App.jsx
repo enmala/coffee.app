@@ -902,7 +902,8 @@ export default function App() {
       grind_size: recipe.grind_size || '',
       water_temp_c: recipe.water_temp_c,
       bean_id: recipe.bean_id || '',
-      steps: [...recipe.steps]
+      steps: [...recipe.steps],
+      is_favorite: Boolean(recipe.is_favorite)
     });
     setEditingRecipeId(recipe.id);
     setIsCreating(true);
@@ -965,13 +966,17 @@ export default function App() {
     };
 
     if (editingRecipeId) {
-      setRecipes((prev) => prev.map(r => r.id === editingRecipeId ? { ...recipeData, id: editingRecipeId } : r));
+      setRecipes((prev) => prev.map(r => r.id === editingRecipeId ? { ...r, ...recipeData, id: editingRecipeId } : r));
+      if (summaryRecipe && summaryRecipe.id === editingRecipeId) {
+        setSummaryRecipe((prev) => (prev ? { ...prev, ...recipeData, id: editingRecipeId } : null));
+      }
       setSaveSuccessMessage({
         title: "¡Receta Actualizada!",
         body: "Los cambios en tu receta se han guardado correctamente."
       });
     } else {
       const created = {
+        is_favorite: false,
         ...recipeData,
         id: `custom-${Date.now()}`
       };

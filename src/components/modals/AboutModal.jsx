@@ -1,7 +1,18 @@
+import { useState } from 'react';
 import { version } from '../../../package.json';
 
 export default function AboutModal({ isOpen, onClose, isTwa }) {
+  const [copied, setCopied] = useState(false);
+
   if (!isOpen) return null;
+
+  const handleCopyEmail = () => {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText('baristatimer@bitslab.cl');
+    }
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   return (
     <div className="fixed inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
@@ -28,6 +39,32 @@ export default function AboutModal({ isOpen, onClose, isTwa }) {
           <p className="text-xs text-slate-500 dark:text-slate-400">
             Hecho con ☕ por <a className="text-amber-800 dark:text-amber-550 dark:hover:text-amber-405 hover:underline font-semibold">Enrique Maldonado</a>
           </p>
+        </div>
+
+        <div className="p-3.5 bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200/60 dark:border-amber-900/30 rounded-xl text-left space-y-1.5">
+          <p className="text-xs font-bold text-slate-700 dark:text-slate-200 flex items-center gap-1.5">
+            <span>✉️</span> Contacto y Sugerencias
+          </p>
+          <p className="text-[11px] text-slate-500 dark:text-slate-400">
+            ¿Tienes dudas, comentarios o sugerencias? Escríbenos directamente:
+          </p>
+          <div className="flex items-center justify-between gap-2 pt-1">
+            <a
+              href="mailto:baristatimer@bitslab.cl"
+              className="text-xs font-bold text-amber-900 dark:text-amber-400 hover:underline truncate"
+              title="Enviar correo a baristatimer@bitslab.cl"
+            >
+              baristatimer@bitslab.cl
+            </a>
+            <button
+              type="button"
+              onClick={handleCopyEmail}
+              className="px-2.5 py-1 text-[11px] font-bold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition cursor-pointer shrink-0"
+              title="Copiar correo al portapapeles"
+            >
+              {copied ? '¡Copiado!' : '📋 Copiar'}
+            </button>
+          </div>
         </div>
 
         <div className="space-y-3 pt-2">

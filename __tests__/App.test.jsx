@@ -81,6 +81,13 @@ describe('App Component', () => {
 
     expect(screen.getByText(/Enrique Maldonado/)).toBeInTheDocument();
     expect(screen.getByText(`v${version}`)).toBeInTheDocument();
+    expect(screen.getByText('baristatimer@bitslab.cl')).toBeInTheDocument();
+    
+    const copyBtn = screen.getByTitle('Copiar correo al portapapeles');
+    expect(copyBtn).toBeInTheDocument();
+    fireEvent.click(copyBtn);
+    expect(screen.getByText('¡Copiado!')).toBeInTheDocument();
+
     expect(screen.getByText('Repositorio en GitHub')).toBeInTheDocument();
     expect(screen.getByText('Apoya el proyecto en Ko-fi')).toBeInTheDocument();
 

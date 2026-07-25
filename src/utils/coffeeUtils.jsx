@@ -42,9 +42,40 @@ export const speakText = (message) => {
   }
 };
 
+// Auxiliar para determinar la categoría de la receta ('tea' o 'coffee')
+export const getRecipeCategory = (recipe) => {
+  if (!recipe) return 'coffee';
+  if (recipe.category === 'tea' || recipe.category === 'té') return 'tea';
+  const m = (recipe.method || '').toLowerCase();
+  const teaKeywords = ['matcha', 'sencha', 'gongfu', 'té', 'tea', 'infusión', 'infusion', 'oolong', 'chasen', 'chai'];
+  if (teaKeywords.some(keyword => m.includes(keyword))) {
+    return 'tea';
+  }
+  return 'coffee';
+};
+
+export const getIngredientLabel = (recipe) => {
+  return getRecipeCategory(recipe) === 'tea' ? 'Té / Insumo' : 'Café';
+};
+
+export const getGrindLabel = (recipe) => {
+  return getRecipeCategory(recipe) === 'tea' ? 'Presentación' : 'Molienda';
+};
+
 // Iconos SVG en formato de glifos minimalistas
 export const getMethodIcon = (method) => {
-  const m = method.toLowerCase();
+  const m = (method || '').toLowerCase();
+  if (m.includes('matcha') || m.includes('sencha') || m.includes('gongfu') || m.includes('té') || m.includes('tea') || m.includes('oolong') || m.includes('infusión') || m.includes('infusion')) {
+    return (
+      <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current text-emerald-700/80 dark:text-emerald-400" xmlns="http://www.w3.org/2000/svg">
+        <path d="M4 19a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-1H4v1z" />
+        <path d="M3 10v6a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-6H3zm16 1h2a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2h-2v-5z" />
+        <path d="M7 4.5c.3.5.3 1.1 0 1.5s-.6 1-.3 1.5" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" />
+        <path d="M11 4c.3.5.3 1.1 0 1.5s-.6 1-.3 1.5" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" />
+        <path d="M15 4.5c.3.5.3 1.1 0 1.5s-.6 1-.3 1.5" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" />
+      </svg>
+    );
+  }
   if (m.includes('v60')) {
     return (
       <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current text-amber-900/70 dark:text-amber-500/80" xmlns="http://www.w3.org/2000/svg">
@@ -150,6 +181,7 @@ export const compressRecipe = async (recipe) => {
   const minified = {
     n: recipe.name,
     m: recipe.method,
+    cat: recipe.category || undefined,
     c: recipe.coffee_g,
     g: recipe.grind_size,
     t: recipe.water_temp_c,
@@ -228,6 +260,7 @@ export const decompressRecipe = async (encodedStr) => {
   return {
     name: minified.n,
     method: minified.m || 'V60',
+    category: minified.cat || undefined,
     coffee_g: Number(minified.c) || 0,
     grind_size: minified.g || '',
     water_temp_c: Number(minified.t) || 0,

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { playBeep, speakText } from '../utils/coffeeUtils';
+import { playBeep, speakText, getIngredientLabel, getGrindLabel } from '../utils/coffeeUtils';
 
 export default function TimerComponent({ recipe, onComplete, soundEnabled = true, vibrationEnabled = true, vibrationType = 'normal', voiceGuidanceEnabled = false, beanName, autoStart = false }) {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
@@ -10,12 +10,15 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
   const currentStep = recipe.steps[currentStepIndex];
 
   const getStepMessage = (step, index) => {
+    const instructionText = step.instruction ? `${step.instruction}.` : '';
+    if (step.duration_s === 0) {
+      return `Paso ${index + 1}: ${step.title}. ${instructionText} Paso manual. Presiona siguiente al completar.`;
+    }
     const minutes = Math.floor(step.duration_s / 60);
     const seconds = step.duration_s % 60;
     const durationText = minutes > 0
       ? `${minutes} minutos y ${seconds} segundos`
       : `${seconds} segundos`;
-    const instructionText = step.instruction ? `${step.instruction}.` : '';
     return `Paso ${index + 1}: ${step.title}. ${instructionText} Tiempo ${durationText}.`;
   };
 
@@ -58,7 +61,7 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
   useEffect(() => {
     let interval = null;
 
-    if (isRunning) {
+    if (isRunning && currentStep.duration_s > 0) {
       interval = setInterval(() => {
         setTimeLeft((prevTime) => {
           if (prevTime > 1) {
@@ -105,7 +108,42 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [isRunning, currentStepIndex, recipe.steps, soundEnabled, vibrationEnabled, vibrationType, voiceGuidanceEnabled]);
+  }, [isRunning, currentStepIndex, recipe.steps, soundEnabled, vibrationEnabled, vibrationType, voiceGuidanceEnabled, currentStep.duration_s]);
+
+  const handleCompleteManualStep = () => {
+    if (soundEnabled) {
+      playBeep();
+    }
+
+    if (currentStepIndex < recipe.steps.length - 1) {
+      const nextIndex = currentStepIndex + 1;
+      setCurrentStepIndex(nextIndex);
+      setTimeLeft(recipe.steps[nextIndex].duration_s);
+      
+      if (vibrationEnabled && 'vibrate' in navigator) {
+        const pattern = vibrationType === 'short'
+          ? [75, 50, 75]
+          : vibrationType === 'long'
+          ? [300, 150, 300]
+          : [150, 100, 150];
+        navigator.vibrate(pattern);
+      }
+    } else {
+      setIsRunning(false);
+      if (vibrationEnabled && 'vibrate' in navigator) {
+        const duration = vibrationType === 'short'
+          ? 200
+          : vibrationType === 'long'
+          ? 800
+          : 400;
+        navigator.vibrate(duration);
+      }
+      if (voiceGuidanceEnabled) {
+        speakText('¡Preparación completada! Tu café está listo.');
+      }
+      setShowFinishedModal(true);
+    }
+  };
 
   const handleReset = () => {
     setIsRunning(false);
@@ -158,11 +196,11 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
 
       <div className="grid grid-cols-3 gap-2 bg-slate-50 dark:bg-slate-800/40 p-2 rounded-xl text-xs text-slate-600 dark:text-slate-300 border border-slate-100 dark:border-slate-800">
         <div>
-          <span className="block text-slate-500 dark:text-slate-300 text-[10px] uppercase font-bold">Café</span>
+          <span className="block text-slate-500 dark:text-slate-300 text-[10px] uppercase font-bold">{getIngredientLabel(recipe)}</span>
           <span className="font-semibold text-sm">{recipe.coffee_g}g</span>
         </div>
         <div>
-          <span className="block text-slate-500 dark:text-slate-300 text-[10px] uppercase font-bold">Molienda</span>
+          <span className="block text-slate-500 dark:text-slate-300 text-[10px] uppercase font-bold">{getGrindLabel(recipe)}</span>
           <span className="font-semibold text-sm truncate block">{recipe.grind_size || 'N/D'}</span>
         </div>
         <div>
@@ -192,7 +230,7 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
             strokeWidth="8"
             fill="transparent"
             strokeDasharray={2 * Math.PI * 76}
-            strokeDashoffset={2 * Math.PI * 76 * (1 - (timeLeft / (currentStep.duration_s || 1)))}
+            strokeDashoffset={currentStep.duration_s > 0 ? 2 * Math.PI * 76 * (1 - (timeLeft / currentStep.duration_s)) : 0}
             strokeLinecap="round"
           />
         </svg>
@@ -202,7 +240,7 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
             {currentStep.title}
           </span>
           <span className="text-3xl font-mono font-bold text-slate-900 dark:text-white select-none tracking-tight">
-            {formatTime(timeLeft)}
+            {currentStep.duration_s > 0 ? formatTime(timeLeft) : 'Manual'}
           </span>
           <span className="text-[10px] text-amber-800 dark:text-amber-300 font-bold bg-amber-50 dark:bg-amber-950/30 px-2 py-0.5 rounded-full uppercase">
             Paso {currentStepIndex + 1} de {recipe.steps.length}
@@ -247,17 +285,28 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
             </svg>
           </button>
           
-          <button 
-            type="button"
-            onClick={() => setIsRunning(!isRunning)}
-            className={`w-32 py-2.5 rounded-full text-white font-bold shadow-md transition transform active:scale-95 cursor-pointer text-sm ${
-              isRunning ? 'bg-red-600 hover:bg-red-700' : 'bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-800'
-            } focus:outline-none focus:ring-2 focus:ring-amber-500 dark:focus:ring-amber-400 focus:ring-offset-2`}
-            aria-pressed={isRunning}
-            aria-label={isRunning ? 'Pausar cronómetro' : 'Iniciar cronómetro'}
-          >
-            {isRunning ? 'Pausar' : 'Iniciar'}
-          </button>
+          {currentStep.duration_s === 0 ? (
+            <button 
+              type="button"
+              onClick={handleCompleteManualStep}
+              className="w-36 py-2.5 rounded-full text-white font-bold shadow-md transition transform active:scale-95 cursor-pointer text-sm bg-emerald-700 hover:bg-emerald-800 dark:bg-emerald-600 dark:hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
+              aria-label="Completar paso manual"
+            >
+              {currentStepIndex < recipe.steps.length - 1 ? 'Siguiente Paso' : 'Finalizar'}
+            </button>
+          ) : (
+            <button 
+              type="button"
+              onClick={() => setIsRunning(!isRunning)}
+              className={`w-32 py-2.5 rounded-full text-white font-bold shadow-md transition transform active:scale-95 cursor-pointer text-sm ${
+                isRunning ? 'bg-red-600 hover:bg-red-700' : 'bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-800'
+              } focus:outline-none focus:ring-2 focus:ring-amber-500 dark:focus:ring-amber-400 focus:ring-offset-2`}
+              aria-pressed={isRunning}
+              aria-label={isRunning ? 'Pausar cronómetro' : 'Iniciar cronómetro'}
+            >
+              {isRunning ? 'Pausar' : 'Iniciar'}
+            </button>
+          )}
 
           <button 
             type="button"

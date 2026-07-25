@@ -46,6 +46,7 @@ Los agentes de IA deben leer este archivo para saber qué implementar a continua
 ---
 
 ## ✅ Completado
+- [x] Soporte para recetas de té (Matcha, Sencha, Gongfu, etc.), temporizador con flujo para pasos manuales untimed (`duration_s: 0`), iconografía adaptativa (🍵 vs ☕), etiquetas dinámicas de insumo/presentación y recetas predeterminadas de Té Verde y Matcha (v1.9.0).
 - [x] Sección de contacto directo vía correo (`baristatimer@bitslab.cl`) en el modal "Acerca de" con función de copiado rápido al portapapeles y actualización del correo en la Política de Privacidad (v1.8.0).
 - [x] Corrección en la gestión de favoritas: preservación del estado `is_favorite` al editar y guardar recetas existentes (v1.7.1).
 - [x] Sistema de recetas favoritas con ordenamiento prioritario en el listado y botón de toggle en tarjetas y resumen de receta (v1.7.0).

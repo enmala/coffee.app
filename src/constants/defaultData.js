@@ -65,6 +65,38 @@ export const DEFAULT_RECIPES = [
       { step_number: 5, title: 'Decantación final', water_g: 0, duration_s: 300, instruction: 'Deja reposar sin mover la prensa durante 5 minutos para asentar todos los sedimentos.' },
       { step_number: 6, title: 'Servir', water_g: 0, duration_s: 30, instruction: 'Inserta el filtro rozando la superficie sin bajar hasta el fondo y sirve lentamente.' }
     ]
+  },
+  {
+    id: 'matcha-tradicional-usucha',
+    name: 'Matcha Tradicional (Usucha)',
+    method: 'Matcha',
+    category: 'tea',
+    is_favorite: false,
+    coffee_g: 2,
+    grind_size: 'Polvo Fino (Cernido)',
+    water_temp_c: 80,
+    steps: [
+      { step_number: 1, title: 'Tamizar Matcha', water_g: 0, duration_s: 0, instruction: 'Tamiza 2g de Matcha con un colador fino directamente sobre el cuenco (Chawan) para deshacer grumos.' },
+      { step_number: 2, title: 'Agregar agua a 80°C', water_g: 70, duration_s: 0, instruction: 'Vierte 70g (70ml) de agua caliente a 80°C por el borde del cuenco.' },
+      { step_number: 3, title: 'Batido con Chasen', water_g: 0, duration_s: 30, instruction: 'Bate enérgicamente en patrón de W o M con el batidor de bambú (Chasen) hasta crear una capa densa de espuma verde jade.' },
+      { step_number: 4, title: 'Servir', water_g: 0, duration_s: 0, instruction: 'Pasa suavemente las puntas del Chasen para romper burbujas grandes y sirve inmediatamente.' }
+    ]
+  },
+  {
+    id: 'sencha-japones-tradicional',
+    name: 'Té Verde Sencha Tradicional',
+    method: 'Sencha',
+    category: 'tea',
+    is_favorite: false,
+    coffee_g: 4,
+    grind_size: 'Hoja Entera',
+    water_temp_c: 70,
+    steps: [
+      { step_number: 1, title: 'Colocar hojas', water_g: 0, duration_s: 0, instruction: 'Coloca 4g de té verde Sencha en la tetera Kyusu o infusor.' },
+      { step_number: 2, title: 'Primera Infusión', water_g: 200, duration_s: 60, instruction: 'Vierte 200g de agua a 70°C y deja reposar en infusión durante 60 segundos.' },
+      { step_number: 3, title: 'Servir primera taza', water_g: 0, duration_s: 15, instruction: 'Vierte alternando entre tazas hasta vaciar la última gota para no sobre-infusionar.' },
+      { step_number: 4, title: 'Segunda Infusión', water_g: 200, duration_s: 30, instruction: 'Reutiliza las hojas virtiendo 200g de agua a 75°C e infusiona por 30 segundos.' }
+    ]
   }
 ];
 

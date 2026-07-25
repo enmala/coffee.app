@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { getIngredientLabel, getGrindLabel } from '../../utils/coffeeUtils';
 
 export default function RecipeSummaryModal({
   summaryRecipe,
@@ -86,11 +87,11 @@ export default function RecipeSummaryModal({
           {/* Parámetros Físicos */}
           <div className="grid grid-cols-2 gap-2 text-xs bg-slate-50 dark:bg-slate-800/40 p-3 rounded-xl border border-slate-100 dark:border-slate-800/80">
             <div>
-              <span className="text-slate-500 dark:text-slate-300 block font-semibold text-[10px] uppercase">Café Inicial</span>
+              <span className="text-slate-500 dark:text-slate-300 block font-semibold text-[10px] uppercase">{getIngredientLabel(summaryRecipe)}</span>
               <span className="text-sm font-bold text-slate-800 dark:text-slate-200">{summaryRecipe.coffee_g}g</span>
             </div>
             <div>
-              <span className="text-slate-500 dark:text-slate-300 block font-semibold text-[10px] uppercase">Molienda</span>
+              <span className="text-slate-500 dark:text-slate-300 block font-semibold text-[10px] uppercase">{getGrindLabel(summaryRecipe)}</span>
               <span className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate block">{summaryRecipe.grind_size || 'N/D'}</span>
             </div>
             <div className="mt-1">

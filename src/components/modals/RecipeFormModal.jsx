@@ -1,3 +1,5 @@
+import { getGrindLabel, getRecipeCategory } from '../../utils/coffeeUtils';
+
 export default function RecipeFormModal({
   editingRecipeId,
   newRecipe,
@@ -13,6 +15,8 @@ export default function RecipeFormModal({
   handleMoveStep,
   handleCancelForm
 }) {
+  const grindLabel = getGrindLabel(newRecipe);
+
   return (
     <div>
       <div className="flex justify-between items-center mb-4 border-b border-slate-200 dark:border-slate-800 pb-2">
@@ -43,18 +47,26 @@ export default function RecipeFormModal({
               onChange={(e) => setNewRecipe({ ...newRecipe, method: e.target.value })}
               className="w-full p-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
             >
-              <option value="V60">V60</option>
-              <option value="Aeropress">Aeropress</option>
-              <option value="Chemex">Chemex</option>
-              <option value="Hario Switch">Hario Switch</option>
-              <option value="Moka">Moka</option>
-              <option value="Origami">Origami</option>
-              <option value="Prensa Francesa">Prensa Francesa</option>
+              <optgroup label="Métodos de Café">
+                <option value="V60">V60</option>
+                <option value="Aeropress">Aeropress</option>
+                <option value="Chemex">Chemex</option>
+                <option value="Hario Switch">Hario Switch</option>
+                <option value="Moka">Moka</option>
+                <option value="Origami">Origami</option>
+                <option value="Prensa Francesa">Prensa Francesa</option>
+              </optgroup>
+              <optgroup label="Métodos de Té">
+                <option value="Matcha">Matcha</option>
+                <option value="Sencha">Sencha (Té Verde)</option>
+                <option value="Gongfu">Gongfu (Té)</option>
+                <option value="Té Negro / Herbal">Té Negro / Herbal</option>
+              </optgroup>
               <option value="Otro">Otro</option>
             </select>
           </div>
           <div>
-            <label className="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Molienda</label>
+            <label className="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">{grindLabel}</label>
             <input
               type="text"
               value={newRecipe.grind_size}
@@ -67,13 +79,13 @@ export default function RecipeFormModal({
 
         <div className="grid grid-cols-2 gap-2">
           <div>
-            <label className="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Café Inicial (g)</label>
+            <label className="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">{getRecipeCategory(newRecipe) === 'tea' ? 'Té / Insumo Inicial' : 'Café Inicial'} (g)</label>
             <input
               type="number"
               value={newRecipe.coffee_g}
               onChange={(e) => setNewRecipe({ ...newRecipe, coffee_g: parseFloat(e.target.value) || 0 })}
               className="w-full p-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
-              min="1"
+              min="0.1"
               step="0.1"
             />
           </div>
@@ -89,27 +101,29 @@ export default function RecipeFormModal({
           </div>
         </div>
 
-        <div>
-          <label htmlFor="recipe-bean-input" className="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Grano de Café (Opcional)</label>
-          <select
-            id="recipe-bean-input"
-            value={newRecipe.bean_id || ''}
-            onChange={(e) => setNewRecipe({ ...newRecipe, bean_id: e.target.value })}
-            className="w-full p-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
-          >
-            <option value="">-- Sin grano asociado --</option>
-            {beans.map((b) => (
-              <option key={b.id} value={b.id}>
-                {b.name} {b.roaster ? `(${b.roaster})` : ''}
-              </option>
-            ))}
-          </select>
-          {beans.length === 0 && (
-            <p className="text-[10px] text-amber-805 dark:text-amber-500 mt-1 font-semibold">
-              No tienes granos registrados. Puedes agregarlos en la pestaña "Granos".
-            </p>
-          )}
-        </div>
+        {getRecipeCategory(newRecipe) !== 'tea' && (
+          <div>
+            <label htmlFor="recipe-bean-input" className="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Grano de Café (Opcional)</label>
+            <select
+              id="recipe-bean-input"
+              value={newRecipe.bean_id || ''}
+              onChange={(e) => setNewRecipe({ ...newRecipe, bean_id: e.target.value })}
+              className="w-full p-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+            >
+              <option value="">-- Sin grano asociado --</option>
+              {beans.map((b) => (
+                <option key={b.id} value={b.id}>
+                  {b.name} {b.roaster ? `(${b.roaster})` : ''}
+                </option>
+              ))}
+            </select>
+            {beans.length === 0 && (
+              <p className="text-[10px] text-amber-805 dark:text-amber-500 mt-1 font-semibold">
+                No tienes granos registrados. Puedes agregarlos en la pestaña "Granos".
+              </p>
+            )}
+          </div>
+        )}
 
         <div className="border-t border-slate-200 dark:border-slate-800 pt-3 mt-2 text-left">
           <div className="flex justify-between items-center mb-3">

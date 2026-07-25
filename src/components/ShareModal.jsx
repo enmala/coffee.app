@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import QRCode from 'qrcode';
-import { compressRecipe } from '../utils/coffeeUtils';
+import { compressRecipe, getRecipeCategory } from '../utils/coffeeUtils';
 
 export default function ShareModal({ recipe, onClose, onAlert }) {
   const [shareUrl, setShareUrl] = useState('');
@@ -40,6 +40,8 @@ export default function ShareModal({ recipe, onClose, onAlert }) {
   useEffect(() => {
     if (!shareUrl || generating || !canvasRef.current) return;
 
+    const isTea = getRecipeCategory(recipe) === 'tea';
+
     // Renderizar QR Code en el canvas
     QRCode.toCanvas(
       canvasRef.current,
@@ -48,7 +50,7 @@ export default function ShareModal({ recipe, onClose, onAlert }) {
         width: 220,
         margin: 2,
         color: {
-          dark: '#3f2b1c', // Marrón oscuro coherente con café
+          dark: isTea ? '#1c3f2b' : '#3f2b1c',
           light: '#ffffff',
         },
       },
@@ -59,7 +61,7 @@ export default function ShareModal({ recipe, onClose, onAlert }) {
         }
       }
     );
-  }, [shareUrl, generating]);
+  }, [shareUrl, generating, recipe]);
 
   const handleCopyLink = async () => {
     try {
@@ -79,10 +81,14 @@ export default function ShareModal({ recipe, onClose, onAlert }) {
   const handleWebShare = async () => {
     if (!navigator.share) return;
 
+    const isTea = getRecipeCategory(recipe) === 'tea';
+    const typeLabel = isTea ? 'Té' : 'Café';
+    const verbLabel = isTea ? 'té' : 'café';
+
     try {
       await navigator.share({
-        title: `Receta de Café: ${recipe.name}`,
-        text: `Prepara café con esta receta de ${recipe.method}: ${recipe.name}`,
+        title: `Receta de ${typeLabel}: ${recipe.name}`,
+        text: `Prepara ${verbLabel} con esta receta de ${recipe.method}: ${recipe.name}`,
         url: shareUrl,
       });
     } catch (err) {

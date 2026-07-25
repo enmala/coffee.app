@@ -157,9 +157,9 @@ describe('App Component', () => {
     const startTimerBtn = screen.getByText('Iniciar Timer');
     fireEvent.click(startTimerBtn);
     
-    // Verify TimerComponent is rendered
+    // Verify TimerComponent is rendered with manual preparation step
     expect(screen.getByText(/Volver al listado/i)).toBeInTheDocument();
-    expect(screen.getByText('Pausar')).toBeInTheDocument();
+    expect(screen.getByText('Siguiente Paso')).toBeInTheDocument();
   });
 
   test('creates a new recipe with steps', () => {
@@ -286,8 +286,12 @@ describe('App Component', () => {
     vi.useFakeTimers();
     fireEvent.click(startTimerBtn);
     
+    // Complete initial manual step 1
+    const manualStepBtn = screen.getByRole('button', { name: 'Completar paso manual' });
+    fireEvent.click(manualStepBtn);
+    
     // Render the TimerComponent, run it immediately to completion
-    // The recipe has 5 steps of 45s, 45s, 30s, 30s, 30s. Total: 180s.
+    // The recipe has 5 timed steps of 45s, 45s, 30s, 30s, 30s. Total: 180s.
     
     act(() => {
       vi.advanceTimersByTime(45000);

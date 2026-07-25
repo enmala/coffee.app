@@ -103,7 +103,7 @@ describe('ShareModal Component Tests', () => {
     }
   });
 
-  test('supports web share api if available', async () => {
+  test('supports web share api with customized title and text for coffee recipe', async () => {
     const mockShare = vi.fn().mockResolvedValue(true);
     Object.defineProperty(navigator, 'share', {
       value: mockShare,
@@ -119,7 +119,41 @@ describe('ShareModal Component Tests', () => {
     expect(shareBtn).toBeInTheDocument();
 
     fireEvent.click(shareBtn);
-    expect(mockShare).toHaveBeenCalled();
+    expect(mockShare).toHaveBeenCalledWith(expect.objectContaining({
+      title: 'Receta de Café: V60 Dulce',
+      text: 'Prepara café con esta receta de V60: V60 Dulce'
+    }));
+  });
+
+  test('supports web share api with customized title and text for tea recipe', async () => {
+    const mockShare = vi.fn().mockResolvedValue(true);
+    Object.defineProperty(navigator, 'share', {
+      value: mockShare,
+      writable: true,
+      configurable: true
+    });
+
+    const teaRecipe = {
+      id: 'recipe-tea',
+      name: 'Matcha Uji',
+      method: 'Matcha',
+      category: 'tea',
+      coffee_g: 2,
+      grind_size: 'Fino',
+      water_temp_c: 80,
+      steps: []
+    };
+
+    await act(async () => {
+      render(<ShareModal recipe={teaRecipe} onClose={mockOnClose} />);
+    });
+
+    const shareBtn = screen.getByText('Compartir en Móvil');
+    fireEvent.click(shareBtn);
+    expect(mockShare).toHaveBeenCalledWith(expect.objectContaining({
+      title: 'Receta de Té: Matcha Uji',
+      text: 'Prepara té con esta receta de Matcha: Matcha Uji'
+    }));
   });
 
   test('handles clipboard write error and calls onAlert', async () => {

@@ -8,11 +8,12 @@ export const DEFAULT_RECIPES = [
     grind_size: 'Gruesa (Coarse)',
     water_temp_c: 92,
     steps: [
-      { step_number: 1, title: 'Preinfusión', water_g: 50, duration_s: 45, instruction: 'Vierte 50g de agua lentamente.' },
-      { step_number: 2, title: 'Segundo Vertido', water_g: 70, duration_s: 45, instruction: 'Vierte hasta los 120g de agua acumulados.' },
-      { step_number: 3, title: 'Tercer Vertido', water_g: 60, duration_s: 30, instruction: 'Vierte rápidamente hasta llegar a los 180g.' },
-      { step_number: 4, title: 'Cuarto Vertido', water_g: 60, duration_s: 30, instruction: 'Vierte hasta alcanzar los 240g.' },
-      { step_number: 5, title: 'Quinto Vertido', water_g: 60, duration_s: 30, instruction: 'Último vertido hasta finalizar en 300g.' }
+      { step_number: 1, title: 'Preparación y purgado', water_g: 0, duration_s: 0, instruction: 'Coloca el filtro de papel en el V60, enjuaga con agua caliente para purgar sabores a papel y precalentar el cono, descarta el agua y agrega los 20g de café molido.' },
+      { step_number: 2, title: 'Preinfusión', water_g: 50, duration_s: 45, instruction: 'Vierte 50g de agua lentamente.' },
+      { step_number: 3, title: 'Segundo Vertido', water_g: 70, duration_s: 45, instruction: 'Vierte hasta los 120g de agua acumulados.' },
+      { step_number: 4, title: 'Tercer Vertido', water_g: 60, duration_s: 30, instruction: 'Vierte rápidamente hasta llegar a los 180g.' },
+      { step_number: 5, title: 'Cuarto Vertido', water_g: 60, duration_s: 30, instruction: 'Vierte hasta alcanzar los 240g.' },
+      { step_number: 6, title: 'Quinto Vertido', water_g: 60, duration_s: 30, instruction: 'Último vertido hasta finalizar en 300g.' }
     ]
   },
   {

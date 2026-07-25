@@ -181,7 +181,7 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
     <div className="space-y-4 text-center">
       <div>
         <h3 className="text-lg font-bold text-slate-900 dark:text-white">{recipe.name}</h3>
-        <span className="text-xs bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-350 px-2 py-0.5 rounded font-bold uppercase tracking-wider">{recipe.method}</span>
+        <span className="text-xs bg-slate-100 dark:bg-slate-800/90 text-slate-700 dark:text-slate-200 border border-slate-200/60 dark:border-slate-700/60 px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider shadow-xs">{recipe.method}</span>
         {beanName && (
           <div className="text-xs text-amber-800 dark:text-amber-300 font-bold mt-1 select-none flex items-center justify-center gap-1">
             <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-current" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">

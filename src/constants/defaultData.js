@@ -24,9 +24,10 @@ export const DEFAULT_RECIPES = [
     grind_size: 'Medio-Fina',
     water_temp_c: 85,
     steps: [
-      { step_number: 1, title: 'Llenado y agitación', water_g: 220, duration_s: 10, instruction: 'Vierte todo el agua rápidamente y agita durante 10 segundos.' },
-      { step_number: 2, title: 'Reposo', water_g: 0, duration_s: 50, instruction: 'Coloca el émbolo ligeramente para hacer vacío y espera.' },
-      { step_number: 3, title: 'Prensado', water_g: 0, duration_s: 30, instruction: 'Presiona el émbolo suavemente hacia abajo durante 30 segundos.' }
+      { step_number: 1, title: 'Preparación y enjuague', water_g: 0, duration_s: 0, instruction: 'Coloca el filtro de papel en la tapa de la Aeropress, enjuaga con agua caliente para eliminar sabores a papel y enrosca firmemente.' },
+      { step_number: 2, title: 'Llenado y agitación', water_g: 220, duration_s: 10, instruction: 'Vierte todo el agua rápidamente y agita durante 10 segundos.' },
+      { step_number: 3, title: 'Reposo', water_g: 0, duration_s: 50, instruction: 'Coloca el émbolo ligeramente para hacer vacío y espera.' },
+      { step_number: 4, title: 'Prensado', water_g: 0, duration_s: 30, instruction: 'Presiona el émbolo suavemente hacia abajo durante 30 segundos.' }
     ]
   },
   {
@@ -60,10 +61,10 @@ export const DEFAULT_RECIPES = [
     steps: [
       { step_number: 1, title: 'Vertido total', water_g: 500, duration_s: 30, instruction: 'Vierte 500g de agua hirviendo sobre los 30g de café procurando mojar todo el grano.' },
       { step_number: 2, title: 'Infusión inicial', water_g: 0, duration_s: 210, instruction: 'Coloca el émbolo en la parte superior sin bajarlo y deja infusionar durante 3:30.' },
-      { step_number: 3, title: 'Romper costra', water_g: 0, duration_s: 20, instruction: 'Remueve suavemente la capa de café flotante con una cuchara para que se asiente al fondo.' },
-      { step_number: 4, title: 'Limpiar espuma', water_g: 0, duration_s: 30, instruction: 'Retira la espuma y partículas flotantes de la superficie utilizando dos cucharas.' },
+      { step_number: 3, title: 'Romper costra', water_g: 0, duration_s: 0, instruction: 'Remueve suavemente la capa de café flotante con una cuchara para que se asiente al fondo.' },
+      { step_number: 4, title: 'Limpiar espuma', water_g: 0, duration_s: 0, instruction: 'Retira la espuma y partículas flotantes de la superficie utilizando dos cucharas.' },
       { step_number: 5, title: 'Decantación final', water_g: 0, duration_s: 300, instruction: 'Deja reposar sin mover la prensa durante 5 minutos para asentar todos los sedimentos.' },
-      { step_number: 6, title: 'Servir', water_g: 0, duration_s: 30, instruction: 'Inserta el filtro rozando la superficie sin bajar hasta el fondo y sirve lentamente.' }
+      { step_number: 6, title: 'Servir', water_g: 0, duration_s: 0, instruction: 'Inserta el filtro rozando la superficie sin bajar hasta el fondo y sirve lentamente.' }
     ]
   },
   {

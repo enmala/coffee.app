@@ -101,27 +101,29 @@ export default function RecipeFormModal({
           </div>
         </div>
 
-        <div>
-          <label htmlFor="recipe-bean-input" className="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Grano de Café (Opcional)</label>
-          <select
-            id="recipe-bean-input"
-            value={newRecipe.bean_id || ''}
-            onChange={(e) => setNewRecipe({ ...newRecipe, bean_id: e.target.value })}
-            className="w-full p-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
-          >
-            <option value="">-- Sin grano asociado --</option>
-            {beans.map((b) => (
-              <option key={b.id} value={b.id}>
-                {b.name} {b.roaster ? `(${b.roaster})` : ''}
-              </option>
-            ))}
-          </select>
-          {beans.length === 0 && (
-            <p className="text-[10px] text-amber-805 dark:text-amber-500 mt-1 font-semibold">
-              No tienes granos registrados. Puedes agregarlos en la pestaña "Granos".
-            </p>
-          )}
-        </div>
+        {getRecipeCategory(newRecipe) !== 'tea' && (
+          <div>
+            <label htmlFor="recipe-bean-input" className="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Grano de Café (Opcional)</label>
+            <select
+              id="recipe-bean-input"
+              value={newRecipe.bean_id || ''}
+              onChange={(e) => setNewRecipe({ ...newRecipe, bean_id: e.target.value })}
+              className="w-full p-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+            >
+              <option value="">-- Sin grano asociado --</option>
+              {beans.map((b) => (
+                <option key={b.id} value={b.id}>
+                  {b.name} {b.roaster ? `(${b.roaster})` : ''}
+                </option>
+              ))}
+            </select>
+            {beans.length === 0 && (
+              <p className="text-[10px] text-amber-805 dark:text-amber-500 mt-1 font-semibold">
+                No tienes granos registrados. Puedes agregarlos en la pestaña "Granos".
+              </p>
+            )}
+          </div>
+        )}
 
         <div className="border-t border-slate-200 dark:border-slate-800 pt-3 mt-2 text-left">
           <div className="flex justify-between items-center mb-3">

@@ -1,7 +1,8 @@
 import { describe, test, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import TimerComponent from '../src/components/TimerComponent';
-import { getRecipeCategory, getIngredientLabel, getGrindLabel } from '../src/utils/coffeeUtils';
+import RecipeFormModal from '../src/components/modals/RecipeFormModal';
+import { getRecipeCategory, getIngredientLabel, getGrindLabel, speakText } from '../src/utils/coffeeUtils';
 import { DEFAULT_RECIPES } from '../src/constants/defaultData';
 
 vi.mock('../src/utils/coffeeUtils', async (importOriginal) => {
@@ -42,7 +43,7 @@ describe('Tea Recipe Support & Untimed Steps', () => {
     expect(senchaRecipe.method).toBe('Sencha');
   });
 
-  test('TimerComponent handles untimed manual steps (duration_s === 0) correctly', () => {
+  test('TimerComponent handles untimed manual steps (duration_s === 0) and completion text for tea', () => {
     const onCompleteMock = vi.fn();
     const untimedRecipe = {
       id: 'matcha-test',
@@ -53,12 +54,11 @@ describe('Tea Recipe Support & Untimed Steps', () => {
       grind_size: 'Polvo Fino',
       water_temp_c: 80,
       steps: [
-        { step_number: 1, title: 'Tamizar Matcha', water_g: 0, duration_s: 0, instruction: 'Tamizar 2g de matcha' },
-        { step_number: 2, title: 'Batir con Chasen', water_g: 70, duration_s: 30, instruction: 'Batir en W' }
+        { step_number: 1, title: 'Tamizar Matcha', water_g: 0, duration_s: 0, instruction: 'Tamizar 2g de matcha' }
       ]
     };
 
-    render(<TimerComponent recipe={untimedRecipe} onComplete={onCompleteMock} />);
+    render(<TimerComponent recipe={untimedRecipe} onComplete={onCompleteMock} voiceGuidanceEnabled={true} />);
 
     expect(screen.getByText('Matcha Test')).toBeInTheDocument();
     expect(screen.getByText('Té / Insumo')).toBeInTheDocument();
@@ -67,13 +67,73 @@ describe('Tea Recipe Support & Untimed Steps', () => {
     expect(screen.getByText('Manual')).toBeInTheDocument();
 
     const completeBtn = screen.getByRole('button', { name: 'Completar paso manual' });
-    expect(completeBtn).toHaveTextContent('Siguiente Paso');
+    expect(completeBtn).toHaveTextContent('Finalizar');
 
-    // Advance to step 2 by clicking complete manual step
+    // Complete final step
     fireEvent.click(completeBtn);
 
-    expect(screen.getByText('Batir con Chasen')).toBeInTheDocument();
-    expect(screen.getByText('Paso 2 de 2')).toBeInTheDocument();
-    expect(screen.getByText('0:30')).toBeInTheDocument();
+    expect(screen.getByText('¡Preparación Completada!')).toBeInTheDocument();
+    expect(screen.getByText('¡Buen provecho! Tu té está listo para servir.')).toBeInTheDocument();
+    expect(speakText).toHaveBeenCalledWith('¡Preparación completada! Tu té está listo.');
+  });
+
+  test('RecipeFormModal hides coffee bean selector when a tea method is selected', () => {
+    const coffeeRecipe = {
+      name: '',
+      method: 'V60',
+      coffee_g: 20,
+      grind_size: 'Media',
+      water_temp_c: 92,
+      steps: []
+    };
+
+    const teaRecipe = {
+      name: '',
+      method: 'Matcha',
+      coffee_g: 2,
+      grind_size: 'Polvo Fino',
+      water_temp_c: 80,
+      steps: []
+    };
+
+    const { rerender } = render(
+      <RecipeFormModal
+        editingRecipeId={null}
+        newRecipe={coffeeRecipe}
+        setNewRecipe={vi.fn()}
+        beans={[{ id: 'b1', name: 'Grano 1' }]}
+        editingStepIndex={null}
+        setEditingStepIndex={vi.fn()}
+        totalStepsTime={0}
+        totalStepsWater={0}
+        handleSaveRecipe={vi.fn()}
+        handleOpenStepEditor={vi.fn()}
+        handleCloseStepEditor={vi.fn()}
+        handleMoveStep={vi.fn()}
+        handleCancelForm={vi.fn()}
+      />
+    );
+
+    expect(screen.getByText('Grano de Café (Opcional)')).toBeInTheDocument();
+
+    rerender(
+      <RecipeFormModal
+        editingRecipeId={null}
+        newRecipe={teaRecipe}
+        setNewRecipe={vi.fn()}
+        beans={[{ id: 'b1', name: 'Grano 1' }]}
+        editingStepIndex={null}
+        setEditingStepIndex={vi.fn()}
+        totalStepsTime={0}
+        totalStepsWater={0}
+        handleSaveRecipe={vi.fn()}
+        handleOpenStepEditor={vi.fn()}
+        handleCloseStepEditor={vi.fn()}
+        handleMoveStep={vi.fn()}
+        handleCancelForm={vi.fn()}
+      />
+    );
+
+    expect(screen.queryByText('Grano de Café (Opcional)')).not.toBeInTheDocument();
   });
 });

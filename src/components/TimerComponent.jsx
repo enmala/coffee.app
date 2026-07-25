@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { playBeep, speakText, getIngredientLabel, getGrindLabel } from '../utils/coffeeUtils';
+import { playBeep, speakText, getIngredientLabel, getGrindLabel, getRecipeCategory } from '../utils/coffeeUtils';
 
 export default function TimerComponent({ recipe, onComplete, soundEnabled = true, vibrationEnabled = true, vibrationType = 'normal', voiceGuidanceEnabled = false, beanName, autoStart = false }) {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
@@ -96,7 +96,7 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
               navigator.vibrate(duration);
             }
             if (voiceGuidanceEnabled) {
-              speakText('¡Preparación completada! Tu café está listo.');
+              speakText(getRecipeCategory(recipe) === 'tea' ? '¡Preparación completada! Tu té está listo.' : '¡Preparación completada! Tu café está listo.');
             }
             setShowFinishedModal(true);
             return 0;
@@ -108,7 +108,7 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [isRunning, currentStepIndex, recipe.steps, soundEnabled, vibrationEnabled, vibrationType, voiceGuidanceEnabled, currentStep.duration_s]);
+  }, [isRunning, currentStepIndex, recipe.steps, soundEnabled, vibrationEnabled, vibrationType, voiceGuidanceEnabled, currentStep.duration_s, recipe]);
 
   const handleCompleteManualStep = () => {
     if (soundEnabled) {
@@ -139,7 +139,7 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
         navigator.vibrate(duration);
       }
       if (voiceGuidanceEnabled) {
-        speakText('¡Preparación completada! Tu café está listo.');
+        speakText(getRecipeCategory(recipe) === 'tea' ? '¡Preparación completada! Tu té está listo.' : '¡Preparación completada! Tu café está listo.');
       }
       setShowFinishedModal(true);
     }
@@ -350,7 +350,7 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
             <div>
               <h3 className="text-lg font-bold text-slate-900 dark:text-white">¡Preparación Completada!</h3>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                ¡Buen provecho! Tu café está listo para servir.
+                ¡Buen provecho! {getRecipeCategory(recipe) === 'tea' ? 'Tu té está listo para servir.' : 'Tu café está listo para servir.'}
               </p>
             </div>
 

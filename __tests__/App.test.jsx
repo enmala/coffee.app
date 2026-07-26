@@ -1344,31 +1344,51 @@ describe('App Component', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Cerrar' }));
   });
 
-  test('App recipe duplication pre-fills form modal for new variation and creates independent recipe', async () => {
+  test('App recipe duplication from summary modal pre-fills form, saves and returns to recipes list view', async () => {
     render(<App />);
 
-    // 1. Find Aeropress Tradicional card and click options menu 'Duplicar'
+    // 1. Open summary for Aeropress Tradicional
     const recipeCard = screen.getByText('Aeropress Tradicional').closest('.group');
-    const menuTrigger = recipeCard.querySelector('button[data-menu-trigger="aeropress-standard"]');
-    fireEvent.click(menuTrigger);
+    const summaryBtn = recipeCard.querySelector('button[title="Ver Resumen"]');
+    fireEvent.click(summaryBtn);
 
-    const menuContent = recipeCard.querySelector('div[data-menu-content="aeropress-standard"]');
-    const duplicateBtn = Array.from(menuContent.querySelectorAll('button')).find(
-      (b) => b.textContent.includes('Duplicar')
-    );
+    // 2. Click '📋 Duplicar' in summary modal
+    const duplicateBtn = screen.getByText('📋 Duplicar');
     fireEvent.click(duplicateBtn);
 
-    // 2. Verify form modal opens pre-filled with (Copia) name
+    // 3. Verify form modal opens pre-filled with (Copia) name
     expect(screen.getByDisplayValue('Aeropress Tradicional (Copia)')).toBeInTheDocument();
     expect(screen.getByDisplayValue('Medio-Fina')).toBeInTheDocument();
 
-    // 3. Change name to custom variation and save
+    // 4. Change name to custom variation and save
     fireEvent.change(screen.getByPlaceholderText('Ej: Mi V60 Balanceado'), { target: { value: 'Aeropress Variación Fina' } });
     fireEvent.click(screen.getByRole('button', { name: 'Guardar Receta' }));
 
-    // 4. Verify both recipes exist
+    // 5. Verify returned to recipes list view and both recipes exist
+    expect(screen.queryByText('Tiempo Total Estimado')).not.toBeInTheDocument();
     expect(screen.getByText('Aeropress Tradicional')).toBeInTheDocument();
     expect(screen.getByText('Aeropress Variación Fina')).toBeInTheDocument();
+  });
+
+  test('App recipe duplication cancel restores original recipe summary modal', async () => {
+    render(<App />);
+
+    // 1. Open summary for Aeropress Tradicional
+    const recipeCard = screen.getByText('Aeropress Tradicional').closest('.group');
+    const summaryBtn = recipeCard.querySelector('button[title="Ver Resumen"]');
+    fireEvent.click(summaryBtn);
+
+    // 2. Click '📋 Duplicar' in summary modal
+    const duplicateBtn = screen.getByText('📋 Duplicar');
+    fireEvent.click(duplicateBtn);
+
+    // 3. Click 'Cancelar' in recipe form
+    fireEvent.click(screen.getByRole('button', { name: 'Cancelar' }));
+
+    // 4. Verify app returns to Aeropress Tradicional summary modal
+    expect(screen.getByText('Tiempo Total Estimado')).toBeInTheDocument();
+    const summaryHeading = screen.getByRole('heading', { level: 3, name: 'Aeropress Tradicional' });
+    expect(summaryHeading).toBeInTheDocument();
   });
 
   test('App recipe duplication generates sequential copy names when duplicating from summary modal', async () => {
@@ -1389,7 +1409,7 @@ describe('App Component', () => {
     expect(screen.getByText('Aeropress Tradicional (Copia)')).toBeInTheDocument();
 
     // 4. Duplicate again from the summary of Aeropress Tradicional
-    const originalCard = screen.getByText('Aeropress Tradicional').closest('.group');
+    const originalCard = screen.getAllByText('Aeropress Tradicional')[0].closest('.group');
     const summaryBtn2 = originalCard.querySelector('button[title="Ver Resumen"]');
     fireEvent.click(summaryBtn2);
     const duplicateSummaryBtn2 = screen.getByText('📋 Duplicar');

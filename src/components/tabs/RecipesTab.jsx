@@ -10,7 +10,6 @@ export default function RecipesTab({
   onSelectSummary,
   onStartTimerImmediate,
   onEditRecipe,
-  onDuplicateRecipe,
   onShareRecipe,
   onExportJson,
   onDeleteRecipe,
@@ -96,19 +95,6 @@ export default function RecipesTab({
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
-                              if (onDuplicateRecipe) onDuplicateRecipe(recipe);
-                            }}
-                            className="p-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-xl transition cursor-pointer flex items-center justify-center border border-slate-200/50 dark:border-slate-700/50"
-                            title="Duplicar esta receta como base para una nueva"
-                            aria-label="Duplicar receta"
-                          >
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125H3.375a1.125 1.125 0 0 1-1.125-1.125V10.5c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 0 1 1.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V6.75c0-.621-.504-1.125-1.125-1.125H9.75a1.125 1.125 0 0 0-1.125 1.125v3.375m1.125-3.375a2.25 2.25 0 0 0 2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v10.5a2.25 2.25 0 0 0 2.25 2.25h10.5a2.25 2.25 0 0 0 2.25-2.25V6.75a2.25 2.25 0 0 0-2.25-2.25H9.75" />
-                            </svg>
-                          </button>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
                               onStartTimerImmediate(recipe);
                             }}
                             className="p-2 bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/20 dark:hover:bg-amber-950/40 text-amber-800 dark:text-amber-500 rounded-xl transition cursor-pointer flex items-center justify-center border border-amber-200/10 dark:border-amber-900/10"
@@ -144,9 +130,6 @@ export default function RecipesTab({
                               <div data-menu-content={recipe.id}>
                                 <button onClick={(e) => { e.stopPropagation(); onEditRecipe(recipe); setMenuOpenRecipeId(null); }}>
                                   ✏️ Editar
-                                </button>
-                                <button onClick={(e) => { e.stopPropagation(); if (onDuplicateRecipe) onDuplicateRecipe(recipe); setMenuOpenRecipeId(null); }}>
-                                  📋 Duplicar
                                 </button>
                                 <button onClick={(e) => { e.stopPropagation(); onShareRecipe(recipe); setMenuOpenRecipeId(null); }}>
                                   🔗 Compartir

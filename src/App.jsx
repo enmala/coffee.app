@@ -67,6 +67,7 @@ export default function App() {
   const [editingStepIndex, setEditingStepIndex] = useState(null);
   const [menuOpenRecipeId, setMenuOpenRecipeId] = useState(null);
   const [summaryRecipe, setSummaryRecipe] = useState(null);
+  const [duplicatingFromRecipe, setDuplicatingFromRecipe] = useState(null);
   const [recipeToShare, setRecipeToShare] = useState(null);
   const [recipeToImport, setRecipeToImport] = useState(null);
   const [beanToShare, setBeanToShare] = useState(null);
@@ -394,10 +395,12 @@ export default function App() {
     safeBack('timer');
   };
 
-  const handleCancelForm = () => {
+  const handleCancelForm = (isSaving = false) => {
+    const originalRecipeToRestore = isSaving === true ? null : duplicatingFromRecipe;
     setIsCreating(false);
     setEditingRecipeId(null);
     setEditingStepIndex(null);
+    setDuplicatingFromRecipe(null);
     setNewRecipe({
       name: '',
       method: 'V60',
@@ -409,7 +412,15 @@ export default function App() {
     });
     setStepInput({ title: '', water_g: 0, duration_s: 30, instruction: '' });
     setStepTitleError(false);
-    safeBack('edit-recipe');
+
+    if (originalRecipeToRestore) {
+      setSummaryRecipe(originalRecipeToRestore);
+      window.history.replaceState({ view: 'summary', recipeId: originalRecipeToRestore.id }, '');
+      syncStateWithHistory({ view: 'summary', recipeId: originalRecipeToRestore.id });
+    } else {
+      setSummaryRecipe(null);
+      safeBack('edit-recipe');
+    }
   };
 
   const handleCancelBean = () => {
@@ -906,11 +917,42 @@ export default function App() {
       is_favorite: Boolean(recipe.is_favorite)
     });
     setEditingRecipeId(recipe.id);
+    setDuplicatingFromRecipe(null);
     setIsCreating(true);
     navigateTo('edit-recipe', { recipeId: recipe.id });
   };
 
+  const handleDuplicateRecipe = (recipe) => {
+    let copyName = `${recipe.name} (Copia)`;
+    if (recipes.some((r) => r.name.toLowerCase() === copyName.toLowerCase())) {
+      let counter = 2;
+      while (recipes.some((r) => r.name.toLowerCase() === `${recipe.name} (Copia ${counter})`.toLowerCase())) {
+        counter++;
+      }
+      copyName = `${recipe.name} (Copia ${counter})`;
+    }
+
+    setDuplicatingFromRecipe(recipe);
+    setNewRecipe({
+      name: copyName,
+      method: recipe.method || 'V60',
+      coffee_g: recipe.coffee_g,
+      grind_size: recipe.grind_size || '',
+      water_temp_c: recipe.water_temp_c,
+      bean_id: recipe.bean_id || '',
+      steps: recipe.steps ? recipe.steps.map((s) => ({ ...s })) : [],
+      is_favorite: false
+    });
+    setEditingRecipeId(null);
+    if (summaryRecipe) {
+      setSummaryRecipe(null);
+    }
+    setIsCreating(true);
+    navigateTo('edit-recipe');
+  };
+
   const handleNewRecipeClick = () => {
+    setDuplicatingFromRecipe(null);
     setNewRecipe({
       name: '',
       method: 'V60',
@@ -985,8 +1027,12 @@ export default function App() {
         title: "¡Receta Guardada!",
         body: "Tu nueva receta ha sido creada y guardada correctamente."
       });
+      setSummaryRecipe(null);
+      setDuplicatingFromRecipe(null);
+      window.history.replaceState({ view: 'main' }, '');
+      syncStateWithHistory({ view: 'main' });
     }
-    handleCancelForm();
+    handleCancelForm(true);
   };
 
   const handleToggleFavorite = (recipeId) => {
@@ -1252,6 +1298,9 @@ export default function App() {
           onEdit={(recipe) => {
             handleEditRecipe(recipe);
             closeSummary();
+          }}
+          onDuplicate={(recipe) => {
+            handleDuplicateRecipe(recipe);
           }}
           onStartTimer={(recipe) => {
             setAutoStartTimer(true);

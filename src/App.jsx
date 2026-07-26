@@ -910,6 +910,34 @@ export default function App() {
     navigateTo('edit-recipe', { recipeId: recipe.id });
   };
 
+  const handleDuplicateRecipe = (recipe) => {
+    let copyName = `${recipe.name} (Copia)`;
+    if (recipes.some((r) => r.name.toLowerCase() === copyName.toLowerCase())) {
+      let counter = 2;
+      while (recipes.some((r) => r.name.toLowerCase() === `${recipe.name} (Copia ${counter})`.toLowerCase())) {
+        counter++;
+      }
+      copyName = `${recipe.name} (Copia ${counter})`;
+    }
+
+    setNewRecipe({
+      name: copyName,
+      method: recipe.method || 'V60',
+      coffee_g: recipe.coffee_g,
+      grind_size: recipe.grind_size || '',
+      water_temp_c: recipe.water_temp_c,
+      bean_id: recipe.bean_id || '',
+      steps: recipe.steps ? recipe.steps.map((s) => ({ ...s })) : [],
+      is_favorite: false
+    });
+    setEditingRecipeId(null);
+    if (summaryRecipe) {
+      setSummaryRecipe(null);
+    }
+    setIsCreating(true);
+    navigateTo('edit-recipe');
+  };
+
   const handleNewRecipeClick = () => {
     setNewRecipe({
       name: '',
@@ -1198,6 +1226,7 @@ export default function App() {
                   navigateTo('timer', { recipeId: recipe.id });
                 }}
                 onEditRecipe={(recipe) => handleEditRecipe(recipe)}
+                onDuplicateRecipe={(recipe) => handleDuplicateRecipe(recipe)}
                 onShareRecipe={(recipe) => navigateTo('share', { recipeId: recipe.id })}
                 onExportJson={(recipe) => handleExportJson(recipe)}
                 onDeleteRecipe={(recipe, e) => handleDeleteRecipe(recipe, e)}
@@ -1252,6 +1281,9 @@ export default function App() {
           onEdit={(recipe) => {
             handleEditRecipe(recipe);
             closeSummary();
+          }}
+          onDuplicate={(recipe) => {
+            handleDuplicateRecipe(recipe);
           }}
           onStartTimer={(recipe) => {
             setAutoStartTimer(true);

@@ -8,6 +8,7 @@ export default function RecipeSummaryModal({
   onShare,
   onDelete,
   onEdit,
+  onDuplicate,
   onStartTimer,
   formatSecondsToMinutes,
   onToggleFavorite
@@ -207,6 +208,13 @@ export default function RecipeSummaryModal({
             className="flex-1 py-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-650 dark:text-slate-355 rounded-xl font-bold text-xs transition cursor-pointer flex items-center justify-center gap-1"
           >
             ✏️ Editar
+          </button>
+          <button
+            onClick={() => onDuplicate && onDuplicate(summaryRecipe)}
+            className="flex-1 py-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-650 dark:text-slate-355 rounded-xl font-bold text-xs transition cursor-pointer flex items-center justify-center gap-1"
+            title="Duplicar esta receta como base para una nueva"
+          >
+            📋 Duplicar
           </button>
           <button
             onClick={() => onStartTimer(summaryRecipe)}

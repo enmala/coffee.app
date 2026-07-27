@@ -24,14 +24,14 @@ export default function RecipeSummaryModal({
         {/* Header Fijo */}
         <div className="p-5 pb-3 border-b border-slate-200 dark:border-slate-800 flex justify-between items-start shrink-0 bg-white dark:bg-slate-900">
           <div className="min-w-0 flex-1">
-            <div className="flex items-start gap-2">
-              <h3 className={`font-bold text-base text-slate-900 dark:text-white ${isRecipeNameExpanded ? 'leading-snug' : 'truncate'}`}>
+            <div className="flex items-start gap-1.5 min-w-0">
+              <h3 className={`font-bold text-base text-slate-900 dark:text-white ${isRecipeNameExpanded ? 'whitespace-normal break-words leading-snug' : 'truncate'}`}>
                 {summaryRecipe.name}
               </h3>
-              {summaryRecipe.name.length > 40 && (
+              {summaryRecipe.name.length > 18 && (
                 <button
                   onClick={() => setIsRecipeNameExpanded(!isRecipeNameExpanded)}
-                  className="p-0.5 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 shrink-0 transition cursor-pointer"
+                  className="p-0.5 mt-0.5 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 shrink-0 transition cursor-pointer"
                   title={isRecipeNameExpanded ? "Contraer nombre" : "Expandir nombre"}
                   aria-label={isRecipeNameExpanded ? "Contraer nombre" : "Expandir nombre"}
                 >

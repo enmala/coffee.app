@@ -82,16 +82,18 @@ describe('storageUtils Utility Tests', () => {
       expect(localStorage.getItem('test_str')).toBe('dark');
     });
 
-    test('catches QuotaExceededError when storage is full', () => {
+    test('catches QuotaExceededError when storage is full and triggers onError callback', () => {
       const setItemSpy = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
         const error = new Error('QuotaExceededError');
         error.name = 'QuotaExceededError';
         throw error;
       });
       const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const onErrorSpy = vi.fn();
 
-      const success = safeSetItem('full_key', { data: 'big_payload' });
+      const success = safeSetItem('full_key', { data: 'big_payload' }, onErrorSpy);
       expect(success).toBe(false);
+      expect(onErrorSpy).toHaveBeenCalledWith(expect.any(Error));
       expect(consoleWarnSpy).toHaveBeenCalledWith(
         expect.stringContaining('Error al guardar en localStorage clave "full_key"'),
         expect.any(Error)

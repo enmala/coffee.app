@@ -6,19 +6,19 @@ export default function ImportBeanConfirmationModal({ bean, existingBeans = [], 
   );
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm p-4 animate-fade-in">
       <div 
-        className="w-full max-w-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-2xl p-6 max-h-[90vh] flex flex-col transition-all duration-300"
+        className="w-full max-w-lg bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl shadow-2xl p-6 max-h-[90vh] flex flex-col transition-all duration-300"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Cabecera */}
-        <div className="flex justify-between items-center mb-4 pb-2 border-b border-zinc-150 dark:border-zinc-800">
+        <div className="flex justify-between items-center mb-4 pb-2 border-b border-slate-150 dark:border-slate-800">
           <h3 className="text-xl font-bold text-amber-950 dark:text-amber-500 flex items-center gap-2">
             <span>Importar Grano de Café</span>
           </h3>
           <button 
             onClick={onCancel}
-            className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 text-2xl font-semibold leading-none p-1"
+            className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-2xl font-semibold leading-none p-1"
             aria-label="Cerrar modal"
           >
             &times;
@@ -32,11 +32,11 @@ export default function ImportBeanConfirmationModal({ bean, existingBeans = [], 
               🫘
             </div>
             <div>
-              <h4 className="text-lg font-bold text-zinc-900 dark:text-zinc-100 leading-tight">
+              <h4 className="text-lg font-bold text-slate-900 dark:text-slate-100 leading-tight">
                 {bean.name}
               </h4>
               {bean.roaster && (
-                <p className="text-xs text-zinc-550 dark:text-zinc-400 mt-0.5 font-semibold">
+                <p className="text-xs text-slate-550 dark:text-slate-400 mt-0.5 font-semibold">
                   Tostador: {bean.roaster}
                 </p>
               )}
@@ -55,67 +55,67 @@ export default function ImportBeanConfirmationModal({ bean, existingBeans = [], 
 
           {/* Atributos técnicos en grid */}
           <div>
-            <h5 className="text-xs font-bold text-zinc-400 dark:text-zinc-500 uppercase mb-2 tracking-wider">
+            <h5 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase mb-2 tracking-wider">
               Atributos Técnicos
             </h5>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               {bean.origin && (
-                <div className="p-3 bg-zinc-50 dark:bg-zinc-800/40 rounded-xl border border-zinc-150 dark:border-zinc-800/80">
-                  <span className="block text-[10px] text-zinc-400 dark:text-zinc-500 font-semibold uppercase">Origen</span>
-                  <span className="text-sm font-bold text-zinc-800 dark:text-zinc-200 truncate block">📍 {bean.origin}</span>
+                <div className="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-150 dark:border-slate-800/80">
+                  <span className="block text-[10px] text-slate-400 dark:text-slate-500 font-semibold uppercase">Origen</span>
+                  <span className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate block">📍 {bean.origin}</span>
                 </div>
               )}
               {bean.region && (
-                <div className="p-3 bg-zinc-50 dark:bg-zinc-800/40 rounded-xl border border-zinc-150 dark:border-zinc-800/80">
-                  <span className="block text-[10px] text-zinc-400 dark:text-zinc-500 font-semibold uppercase">Región</span>
-                  <span className="text-sm font-bold text-zinc-800 dark:text-zinc-200 truncate block">🗺️ {bean.region}</span>
+                <div className="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-150 dark:border-slate-800/80">
+                  <span className="block text-[10px] text-slate-400 dark:text-slate-500 font-semibold uppercase">Región</span>
+                  <span className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate block">🗺️ {bean.region}</span>
                 </div>
               )}
               {bean.farm && (
-                <div className="p-3 bg-zinc-50 dark:bg-zinc-800/40 rounded-xl border border-zinc-150 dark:border-zinc-800/80">
-                  <span className="block text-[10px] text-zinc-400 dark:text-zinc-500 font-semibold uppercase">Finca</span>
-                  <span className="text-sm font-bold text-zinc-800 dark:text-zinc-200 truncate block">🏡 {bean.farm}</span>
+                <div className="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-150 dark:border-slate-800/80">
+                  <span className="block text-[10px] text-slate-400 dark:text-slate-500 font-semibold uppercase">Finca</span>
+                  <span className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate block">🏡 {bean.farm}</span>
                 </div>
               )}
               {bean.producer && (
-                <div className="p-3 bg-zinc-50 dark:bg-zinc-800/40 rounded-xl border border-zinc-150 dark:border-zinc-800/80">
-                  <span className="block text-[10px] text-zinc-400 dark:text-zinc-500 font-semibold uppercase">Productor</span>
-                  <span className="text-sm font-bold text-zinc-800 dark:text-zinc-200 truncate block">🧑‍🌾 {bean.producer}</span>
+                <div className="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-150 dark:border-slate-800/80">
+                  <span className="block text-[10px] text-slate-400 dark:text-slate-500 font-semibold uppercase">Productor</span>
+                  <span className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate block">🧑‍🌾 {bean.producer}</span>
                 </div>
               )}
               {bean.process && (
-                <div className="p-3 bg-zinc-50 dark:bg-zinc-800/40 rounded-xl border border-zinc-150 dark:border-zinc-800/80">
-                  <span className="block text-[10px] text-zinc-400 dark:text-zinc-500 font-semibold uppercase">Proceso</span>
-                  <span className="text-sm font-bold text-zinc-800 dark:text-zinc-200 truncate block">⚙️ {bean.process}</span>
+                <div className="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-150 dark:border-slate-800/80">
+                  <span className="block text-[10px] text-slate-400 dark:text-slate-500 font-semibold uppercase">Proceso</span>
+                  <span className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate block">⚙️ {bean.process}</span>
                 </div>
               )}
               {bean.roast_level && (
-                <div className="p-3 bg-zinc-50 dark:bg-zinc-800/40 rounded-xl border border-zinc-150 dark:border-zinc-800/80">
-                  <span className="block text-[10px] text-zinc-400 dark:text-zinc-500 font-semibold uppercase">Tueste</span>
-                  <span className="text-sm font-bold text-zinc-800 dark:text-zinc-200 truncate block">🔥 {bean.roast_level}</span>
+                <div className="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-150 dark:border-slate-800/80">
+                  <span className="block text-[10px] text-slate-400 dark:text-slate-500 font-semibold uppercase">Tueste</span>
+                  <span className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate block">🔥 {bean.roast_level}</span>
                 </div>
               )}
               {bean.variety && (
-                <div className="p-3 bg-zinc-50 dark:bg-zinc-800/40 rounded-xl border border-zinc-150 dark:border-zinc-800/80">
-                  <span className="block text-[10px] text-zinc-400 dark:text-zinc-500 font-semibold uppercase">Variedad</span>
-                  <span className="text-sm font-bold text-zinc-800 dark:text-zinc-200 truncate block">🌱 {bean.variety}</span>
+                <div className="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-150 dark:border-slate-800/80">
+                  <span className="block text-[10px] text-slate-400 dark:text-slate-500 font-semibold uppercase">Variedad</span>
+                  <span className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate block">🌱 {bean.variety}</span>
                 </div>
               )}
               {bean.altitude && (
-                <div className="p-3 bg-zinc-50 dark:bg-zinc-800/40 rounded-xl border border-zinc-150 dark:border-zinc-800/80">
-                  <span className="block text-[10px] text-zinc-400 dark:text-zinc-500 font-semibold uppercase">Altitud</span>
-                  <span className="text-sm font-bold text-zinc-800 dark:text-zinc-200 truncate block">🏔️ {bean.altitude}</span>
+                <div className="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-150 dark:border-slate-800/80">
+                  <span className="block text-[10px] text-slate-400 dark:text-slate-500 font-semibold uppercase">Altitud</span>
+                  <span className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate block">🏔️ {bean.altitude}</span>
                 </div>
               )}
               {bean.harvest_year && (
-                <div className="p-3 bg-zinc-50 dark:bg-zinc-800/40 rounded-xl border border-zinc-150 dark:border-zinc-800/80">
-                  <span className="block text-[10px] text-zinc-400 dark:text-zinc-500 font-semibold uppercase">Año Cosecha</span>
-                  <span className="text-sm font-bold text-zinc-800 dark:text-zinc-200 truncate block">🌾 {bean.harvest_year}</span>
+                <div className="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-150 dark:border-slate-800/80">
+                  <span className="block text-[10px] text-slate-400 dark:text-slate-500 font-semibold uppercase">Año Cosecha</span>
+                  <span className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate block">🌾 {bean.harvest_year}</span>
                 </div>
               )}
               {bean.sca_score && (
-                <div className="p-3 bg-zinc-50 dark:bg-zinc-800/40 rounded-xl border border-zinc-150 dark:border-zinc-800/80">
-                  <span className="block text-[10px] text-zinc-400 dark:text-zinc-500 font-semibold uppercase">Puntaje SCA</span>
+                <div className="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-150 dark:border-slate-800/80">
+                  <span className="block text-[10px] text-slate-400 dark:text-slate-500 font-semibold uppercase">Puntaje SCA</span>
                   <span className="text-sm font-bold text-emerald-600 dark:text-emerald-400 truncate block">🏆 {bean.sca_score}</span>
                 </div>
               )}
@@ -125,10 +125,10 @@ export default function ImportBeanConfirmationModal({ bean, existingBeans = [], 
           {/* Notas de cata */}
           {bean.tasting_notes && bean.tasting_notes.length > 0 && (
             <div>
-              <h5 className="text-xs font-bold text-zinc-400 dark:text-zinc-500 uppercase mb-2 tracking-wider">
+              <h5 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase mb-2 tracking-wider">
                 Notas de Cata
               </h5>
-              <div className="flex flex-wrap gap-1.5 p-3 bg-zinc-50 dark:bg-zinc-800/20 border border-zinc-150 dark:border-zinc-800/60 rounded-xl">
+              <div className="flex flex-wrap gap-1.5 p-3 bg-slate-50 dark:bg-slate-800/20 border border-slate-150 dark:border-slate-800/60 rounded-xl">
                 {bean.tasting_notes.map((note) => (
                   <span key={note} className="px-3 py-1 bg-amber-50 dark:bg-amber-950/30 text-amber-900 dark:text-amber-300 border border-amber-250/20 rounded-full text-xs font-bold shadow-sm">
                     {note}
@@ -141,27 +141,27 @@ export default function ImportBeanConfirmationModal({ bean, existingBeans = [], 
           {/* Notas generales */}
           {bean.notes && (
             <div>
-              <h5 className="text-xs font-bold text-zinc-400 dark:text-zinc-500 uppercase mb-2 tracking-wider">
+              <h5 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase mb-2 tracking-wider">
                 Notas Generales
               </h5>
-              <div className="p-3.5 bg-zinc-50 dark:bg-zinc-800/30 border border-zinc-150 dark:border-zinc-800/60 rounded-xl italic text-sm text-zinc-700 dark:text-zinc-300">
+              <div className="p-3.5 bg-slate-50 dark:bg-slate-800/30 border border-slate-150 dark:border-slate-800/60 rounded-xl italic text-sm text-slate-700 dark:text-slate-300">
                 "{bean.notes}"
               </div>
             </div>
           )}
 
           {bean.roast_date && (
-            <div className="text-xs text-zinc-400 dark:text-zinc-500 text-right pt-1">
+            <div className="text-xs text-slate-400 dark:text-slate-500 text-right pt-1">
               Fecha de tueste: {bean.roast_date}
             </div>
           )}
         </div>
 
         {/* Botones de acción */}
-        <div className="flex gap-3 mt-6 pt-4 border-t border-zinc-150 dark:border-zinc-800 shrink-0">
+        <div className="flex gap-3 mt-6 pt-4 border-t border-slate-150 dark:border-slate-800 shrink-0">
           <button
             onClick={onCancel}
-            className="flex-1 py-3 px-4 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 font-bold rounded-xl active:scale-[0.98] transition-all text-center cursor-pointer"
+            className="flex-1 py-3 px-4 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold rounded-xl active:scale-[0.98] transition-all text-center cursor-pointer"
           >
             Cancelar
           </button>

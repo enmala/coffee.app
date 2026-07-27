@@ -104,9 +104,9 @@ export default function ShareBeanModal({ bean, onClose, onAlert }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm p-4 animate-fade-in">
       <div 
-        className="w-full max-w-md bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-2xl p-6 overflow-hidden flex flex-col items-center text-center transition-all duration-300"
+        className="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl shadow-2xl p-6 overflow-hidden flex flex-col items-center text-center transition-all duration-300"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Cabecera */}
@@ -116,21 +116,21 @@ export default function ShareBeanModal({ bean, onClose, onAlert }) {
           </h3>
           <button 
             onClick={onClose}
-            className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 text-2xl font-semibold leading-none p-1"
+            className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-2xl font-semibold leading-none p-1"
             aria-label="Cerrar modal"
           >
             &times;
           </button>
         </div>
 
-        <p className="text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-2">
+        <p className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
           {bean.name} {bean.roaster ? `(${bean.roaster})` : ''}
         </p>
 
         {/* Zona de QR Code */}
         <div className="my-4 p-3 bg-white border-2 border-amber-900/10 rounded-2xl shadow-inner flex items-center justify-center min-h-[240px] min-w-[240px]">
           {generating ? (
-            <div className="flex flex-col items-center space-y-2 text-zinc-500">
+            <div className="flex flex-col items-center space-y-2 text-slate-500">
               <div className="w-10 h-10 border-4 border-amber-700 border-t-transparent rounded-full animate-spin"></div>
               <span className="text-sm">Generando código QR...</span>
             </div>
@@ -141,7 +141,7 @@ export default function ShareBeanModal({ bean, onClose, onAlert }) {
           )}
         </div>
 
-        <p className="text-xs text-zinc-500 dark:text-zinc-400 mb-6 max-w-[280px]">
+        <p className="text-xs text-slate-500 dark:text-slate-400 mb-6 max-w-[280px]">
           Escanea este código QR con otro dispositivo para importar este grano al instante.
         </p>
 
@@ -166,7 +166,7 @@ export default function ShareBeanModal({ bean, onClose, onAlert }) {
             className={`w-full flex items-center justify-center gap-2 py-3 px-4 border font-semibold rounded-xl transition-all active:scale-[0.98] ${
               copied
                 ? 'bg-emerald-50 dark:bg-emerald-950/20 border-emerald-500 text-emerald-600 dark:text-emerald-400'
-                : 'bg-zinc-50 dark:bg-zinc-800/50 hover:bg-zinc-100 dark:hover:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300'
+                : 'bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300'
             }`}
           >
             {copied ? (
@@ -188,7 +188,7 @@ export default function ShareBeanModal({ bean, onClose, onAlert }) {
 
           <button
             onClick={handleDownloadJson}
-            className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-transparent border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 font-semibold rounded-xl active:scale-[0.98] transition-all"
+            className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-transparent border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 font-semibold rounded-xl active:scale-[0.98] transition-all"
           >
             <svg viewBox="0 0 24 24" className="w-5 h-5 fill-none stroke-current stroke-2" xmlns="http://www.w3.org/2000/svg">
               <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />

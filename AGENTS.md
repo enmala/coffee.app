@@ -108,4 +108,5 @@ El listado de tareas pendientes, en progreso y completadas ha sido migrado al ar
 *   Se debe conseguir un coverage mínimo del 80% de las funcionalidades implementadas
 *   Los tests deben ser capaces de ejecutarse de forma automatizada
 *   Cada nuevo feature o funcionalidad debe incluir su respectivo test
-*   Antes de dar por completado un trabajo se debe verificar que los test pasan, `npm run lint` no reporta errores y `npm audit --audit-level=high` no reporta vulnerabilidades
+*   Antes de dar por completado un trabajo se debe verificar que los test pasan, `npm run lint` no reporta errores y `npm audit --audit-level=high` no reporta vulnerabilidades.
+*   Si audit reporta vulnerabilidades y no se pueden resolver sin romper el código o instalar dependencias con menos antigüedad que la definida en .npmrc, se debe documentar la vulnerabilidad en el archivo `VULNERABILITIES.md`.

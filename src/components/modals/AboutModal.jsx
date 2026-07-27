@@ -37,7 +37,7 @@ export default function AboutModal({ isOpen, onClose, isTwa }) {
             Tu compañero de barra para café de especialidad. Crea, guarda y cronometra tus recetas de extracción paso a paso, con alertas, historial y soporte offline.
           </p>
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            Hecho con ☕ por <a className="text-amber-800 dark:text-amber-550 dark:hover:text-amber-405 hover:underline font-semibold">Enrique Maldonado</a>
+            Hecho con ☕ por <a className="text-amber-800 dark:text-amber-500 dark:hover:text-amber-400 hover:underline font-semibold">Enrique Maldonado</a>
           </p>
         </div>
 

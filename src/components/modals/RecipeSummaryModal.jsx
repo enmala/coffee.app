@@ -200,7 +200,7 @@ export default function RecipeSummaryModal({
         <div className="p-5 pt-3 border-t border-slate-100 dark:border-slate-800 flex gap-2 shrink-0 bg-white dark:bg-slate-900">
           <button
             onClick={(e) => onDelete(summaryRecipe, e)}
-            className="p-2 border border-red-200 dark:border-red-900/30 hover:bg-red-50 dark:hover:bg-red-950/20 text-red-650 dark:text-red-400 rounded-xl transition cursor-pointer flex items-center justify-center shrink-0"
+            className="p-2 border border-red-200 dark:border-red-900/30 hover:bg-red-50 dark:hover:bg-red-950/20 text-red-600 dark:text-red-400 rounded-xl transition cursor-pointer flex items-center justify-center shrink-0"
             title="Eliminar receta"
           >
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">

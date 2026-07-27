@@ -88,7 +88,7 @@ export default function ImportConfirmationModal({ recipe, existingRecipes = [], 
             <h5 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase mb-2 tracking-wider">
               Pasos de Preparación ({recipe.steps.length}) • Tiempo total: {formatTime(totalDuration)}
             </h5>
-            <div className="border border-slate-100 dark:border-slate-800 rounded-xl overflow-hidden divide-y divide-slate-150 dark:divide-slate-800">
+            <div className="border border-slate-100 dark:border-slate-800 rounded-xl overflow-hidden divide-y divide-slate-100 dark:divide-slate-800">
               {recipe.steps.map((step, index) => (
                 <div key={index} className="p-3 hover:bg-slate-50 dark:hover:bg-slate-800/30 flex justify-between gap-4 transition-colors">
                   <div className="space-y-0.5 min-w-0">

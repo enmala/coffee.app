@@ -1486,7 +1486,7 @@ export default function App() {
         {saveSuccessMessage && (
           <div className="fixed inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
             <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-sm w-full p-5 md:p-6 shadow-xl border border-slate-100 dark:border-slate-800 text-center space-y-4 max-h-[90vh] overflow-y-auto">
-              <div className="flex justify-center text-emerald-650 dark:text-emerald-500 animate-bounce my-2">
+              <div className="flex justify-center text-emerald-600 dark:text-emerald-500 animate-bounce my-2">
                 <svg viewBox="0 0 24 24" className="w-12 h-12 fill-none stroke-current" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
                   <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
                   <polyline points="22 4 12 14.01 9 11.01" />

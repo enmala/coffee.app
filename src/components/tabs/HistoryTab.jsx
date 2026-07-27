@@ -28,7 +28,7 @@ export default function HistoryTab({
               type="checkbox"
               checked={autoLogEnabled}
               onChange={(e) => setAutoLogEnabled(e.target.checked)}
-              className="rounded border-slate-350 dark:border-slate-700 text-amber-800 focus:ring-amber-500 w-3.5 h-3.5"
+              className="rounded border-slate-300 dark:border-slate-700 text-amber-800 focus:ring-amber-500 w-3.5 h-3.5"
             />
             Reg. Auto.
           </label>

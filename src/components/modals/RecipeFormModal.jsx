@@ -131,7 +131,7 @@ export default function RecipeFormModal({
               Pasos Añadidos ({newRecipe.steps.length})
             </h3>
             {newRecipe.steps.length > 0 && (
-              <span className="text-xs font-semibold text-amber-900 dark:text-amber-400 bg-amber-100/60 dark:bg-amber-955/20 px-2 py-0.5 rounded-lg border border-amber-200/20">
+              <span className="text-xs font-semibold text-amber-900 dark:text-amber-400 bg-amber-100/60 dark:bg-amber-950/20 px-2 py-0.5 rounded-lg border border-amber-200/20">
                 ⏱️ {totalStepsTime}s • 💧 {totalStepsWater}g
               </span>
             )}
@@ -189,7 +189,7 @@ export default function RecipeFormModal({
                           setEditingStepIndex(editingStepIndex - 1);
                         }
                       }}
-                      className="p-1 text-red-500 hover:bg-red-50 dark:hover:bg-red-955/20 rounded-lg font-bold text-xs cursor-pointer transition"
+                      className="p-1 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-lg font-bold text-xs cursor-pointer transition"
                       title="Eliminar paso"
                     >
                       ✕

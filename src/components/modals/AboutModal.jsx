@@ -32,12 +32,12 @@ export default function AboutModal({ isOpen, onClose, isTwa }) {
           </button>
         </div>
 
-        <div className="space-y-3 text-sm text-slate-600 dark:text-slate-350 text-left">
+        <div className="space-y-3 text-sm text-slate-600 dark:text-slate-300 text-left">
           <p>
             Tu compañero de barra para café de especialidad. Crea, guarda y cronometra tus recetas de extracción paso a paso, con alertas, historial y soporte offline.
           </p>
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            Hecho con ☕ por <a className="text-amber-800 dark:text-amber-550 dark:hover:text-amber-405 hover:underline font-semibold">Enrique Maldonado</a>
+            Hecho con ☕ por <a className="text-amber-800 dark:text-amber-500 dark:hover:text-amber-400 hover:underline font-semibold">Enrique Maldonado</a>
           </p>
         </div>
 
@@ -96,7 +96,7 @@ export default function AboutModal({ isOpen, onClose, isTwa }) {
         <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
           <button
             onClick={onClose}
-            className="w-full py-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-650 dark:text-slate-300 rounded-xl font-bold text-xs transition cursor-pointer"
+            className="w-full py-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl font-bold text-xs transition cursor-pointer"
           >
             Cerrar
           </button>

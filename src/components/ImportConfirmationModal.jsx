@@ -24,7 +24,7 @@ export default function ImportConfirmationModal({ recipe, existingRecipes = [], 
         onClick={(e) => e.stopPropagation()}
       >
         {/* Cabecera */}
-        <div className="flex justify-between items-center mb-4 pb-2 border-b border-slate-150 dark:border-slate-800">
+        <div className="flex justify-between items-center mb-4 pb-2 border-b border-slate-100 dark:border-slate-800">
           <h3 className="text-xl font-bold text-amber-950 dark:text-amber-500 flex items-center gap-2">
             <span>Importar Receta</span>
           </h3>
@@ -65,19 +65,19 @@ export default function ImportConfirmationModal({ recipe, existingRecipes = [], 
 
           {/* Parámetros físicos */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div className="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-150 dark:border-slate-800/80">
+            <div className="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-800/80">
               <span className="block text-[10px] text-slate-400 dark:text-slate-500 font-semibold uppercase">Café</span>
               <span className="text-sm font-bold text-slate-800 dark:text-slate-200">{recipe.coffee_g}g</span>
             </div>
-            <div className="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-150 dark:border-slate-800/80">
+            <div className="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-800/80">
               <span className="block text-[10px] text-slate-400 dark:text-slate-500 font-semibold uppercase">Molienda</span>
               <span className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate block">{recipe.grind_size || 'N/A'}</span>
             </div>
-            <div className="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-150 dark:border-slate-800/80">
+            <div className="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-800/80">
               <span className="block text-[10px] text-slate-400 dark:text-slate-500 font-semibold uppercase">Temperatura</span>
               <span className="text-sm font-bold text-slate-800 dark:text-slate-200">{recipe.water_temp_c || 'N/A'}°C</span>
             </div>
-            <div className="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-150 dark:border-slate-800/80">
+            <div className="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-800/80">
               <span className="block text-[10px] text-slate-400 dark:text-slate-500 font-semibold uppercase">Agua Total</span>
               <span className="text-sm font-bold text-slate-800 dark:text-slate-200">{totalWater}g</span>
             </div>
@@ -88,7 +88,7 @@ export default function ImportConfirmationModal({ recipe, existingRecipes = [], 
             <h5 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase mb-2 tracking-wider">
               Pasos de Preparación ({recipe.steps.length}) • Tiempo total: {formatTime(totalDuration)}
             </h5>
-            <div className="border border-slate-150 dark:border-slate-800 rounded-xl overflow-hidden divide-y divide-slate-150 dark:divide-slate-800">
+            <div className="border border-slate-100 dark:border-slate-800 rounded-xl overflow-hidden divide-y divide-slate-100 dark:divide-slate-800">
               {recipe.steps.map((step, index) => (
                 <div key={index} className="p-3 hover:bg-slate-50 dark:hover:bg-slate-800/30 flex justify-between gap-4 transition-colors">
                   <div className="space-y-0.5 min-w-0">
@@ -113,7 +113,7 @@ export default function ImportConfirmationModal({ recipe, existingRecipes = [], 
         </div>
 
         {/* Botones de acción */}
-        <div className="flex gap-3 mt-6 pt-4 border-t border-slate-150 dark:border-slate-800 shrink-0">
+        <div className="flex gap-3 mt-6 pt-4 border-t border-slate-100 dark:border-slate-800 shrink-0">
           <button
             onClick={onCancel}
             className="flex-1 py-3 px-4 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold rounded-xl active:scale-[0.98] transition-all text-center"

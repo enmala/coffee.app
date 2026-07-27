@@ -1128,7 +1128,7 @@ export default function App() {
               setIsSettingsOpen(true);
               navigateTo('settings');
             }}
-            className="p-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition cursor-pointer text-slate-655 dark:text-slate-200 flex items-center justify-center"
+            className="p-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition cursor-pointer text-slate-600 dark:text-slate-200 flex items-center justify-center"
             title="Configuración"
           >
             <svg className="w-5 h-5 transition-transform duration-300 hover:rotate-45" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -1346,7 +1346,7 @@ export default function App() {
                 <button
                   type="button"
                   onClick={handleCloseStepEditor}
-                  className="text-slate-400 hover:text-slate-655 dark:hover:text-slate-200 text-sm font-semibold p-1"
+                  className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-sm font-semibold p-1"
                 >
                   ✕
                 </button>
@@ -1372,7 +1372,7 @@ export default function App() {
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <label className="block text-[9px] font-bold uppercase text-slate-500 dark:text-slate-455 mb-0.5 pl-1">Agua a verter (g)</label>
+                    <label className="block text-[9px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-0.5 pl-1">Agua a verter (g)</label>
                     <input
                       type="number"
                       placeholder="Agua (g)"
@@ -1382,7 +1382,7 @@ export default function App() {
                     />
                   </div>
                   <div>
-                    <label className="block text-[9px] font-bold uppercase text-slate-500 dark:text-slate-455 mb-0.5 pl-1">Duración (segundos)</label>
+                    <label className="block text-[9px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-0.5 pl-1">Duración (segundos)</label>
                     <input
                       type="number"
                       placeholder="Tiempo (s)"
@@ -1407,7 +1407,7 @@ export default function App() {
                 <button
                   type="button"
                   onClick={handleCloseStepEditor}
-                  className="flex-1 py-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-655 dark:text-slate-350 rounded-xl font-bold text-xs transition cursor-pointer text-center"
+                  className="flex-1 py-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl font-bold text-xs transition cursor-pointer text-center"
                 >
                   Cancelar edición
                 </button>
@@ -1486,7 +1486,7 @@ export default function App() {
         {saveSuccessMessage && (
           <div className="fixed inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
             <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-sm w-full p-5 md:p-6 shadow-xl border border-slate-100 dark:border-slate-800 text-center space-y-4 max-h-[90vh] overflow-y-auto">
-              <div className="flex justify-center text-emerald-650 dark:text-emerald-500 animate-bounce my-2">
+              <div className="flex justify-center text-emerald-600 dark:text-emerald-500 animate-bounce my-2">
                 <svg viewBox="0 0 24 24" className="w-12 h-12 fill-none stroke-current" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
                   <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
                   <polyline points="22 4 12 14.01 9 11.01" />
@@ -1504,7 +1504,7 @@ export default function App() {
               <button 
                 type="button"
                 onClick={() => setSaveSuccessMessage(null)}
-                className="w-full py-2.5 bg-emerald-700 hover:bg-emerald-800 dark:bg-emerald-650 dark:hover:bg-emerald-700 text-white rounded-xl font-bold text-sm transition shadow-sm cursor-pointer"
+                className="w-full py-2.5 bg-emerald-700 hover:bg-emerald-800 dark:bg-emerald-600 dark:hover:bg-emerald-700 text-white rounded-xl font-bold text-sm transition shadow-sm cursor-pointer"
               >
                 Entendido
               </button>
@@ -1560,14 +1560,14 @@ export default function App() {
                 <button
                   type="button"
                   onClick={closeDeleteBean}
-                  className="flex-1 py-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-650 dark:text-slate-300 rounded-xl font-bold text-xs transition cursor-pointer"
+                  className="flex-1 py-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl font-bold text-xs transition cursor-pointer"
                 >
                   Cancelar
                 </button>
                 <button
                   type="button"
                   onClick={handleConfirmDeleteBean}
-                  className="flex-1 py-2 bg-red-600 hover:bg-red-750 text-white rounded-xl font-bold text-xs transition shadow-sm cursor-pointer"
+                  className="flex-1 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold text-xs transition shadow-sm cursor-pointer"
                 >
                   Sí, Eliminar
                 </button>
@@ -1591,14 +1591,14 @@ export default function App() {
                 <button
                   type="button"
                   onClick={closeDeleteRecipe}
-                  className="flex-1 py-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-650 dark:text-slate-300 rounded-xl font-bold text-xs transition cursor-pointer"
+                  className="flex-1 py-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl font-bold text-xs transition cursor-pointer"
                 >
                   Cancelar
                 </button>
                 <button
                   type="button"
                   onClick={handleConfirmDeleteRecipe}
-                  className="flex-1 py-2 bg-red-600 hover:bg-red-750 text-white rounded-xl font-bold text-xs transition shadow-sm cursor-pointer"
+                  className="flex-1 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold text-xs transition shadow-sm cursor-pointer"
                 >
                   Sí, Eliminar
                 </button>
@@ -1622,14 +1622,14 @@ export default function App() {
                 <button
                   type="button"
                   onClick={closeDeleteHistoryEntry}
-                  className="flex-1 py-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-650 dark:text-slate-300 rounded-xl font-bold text-xs transition cursor-pointer"
+                  className="flex-1 py-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl font-bold text-xs transition cursor-pointer"
                 >
                   Cancelar
                 </button>
                 <button
                   type="button"
                   onClick={handleConfirmDeleteHistoryEntry}
-                  className="flex-1 py-2 bg-red-600 hover:bg-red-750 text-white rounded-xl font-bold text-xs transition shadow-sm cursor-pointer"
+                  className="flex-1 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold text-xs transition shadow-sm cursor-pointer"
                 >
                   Sí, Eliminar
                 </button>
@@ -1653,14 +1653,14 @@ export default function App() {
                 <button
                   type="button"
                   onClick={closeClearHistory}
-                  className="flex-1 py-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-650 dark:text-slate-300 rounded-xl font-bold text-xs transition cursor-pointer"
+                  className="flex-1 py-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl font-bold text-xs transition cursor-pointer"
                 >
                   Cancelar
                 </button>
                 <button
                   type="button"
                   onClick={handleConfirmClearHistory}
-                  className="flex-1 py-2 bg-red-600 hover:bg-red-750 text-white rounded-xl font-bold text-xs transition shadow-sm cursor-pointer"
+                  className="flex-1 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold text-xs transition shadow-sm cursor-pointer"
                 >
                   Sí, Limpiar Todo
                 </button>

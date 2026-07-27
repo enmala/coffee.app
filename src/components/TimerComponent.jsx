@@ -360,7 +360,7 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
                 setShowFinishedModal(false);
                 onComplete();
               }}
-              className="w-full py-2.5 bg-emerald-700 hover:bg-emerald-800 dark:bg-emerald-650 dark:hover:bg-emerald-700 text-white rounded-xl font-bold text-sm transition shadow-sm cursor-pointer"
+              className="w-full py-2.5 bg-emerald-700 hover:bg-emerald-800 dark:bg-emerald-600 dark:hover:bg-emerald-700 text-white rounded-xl font-bold text-sm transition shadow-sm cursor-pointer"
             >
               Entendido
             </button>

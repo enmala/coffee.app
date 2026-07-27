@@ -200,7 +200,7 @@ export default function RecipeSummaryModal({
         <div className="p-5 pt-3 border-t border-slate-100 dark:border-slate-800 flex gap-2 shrink-0 bg-white dark:bg-slate-900">
           <button
             onClick={(e) => onDelete(summaryRecipe, e)}
-            className="p-2 border border-red-200 dark:border-red-900/30 hover:bg-red-50 dark:hover:bg-red-950/20 text-red-650 dark:text-red-400 rounded-xl transition cursor-pointer flex items-center justify-center shrink-0"
+            className="p-2 border border-red-200 dark:border-red-900/30 hover:bg-red-50 dark:hover:bg-red-950/20 text-red-600 dark:text-red-400 rounded-xl transition cursor-pointer flex items-center justify-center shrink-0"
             title="Eliminar receta"
           >
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
@@ -209,13 +209,13 @@ export default function RecipeSummaryModal({
           </button>
           <button
             onClick={() => onEdit(summaryRecipe)}
-            className="flex-1 py-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-650 dark:text-slate-355 rounded-xl font-bold text-xs transition cursor-pointer flex items-center justify-center gap-1"
+            className="flex-1 py-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl font-bold text-xs transition cursor-pointer flex items-center justify-center gap-1"
           >
             ✏️ Editar
           </button>
           <button
             onClick={() => onDuplicate && onDuplicate(summaryRecipe)}
-            className="flex-1 py-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-650 dark:text-slate-355 rounded-xl font-bold text-xs transition cursor-pointer flex items-center justify-center gap-1"
+            className="flex-1 py-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl font-bold text-xs transition cursor-pointer flex items-center justify-center gap-1"
             title="Duplicar esta receta como base para una nueva"
           >
             📋 Duplicar

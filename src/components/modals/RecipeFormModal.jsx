@@ -131,7 +131,7 @@ export default function RecipeFormModal({
               Pasos Añadidos ({newRecipe.steps.length})
             </h3>
             {newRecipe.steps.length > 0 && (
-              <span className="text-xs font-semibold text-amber-900 dark:text-amber-400 bg-amber-100/60 dark:bg-amber-955/20 px-2 py-0.5 rounded-lg border border-amber-200/20">
+              <span className="text-xs font-semibold text-amber-900 dark:text-amber-400 bg-amber-100/60 dark:bg-amber-950/20 px-2 py-0.5 rounded-lg border border-amber-200/20">
                 ⏱️ {totalStepsTime}s • 💧 {totalStepsWater}g
               </span>
             )}
@@ -189,7 +189,7 @@ export default function RecipeFormModal({
                           setEditingStepIndex(editingStepIndex - 1);
                         }
                       }}
-                      className="p-1 text-red-500 hover:bg-red-50 dark:hover:bg-red-955/20 rounded-lg font-bold text-xs cursor-pointer transition"
+                      className="p-1 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-lg font-bold text-xs cursor-pointer transition"
                       title="Eliminar paso"
                     >
                       ✕
@@ -203,7 +203,7 @@ export default function RecipeFormModal({
           <button
             type="button"
             onClick={() => handleOpenStepEditor(null)}
-            className="w-full py-3 border-2 border-dashed border-slate-200 dark:border-slate-800 hover:border-amber-500 dark:hover:border-amber-600 rounded-xl text-xs font-bold text-slate-500 dark:text-slate-400 hover:text-amber-800 dark:hover:text-amber-500 hover:bg-amber-50/10 dark:hover:bg-amber-955/5 transition cursor-pointer flex items-center justify-center gap-1.5"
+            className="w-full py-3 border-2 border-dashed border-slate-200 dark:border-slate-800 hover:border-amber-500 dark:hover:border-amber-600 rounded-xl text-xs font-bold text-slate-500 dark:text-slate-400 hover:text-amber-800 dark:hover:text-amber-500 hover:bg-amber-50/10 dark:hover:bg-amber-950/5 transition cursor-pointer flex items-center justify-center gap-1.5"
           >
             + Agregar Paso
           </button>
@@ -213,7 +213,7 @@ export default function RecipeFormModal({
           <button
             type="button"
             onClick={handleCancelForm}
-            className="flex-1 py-2.5 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-655 dark:text-slate-350 rounded-xl font-bold text-sm transition cursor-pointer text-center"
+            className="flex-1 py-2.5 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl font-bold text-sm transition cursor-pointer text-center"
           >
             Cancelar
           </button>

@@ -94,7 +94,7 @@ Los agentes de IA deben leer este archivo para saber qué implementar a continua
 ## 🛠️ Deuda Técnica
 
 - [ ] **Extraer lógica de `App.jsx` a custom hooks**
-  - *Etiquetas:* [Prioridad: Media] [Complejidad: Media]
+  - *Etiquetas:* [Prioridad: Alta] [Complejidad: Media]
   - *Descripción:* Mover la lógica de recipes, beans, history y navigation a hooks personalizados (`useRecipes`, `useBeans`, `useHistory`, `useNavigation`) para reducir la complejidad de `App.jsx`.
 
 - [ ] **Aumentar cobertura de `RecipeSummaryModal` y `coffeeUtils`**
@@ -120,6 +120,14 @@ Los agentes de IA deben leer este archivo para saber qué implementar a continua
 - [ ] **Usar `useCallback` en handlers pasados a componentes hijos**
   - *Etiquetas:* [Prioridad: Media] [Complejidad: Baja]
   - *Descripción:* Funciones como `handleSaveRecipe`, `handleEditRecipe`, `handleDeleteRecipe`, etc., se recrean en cada render. Memorizarlas con `useCallback` evitaría re-renderizados innecesarios en `RecipesTab`, `BeansTab`, modales y tab components.
+
+- [ ] **Gestión y reutilización de `AudioContext` en Web Audio API**
+  - *Etiquetas:* [Prioridad: Media] [Complejidad: Baja]
+  - *Descripción:* En `src/utils/coffeeUtils.jsx`, `playBeep` instancia un `new AudioContext()` y lo cierra en cada sonido. Reutilizar una única instancia de `AudioContext` previene consumo innecesario de memoria y bloqueos de audio en móviles/TWA.
+
+- [ ] **Memorización (`useMemo`) en filtrado y búsqueda de recetas y granos**
+  - *Etiquetas:* [Prioridad: Baja] [Complejidad: Baja]
+  - *Descripción:* En `RecipesTab.jsx` y `BeansTab.jsx`, el filtrado por texto de búsqueda y método/categoría se evalúa en cada render. Memorizar las listas filtradas con `useMemo` optimizará la fluidez en dispositivos móviles.
 
 - [ ] **Refactorizar patrones repetidos de vibración en `TimerComponent`**
   - *Etiquetas:* [Prioridad: Baja] [Complejidad: Baja]

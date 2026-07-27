@@ -11,6 +11,9 @@ export default function BeansTab({
     b.name.toLowerCase().includes(beanSearchQuery.toLowerCase()) ||
     (b.roaster && b.roaster.toLowerCase().includes(beanSearchQuery.toLowerCase())) ||
     (b.origin && b.origin.toLowerCase().includes(beanSearchQuery.toLowerCase())) ||
+    (b.region && b.region.toLowerCase().includes(beanSearchQuery.toLowerCase())) ||
+    (b.farm && b.farm.toLowerCase().includes(beanSearchQuery.toLowerCase())) ||
+    (b.producer && b.producer.toLowerCase().includes(beanSearchQuery.toLowerCase())) ||
     (b.variety && b.variety.toLowerCase().includes(beanSearchQuery.toLowerCase()))
   );
 
@@ -32,7 +35,7 @@ export default function BeansTab({
       <div className="relative">
         <input
           type="text"
-          placeholder="Buscar por nombre, origen, tostaduría..."
+          placeholder="Buscar por nombre, origen, finca, productor, tostaduría..."
           value={beanSearchQuery}
           onChange={(e) => setBeanSearchQuery(e.target.value)}
           className="w-full px-3 py-2 pl-9 border border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50 dark:bg-slate-800/40 text-slate-900 dark:text-slate-100 text-xs focus:outline-none focus:ring-1 focus:ring-amber-500"
@@ -101,6 +104,21 @@ export default function BeansTab({
                     📍 {bean.origin}
                   </span>
                 )}
+                {bean.region && (
+                  <span className="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded text-[10px] font-semibold">
+                    🗺️ Región: {bean.region}
+                  </span>
+                )}
+                {bean.farm && (
+                  <span className="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded text-[10px] font-semibold">
+                    🏡 Finca: {bean.farm}
+                  </span>
+                )}
+                {bean.producer && (
+                  <span className="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded text-[10px] font-semibold">
+                    🧑‍🌾 Productor: {bean.producer}
+                  </span>
+                )}
                 {bean.process && (
                   <span className="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded text-[10px] font-semibold">
                     ⚙️ {bean.process}
@@ -119,6 +137,11 @@ export default function BeansTab({
                 {bean.altitude && (
                   <span className="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded text-[10px] font-semibold">
                     🏔️ {bean.altitude}
+                  </span>
+                )}
+                {bean.harvest_year && (
+                  <span className="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded text-[10px] font-semibold">
+                    🌾 Cosecha: {bean.harvest_year}
                   </span>
                 )}
                 {bean.sca_score && (

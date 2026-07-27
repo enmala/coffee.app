@@ -144,10 +144,14 @@ export default function RecipeSummaryModal({
                     <div className="px-3 pb-3 pt-1.5 border-t border-amber-200/10 dark:border-amber-900/10 space-y-2 text-[11px] animate-fade-in">
                       <div className="flex flex-wrap gap-1">
                         {bean.origin && <span className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[9px] px-1.5 py-0.5 rounded font-medium text-slate-600 dark:text-slate-300">📍 {bean.origin}</span>}
+                        {bean.region && <span className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[9px] px-1.5 py-0.5 rounded font-medium text-slate-600 dark:text-slate-300">🗺️ {bean.region}</span>}
+                        {bean.farm && <span className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[9px] px-1.5 py-0.5 rounded font-medium text-slate-600 dark:text-slate-300">🏡 {bean.farm}</span>}
+                        {bean.producer && <span className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[9px] px-1.5 py-0.5 rounded font-medium text-slate-600 dark:text-slate-300">🧑‍🌾 {bean.producer}</span>}
                         {bean.process && <span className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[9px] px-1.5 py-0.5 rounded font-medium text-slate-600 dark:text-slate-300">⚙️ {bean.process}</span>}
                         {bean.roast_level && <span className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[9px] px-1.5 py-0.5 rounded font-medium text-slate-600 dark:text-slate-300">🔥 Tueste {bean.roast_level}</span>}
                         {bean.variety && <span className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[9px] px-1.5 py-0.5 rounded font-medium text-slate-600 dark:text-slate-300">🌱 {bean.variety}</span>}
                         {bean.altitude && <span className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[9px] px-1.5 py-0.5 rounded font-medium text-slate-600 dark:text-slate-300">🏔️ {bean.altitude}</span>}
+                        {bean.harvest_year && <span className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[9px] px-1.5 py-0.5 rounded font-medium text-slate-600 dark:text-slate-300">🌾 {bean.harvest_year}</span>}
                         {bean.sca_score && <span className="bg-emerald-100/50 dark:bg-emerald-950/30 text-emerald-800 dark:text-emerald-400 text-[9px] px-1.5 py-0.5 rounded font-bold border border-emerald-250/10">🏆 SCA {bean.sca_score}</span>}
                       </div>
                       {bean.tasting_notes && bean.tasting_notes.length > 0 && (

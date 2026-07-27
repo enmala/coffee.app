@@ -47,7 +47,7 @@ export default function BeanFormModal({
             />
           </div>
 
-          {/* Tostaduría y Origen */}
+          {/* Tostaduría y País/Origen */}
           <div className="grid grid-cols-2 gap-2">
             <div className="space-y-1">
               <label htmlFor="bean-roaster-input" className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Tostaduría</label>
@@ -65,7 +65,7 @@ export default function BeanFormModal({
               <input
                 id="bean-origin-input"
                 type="text"
-                placeholder="Ej: Etiopía, Huila..."
+                placeholder="Ej: Etiopía, Colombia..."
                 value={newBean.origin}
                 onChange={(e) => setNewBean({ ...newBean, origin: e.target.value })}
                 className="w-full p-2 border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:outline-none focus:ring-1 focus:ring-amber-500"
@@ -73,19 +73,60 @@ export default function BeanFormModal({
             </div>
           </div>
 
-          {/* Variedad y Proceso */}
+          {/* Región y Finca */}
           <div className="grid grid-cols-2 gap-2">
+            <div className="space-y-1">
+              <label htmlFor="bean-region-input" className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Región</label>
+              <input
+                id="bean-region-input"
+                type="text"
+                placeholder="Ej: Sidama, Huila, Tarrazú..."
+                value={newBean.region || ''}
+                onChange={(e) => setNewBean({ ...newBean, region: e.target.value })}
+                className="w-full p-2 border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:outline-none focus:ring-1 focus:ring-amber-500"
+              />
+            </div>
+            <div className="space-y-1">
+              <label htmlFor="bean-farm-input" className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Finca</label>
+              <input
+                id="bean-farm-input"
+                type="text"
+                placeholder="Ej: Finca El Paraíso..."
+                value={newBean.farm || ''}
+                onChange={(e) => setNewBean({ ...newBean, farm: e.target.value })}
+                className="w-full p-2 border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:outline-none focus:ring-1 focus:ring-amber-500"
+              />
+            </div>
+          </div>
+
+          {/* Productor y Variedad */}
+          <div className="grid grid-cols-2 gap-2">
+            <div className="space-y-1">
+              <label htmlFor="bean-producer-input" className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Productor</label>
+              <input
+                id="bean-producer-input"
+                type="text"
+                placeholder="Ej: Diego Bermúdez..."
+                value={newBean.producer || ''}
+                onChange={(e) => setNewBean({ ...newBean, producer: e.target.value })}
+                className="w-full p-2 border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:outline-none focus:ring-1 focus:ring-amber-500"
+              />
+            </div>
             <div className="space-y-1">
               <label htmlFor="bean-variety-input" className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Variedad</label>
               <input
                 id="bean-variety-input"
                 type="text"
-                placeholder="Ej: Caturra, Castillo, Heirloom..."
+                placeholder="Ej: Caturra, Castillo, Geisha..."
                 value={newBean.variety}
                 onChange={(e) => setNewBean({ ...newBean, variety: e.target.value })}
                 className="w-full p-2 border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:outline-none focus:ring-1 focus:ring-amber-500"
               />
             </div>
+          </div>
+
+          {/* Proceso de Beneficio y Nivel de Tueste */}
+          <div className="grid grid-cols-2 gap-2">
             <div className="space-y-1">
               <label htmlFor="bean-process-input" className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Proceso de Beneficio</label>
               <select
@@ -102,10 +143,6 @@ export default function BeanFormModal({
                 <option value="Otro">Otro / Mezcla</option>
               </select>
             </div>
-          </div>
-
-          {/* Nivel de Tueste y Fecha de Tueste */}
-          <div className="grid grid-cols-2 gap-2">
             <div className="space-y-1">
               <label htmlFor="bean-roast-level-input" className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Nivel de Tueste</label>
               <select
@@ -120,6 +157,21 @@ export default function BeanFormModal({
                 <option value="Medio-Oscuro">Medio-Oscuro</option>
                 <option value="Oscuro">Oscuro</option>
               </select>
+            </div>
+          </div>
+
+          {/* Año de Cosecha y Fecha de Tueste */}
+          <div className="grid grid-cols-2 gap-2">
+            <div className="space-y-1">
+              <label htmlFor="bean-harvest-year-input" className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Año de Cosecha</label>
+              <input
+                id="bean-harvest-year-input"
+                type="text"
+                placeholder="Ej: 2025 o 2025/2026..."
+                value={newBean.harvest_year || ''}
+                onChange={(e) => setNewBean({ ...newBean, harvest_year: e.target.value })}
+                className="w-full p-2 border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:outline-none focus:ring-1 focus:ring-amber-500"
+              />
             </div>
             <div className="space-y-1">
               <label htmlFor="bean-roast-date-input" className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Fecha de Tueste</label>

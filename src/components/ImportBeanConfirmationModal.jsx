@@ -65,6 +65,24 @@ export default function ImportBeanConfirmationModal({ bean, existingBeans = [], 
                   <span className="text-sm font-bold text-zinc-800 dark:text-zinc-200 truncate block">📍 {bean.origin}</span>
                 </div>
               )}
+              {bean.region && (
+                <div className="p-3 bg-zinc-50 dark:bg-zinc-800/40 rounded-xl border border-zinc-150 dark:border-zinc-800/80">
+                  <span className="block text-[10px] text-zinc-400 dark:text-zinc-500 font-semibold uppercase">Región</span>
+                  <span className="text-sm font-bold text-zinc-800 dark:text-zinc-200 truncate block">🗺️ {bean.region}</span>
+                </div>
+              )}
+              {bean.farm && (
+                <div className="p-3 bg-zinc-50 dark:bg-zinc-800/40 rounded-xl border border-zinc-150 dark:border-zinc-800/80">
+                  <span className="block text-[10px] text-zinc-400 dark:text-zinc-500 font-semibold uppercase">Finca</span>
+                  <span className="text-sm font-bold text-zinc-800 dark:text-zinc-200 truncate block">🏡 {bean.farm}</span>
+                </div>
+              )}
+              {bean.producer && (
+                <div className="p-3 bg-zinc-50 dark:bg-zinc-800/40 rounded-xl border border-zinc-150 dark:border-zinc-800/80">
+                  <span className="block text-[10px] text-zinc-400 dark:text-zinc-500 font-semibold uppercase">Productor</span>
+                  <span className="text-sm font-bold text-zinc-800 dark:text-zinc-200 truncate block">🧑‍🌾 {bean.producer}</span>
+                </div>
+              )}
               {bean.process && (
                 <div className="p-3 bg-zinc-50 dark:bg-zinc-800/40 rounded-xl border border-zinc-150 dark:border-zinc-800/80">
                   <span className="block text-[10px] text-zinc-400 dark:text-zinc-500 font-semibold uppercase">Proceso</span>
@@ -87,6 +105,12 @@ export default function ImportBeanConfirmationModal({ bean, existingBeans = [], 
                 <div className="p-3 bg-zinc-50 dark:bg-zinc-800/40 rounded-xl border border-zinc-150 dark:border-zinc-800/80">
                   <span className="block text-[10px] text-zinc-400 dark:text-zinc-500 font-semibold uppercase">Altitud</span>
                   <span className="text-sm font-bold text-zinc-800 dark:text-zinc-200 truncate block">🏔️ {bean.altitude}</span>
+                </div>
+              )}
+              {bean.harvest_year && (
+                <div className="p-3 bg-zinc-50 dark:bg-zinc-800/40 rounded-xl border border-zinc-150 dark:border-zinc-800/80">
+                  <span className="block text-[10px] text-zinc-400 dark:text-zinc-500 font-semibold uppercase">Año Cosecha</span>
+                  <span className="text-sm font-bold text-zinc-800 dark:text-zinc-200 truncate block">🌾 {bean.harvest_year}</span>
                 </div>
               )}
               {bean.sca_score && (

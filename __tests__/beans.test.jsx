@@ -33,7 +33,11 @@ describe('Coffee Beans Management Tests', () => {
     // Verify the example bean Sidamo is displayed
     expect(screen.getByText('Etiopía Sidamo')).toBeInTheDocument();
     expect(screen.getByText('Tostaduría Artesanal')).toBeInTheDocument();
-    expect(screen.getByText('📍 Etiopía (Sidama)')).toBeInTheDocument();
+    expect(screen.getByText('📍 Etiopía')).toBeInTheDocument();
+    expect(screen.getByText('🗺️ Región: Sidama')).toBeInTheDocument();
+    expect(screen.getByText('🏡 Finca: Finca Shantawene')).toBeInTheDocument();
+    expect(screen.getByText('🧑‍🌾 Productor: Daye Bensa')).toBeInTheDocument();
+    expect(screen.getByText('🌾 Cosecha: 2025')).toBeInTheDocument();
     expect(screen.getByText('⚙️ Lavado')).toBeInTheDocument();
     expect(screen.getByText('🔥 Tueste Claro')).toBeInTheDocument();
     expect(screen.getByText('🌱 Heirloom')).toBeInTheDocument();
@@ -55,7 +59,11 @@ describe('Coffee Beans Management Tests', () => {
     // Fill the form
     fireEvent.change(screen.getByLabelText('Nombre del Grano*'), { target: { value: 'Colombia Supremo' } });
     fireEvent.change(screen.getByLabelText('Tostaduría'), { target: { value: 'Supracafé' } });
-    fireEvent.change(screen.getByLabelText('País/Origen'), { target: { value: 'Cauca' } });
+    fireEvent.change(screen.getByLabelText('País/Origen'), { target: { value: 'Colombia' } });
+    fireEvent.change(screen.getByLabelText('Región'), { target: { value: 'Cauca' } });
+    fireEvent.change(screen.getByLabelText('Finca'), { target: { value: 'La Esperanza' } });
+    fireEvent.change(screen.getByLabelText('Productor'), { target: { value: 'Juan Valdez' } });
+    fireEvent.change(screen.getByLabelText('Año de Cosecha'), { target: { value: '2026' } });
     fireEvent.change(screen.getByLabelText('Variedad'), { target: { value: 'Castillo' } });
     fireEvent.change(screen.getByLabelText('Proceso de Beneficio'), { target: { value: 'Natural' } });
     fireEvent.change(screen.getByLabelText('Nivel de Tueste'), { target: { value: 'Medio' } });
@@ -87,7 +95,11 @@ describe('Coffee Beans Management Tests', () => {
     // Verify new bean is rendered
     expect(screen.getByText('Colombia Supremo')).toBeInTheDocument();
     expect(screen.getByText('Supracafé')).toBeInTheDocument();
-    expect(screen.getByText('📍 Cauca')).toBeInTheDocument();
+    expect(screen.getByText('📍 Colombia')).toBeInTheDocument();
+    expect(screen.getByText('🗺️ Región: Cauca')).toBeInTheDocument();
+    expect(screen.getByText('🏡 Finca: La Esperanza')).toBeInTheDocument();
+    expect(screen.getByText('🧑‍🌾 Productor: Juan Valdez')).toBeInTheDocument();
+    expect(screen.getByText('🌾 Cosecha: 2026')).toBeInTheDocument();
     expect(screen.getByText('⚙️ Natural')).toBeInTheDocument();
     expect(screen.getByText('🔥 Tueste Medio')).toBeInTheDocument();
     expect(screen.getByText('🌱 Castillo')).toBeInTheDocument();

@@ -46,6 +46,7 @@ Los agentes de IA deben leer este archivo para saber qué implementar a continua
 ---
 
 ## ✅ Completado
+- [x] Reemplazo de IDs basados en `Date.now()` por `crypto.randomUUID()` en recetas, granos, beans importados e historial para eliminar riesgo de colisión (`v1.11.0`).
 - [x] Unificación de la paleta de color de fondo en modo oscuro (Slate) para los modales de compartir e importar recetas y granos (`v1.10.2`).
 - [x] Corrección de la expansión del título de receta en el modal de resumen activando el botón de alternancia chevron para nombres largos y aplicando ajuste multilínica (`v1.10.1`).
 - [x] Ampliación de la ficha de granos de café agregando campos para región, finca, productor y año de cosecha junto con la fecha de tueste (v1.10.0).
@@ -75,11 +76,57 @@ Los agentes de IA deben leer este archivo para saber qué implementar a continua
 - [x] Mejoras técnicas de UX/UI: Contraste mejorado en modo oscuro, estandarización de tamaños de fuente, reemplazo de emojis con SVG, mejora de estados deshabilitados y optimización de overflow en listas (v1.5.2).
 - [x] Unificación de importación de JSON (recetas y granos) a un único botón en Configuración con detección automática de tipo de archivo (v1.6.0).
 - [x] Rediseño estético y mejora de representatividad de los iconos SVG en el header y los selectores de pestañas (v1.6.1).
-- [x] Ocultamiento dinámico del botón de donaciones Ko-fi en el contexto de Android TWA para cumplimiento con las políticas de Google Play Store (v1.6.2).
+- [x] Ocultamiento dinámico del botón de donaciones Ko-fi en el contexto de Android TWA para cumplimento con las políticas de Google Play Store (v1.6.2).
 - [x] Inclusión de la receta predeterminada de Moka italiana estándar a la lista de recetas predeterminadas de la app (v1.6.3).
 - [x] Corrección de la orientación de los iconos de los botones avanzar/retroceder en la vista del temporizador y ocultamiento visual al llegar al primer/último paso (v1.6.4).
 - [x] Actualización del nivel de compatibilidad objetivo de Android a API 36 (Android 16) en la configuración TWA y Gradle (v1.6.5).
 - [x] Refactorización de las listas de constantes predeterminadas (DEFAULT_RECIPES, DEFAULT_BEANS, DEFAULT_TASTING_NOTES) a src/constants/defaultData.js e inclusión de la receta por defecto para Prensa Francesa (Técnica Hoffmann) (v1.6.6).
 - [x] Refactorización modular de `App.jsx` extrayendo componentes modales (`AboutModal`, `SettingsModal`, `RecipeSummaryModal`, `RecipeFormModal`, `BeanFormModal`) a `src/components/modals/` y componentes de pestañas (`RecipesTab`, `BeansTab`, `HistoryTab`) a `src/components/tabs/`, reduciendo la complejidad del archivo principal sin alterar la suite de tests (v1.6.7).
+- [x] Configuración de RSA JWS para filtrado de instalaciones TWA en Google Play (v1.3.0).
+- [x] Pruebas de accesibilidad y revisión de accesibilidad en modales y vistas de resumen (v1.2.0).
+- [x] Sistema de favoritos con UI mejorada para el modal de resumen y formularios (v1.1.0).
+- [x] Mejora de navegación con API History y manejo de estados de vistas (v1.0.0).
+- [x] Implementación inicial: localStorage, agrupamiento por métodos, resumen de receta, temporizador por etapas, historial, temas, import/export JSON y configuracion PWA.
+
+
+---
+
+## 🛠️ Deuda Técnica
+
+- [ ] **Extraer lógica de `App.jsx` a custom hooks**
+  - *Etiquetas:* [Prioridad: Media] [Complejidad: Media]
+  - *Descripción:* Mover la lógica de recipes, beans, history y navigation a hooks personalizados (`useRecipes`, `useBeans`, `useHistory`, `useNavigation`) para reducir la complejidad de `App.jsx`.
+
+- [ ] **Aumentar cobertura de `RecipeSummaryModal` y `coffeeUtils`**
+  - *Etiquetas:* [Prioridad: Media] [Complejidad: Media]
+  - *Descripción:* `RecipeSummaryModal` está en 60% statements / 39.39% branches. `coffeeUtils.jsx` está en 71.42% statements. Ambas jalan el promedio y dejan poco margen ante futuros cambios.
+
+- [ ] **Eliminar emojis inconsistentes y usar solo iconos SVG**
+  - *Etiquetas:* [Prioridad: Baja] [Complejidad: Baja]
+  - *Descripción:* Se mezclan emojis (🗑️, ⚠️, ✅) con iconos SVG. Definir iconos SVG para acciones de confirmación/eliminación o usar emojis en todo para consistencia visual.
+
+- [ ] **Corregir clases Tailwind no estándar**
+  - *Etiquetas:* [Prioridad: Media] [Complejidad: Baja]
+  - *Descripción:* Aparecen clases como `text-slate-655`, `dark:bg-emerald-650`, `dark:text-slate-450`, `dark:hover:bg-red-750`. Usar la paleta estándar de Tailwind (50-950) para evitar errores de compilación o suciedad en el bundle.
+
+- [ ] **Agregar try/catch en operaciones de `localStorage`**
+  - *Etiquetas:* [Prioridad: Alta] [Complejidad: Media]
+  - *Descripción:* Los usos directos de `localStorage.setItem` / `JSON.parse` sin manejo de errores pueden romper la app si el storage está lleno, en modo privado o con datos corruptos.
+
+- [ ] **Definir esquema de datos y validación al cargar**
+  - *Etiquetas:* [Prioridad: Alta] [Complejidad: Media]
+  - *Descripción:* Antes de usar `JSON.parse(saved)`, validar que la estructura tenga los campos esperados. Si los datos están corruptos, caer a defaults en lugar de crashear.
+
+- [ ] **Usar `useCallback` en handlers pasados a componentes hijos**
+  - *Etiquetas:* [Prioridad: Media] [Complejidad: Baja]
+  - *Descripción:* Funciones como `handleSaveRecipe`, `handleEditRecipe`, `handleDeleteRecipe`, etc., se recrean en cada render. Memorizarlas con `useCallback` evitaría re-renderizados innecesarios en `RecipesTab`, `BeansTab`, modales y tab components.
+
+- [ ] **Refactorizar patrones repetidos de vibración en `TimerComponent`**
+  - *Etiquetas:* [Prioridad: Baja] [Complejidad: Baja]
+  - *Descripción:* La lógica de selección de patrón de vibración se repite 3 veces. Extraer a una función auxiliar como `getVibrationPattern(type, isCompletion)`.
+
+- [ ] **Centralizar configuración de tamaños y espaciados**
+  - *Etiquetas:* [Prioridad: Baja] [Complejidad: Media]
+  - *Descripción:* Los tamaños de fuente y espaciados están hardcodeados en cada componente. Considerar un archivo `src/utils/breakpoints.js` o variables CSS para facilitar ajustes de responsive.
 
 

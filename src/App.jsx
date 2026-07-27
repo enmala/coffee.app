@@ -600,7 +600,7 @@ export default function App() {
     } else {
       const addedBean = {
         ...beanData,
-        id: `bean-${Date.now()}`
+        id: `bean-${crypto.randomUUID()}`
       };
       setBeans(prev => [addedBean, ...prev]);
       showAlert("Grano de café guardado correctamente.", "success");
@@ -757,7 +757,7 @@ export default function App() {
   const confirmImportRecipe = () => {
     if (!recipeToImport) return;
 
-    const uniqueId = `imported-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+    const uniqueId = `imported-${crypto.randomUUID()}`;
     let recipeName = recipeToImport.name.trim();
 
     const nameExists = recipes.some((r) => r.name.toLowerCase() === recipeName.toLowerCase());
@@ -787,7 +787,7 @@ export default function App() {
   const confirmImportBean = () => {
     if (!beanToImport) return;
 
-    const uniqueId = `imported-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+    const uniqueId = `imported-${crypto.randomUUID()}`;
     let beanName = beanToImport.name.trim();
 
     const nameExists = beans.some((b) => b.name.toLowerCase() === beanName.toLowerCase());
@@ -1044,7 +1044,7 @@ export default function App() {
       const created = {
         is_favorite: false,
         ...recipeData,
-        id: `custom-${Date.now()}`
+        id: `custom-${crypto.randomUUID()}`
       };
       setRecipes((prev) => [...prev, created]);
       setSaveSuccessMessage({
@@ -1170,7 +1170,7 @@ export default function App() {
                   const totalWater = activeRecipe.steps.reduce((acc, s) => acc + s.water_g, 0);
                   const associatedBean = activeRecipe.bean_id ? beans.find(b => b.id === activeRecipe.bean_id) : null;
                   const newEntry = {
-                    id: `history-${Date.now()}`,
+                    id: `history-${crypto.randomUUID()}`,
                     recipeId: activeRecipe.id,
                     recipeName: activeRecipe.name,
                     method: activeRecipe.method,

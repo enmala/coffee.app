@@ -1420,4 +1420,30 @@ describe('App Component', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Guardar Receta' }));
     expect(screen.getByText('Aeropress Tradicional (Copia 2)')).toBeInTheDocument();
   });
+
+  test('expands and collapses long recipe title with chevron button in RecipeSummaryModal', () => {
+    render(<App />);
+
+    // Open summary for "Método 4:6 (Tetsu Kasuya)" (26 chars long)
+    const card = screen.getByText('Método 4:6 (Tetsu Kasuya)').closest('.group');
+    const summaryBtn = card.querySelector('button[title="Ver Resumen"]');
+    fireEvent.click(summaryBtn);
+
+    // Chevron toggle should be present
+    const expandBtn = screen.getByTitle('Expandir nombre');
+    expect(expandBtn).toBeInTheDocument();
+
+    const titleHeader = screen.getByRole('heading', { level: 3, name: 'Método 4:6 (Tetsu Kasuya)' });
+    expect(titleHeader).toHaveClass('truncate');
+
+    // Click expand
+    fireEvent.click(expandBtn);
+    expect(screen.getByTitle('Contraer nombre')).toBeInTheDocument();
+    expect(titleHeader).toHaveClass('whitespace-normal');
+
+    // Click collapse
+    fireEvent.click(screen.getByTitle('Contraer nombre'));
+    expect(screen.getByTitle('Expandir nombre')).toBeInTheDocument();
+    expect(titleHeader).toHaveClass('truncate');
+  });
 });

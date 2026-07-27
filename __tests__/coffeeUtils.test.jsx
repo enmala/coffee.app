@@ -152,7 +152,11 @@ describe('coffeeUtils', () => {
     const testBean = {
       name: 'Geisha de Panamá',
       roaster: 'Specialty Roasters',
-      origin: 'Boquete, Panamá',
+      origin: 'Panamá',
+      region: 'Chiriquí',
+      farm: 'Finca Esmeralda',
+      producer: 'Hacienda La Esmeralda',
+      harvest_year: '2025',
       process: 'Honey',
       variety: 'Geisha',
       roast_level: 'Claro',
@@ -172,6 +176,10 @@ describe('coffeeUtils', () => {
       expect(decompressed.name).toBe(testBean.name);
       expect(decompressed.roaster).toBe(testBean.roaster);
       expect(decompressed.origin).toBe(testBean.origin);
+      expect(decompressed.region).toBe(testBean.region);
+      expect(decompressed.farm).toBe(testBean.farm);
+      expect(decompressed.producer).toBe(testBean.producer);
+      expect(decompressed.harvest_year).toBe(testBean.harvest_year);
       expect(decompressed.process).toBe(testBean.process);
       expect(decompressed.variety).toBe(testBean.variety);
       expect(decompressed.roast_level).toBe(testBean.roast_level);

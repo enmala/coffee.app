@@ -46,6 +46,7 @@ Los agentes de IA deben leer este archivo para saber qué implementar a continua
 ---
 
 ## ✅ Completado
+- [x] Ampliación de la ficha de granos de café agregando campos para región, finca, productor y año de cosecha junto con la fecha de tueste (v1.10.0).
 - [x] Función para duplicar/copiar recetas como base para crear nuevas variaciones pre-cargando el formulario de receta (v1.9.2).
 - [x] Mejora de contraste y legibilidad del distintivo del método de extracción en la vista del temporizador para el modo oscuro (v1.9.1).
 - [x] Soporte para recetas de té (Matcha, Sencha, Gongfu, etc.), temporizador con flujo para pasos manuales untimed (`duration_s: 0`), iconografía adaptativa (🍵 vs ☕), etiquetas dinámicas de insumo/presentación y recetas predeterminadas de Té Verde y Matcha (v1.9.0).

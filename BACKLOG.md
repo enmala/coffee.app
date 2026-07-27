@@ -46,6 +46,7 @@ Los agentes de IA deben leer este archivo para saber qué implementar a continua
 ---
 
 ## ✅ Completado
+- [x] Corrección de clases Tailwind no estándar reemplazando valores fuera de la paleta oficial por equivalentes estándar (50-950) en 11 archivos (`v1.11.2`).
 - [x] Manejo defensivo con `try/catch` en operaciones de `localStorage` y validación de esquemas de datos al cargar mediante el módulo `storageUtils` (`v1.11.1`).
 - [x] Reemplazo de IDs basados en `Date.now()` por `crypto.randomUUID()` en recetas, granos, beans importados e historial para eliminar riesgo de colisión (`v1.11.0`).
 - [x] Unificación de la paleta de color de fondo en modo oscuro (Slate) para los modales de compartir e importar recetas y granos (`v1.10.2`).
@@ -106,7 +107,7 @@ Los agentes de IA deben leer este archivo para saber qué implementar a continua
   - *Etiquetas:* [Prioridad: Baja] [Complejidad: Baja]
   - *Descripción:* Se mezclan emojis (🗑️, ⚠️, ✅) con iconos SVG. Definir iconos SVG para acciones de confirmación/eliminación o usar emojis en todo para consistencia visual.
 
-- [ ] **Corregir clases Tailwind no estándar**
+- [x] **Corregir clases Tailwind no estándar**
   - *Etiquetas:* [Prioridad: Media] [Complejidad: Baja]
   - *Descripción:* Aparecen clases como `text-slate-655`, `dark:bg-emerald-650`, `dark:text-slate-450`, `dark:hover:bg-red-750`. Usar la paleta estándar de Tailwind (50-950) para evitar errores de compilación o suciedad en el bundle.
 

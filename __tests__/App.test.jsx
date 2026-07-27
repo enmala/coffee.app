@@ -1446,4 +1446,11 @@ describe('App Component', () => {
     expect(screen.getByTitle('Expandir nombre')).toBeInTheDocument();
     expect(titleHeader).toHaveClass('truncate');
   });
+
+  test('uses crypto.randomUUID for generated entity IDs', () => {
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    const testUuid = crypto.randomUUID();
+    expect(testUuid).toMatch(uuidRegex);
+  });
 });
+

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { decompressRecipe, decompressBean } from './utils/coffeeUtils';
+import { safeGetItem, safeSetItem } from './utils/storageUtils';
 import TimerComponent from './components/TimerComponent';
 import ShareModal from './components/ShareModal';
 import ShareBeanModal from './components/ShareBeanModal';
@@ -18,47 +19,39 @@ import { DEFAULT_RECIPES, DEFAULT_BEANS, DEFAULT_TASTING_NOTES } from './constan
 
 export default function App() {
   const [recipes, setRecipes] = useState(() => {
-    const saved = localStorage.getItem('coffee_recipes_v1');
-    return saved ? JSON.parse(saved) : DEFAULT_RECIPES;
+    return safeGetItem('coffee_recipes_v1', DEFAULT_RECIPES, Array.isArray);
   });
 
   const [beans, setBeans] = useState(() => {
-    const saved = localStorage.getItem('coffee_beans_v1');
-    return saved ? JSON.parse(saved) : DEFAULT_BEANS;
+    return safeGetItem('coffee_beans_v1', DEFAULT_BEANS, Array.isArray);
   });
 
   const [isAboutOpen, setIsAboutOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   const [soundEnabled, setSoundEnabled] = useState(() => {
-    const saved = localStorage.getItem('coffee_sound_enabled');
-    return saved !== null ? JSON.parse(saved) : true;
+    return safeGetItem('coffee_sound_enabled', true, (v) => typeof v === 'boolean');
   });
 
   const [vibrationEnabled, setVibrationEnabled] = useState(() => {
-    const saved = localStorage.getItem('coffee_vibration_enabled');
-    return saved !== null ? JSON.parse(saved) : true;
+    return safeGetItem('coffee_vibration_enabled', true, (v) => typeof v === 'boolean');
   });
 
   const [vibrationType, setVibrationType] = useState(() => {
-    const saved = localStorage.getItem('coffee_vibration_type');
-    return saved || 'normal';
+    return safeGetItem('coffee_vibration_type', 'normal', (v) => typeof v === 'string');
   });
 
   const [voiceGuidanceEnabled, setVoiceGuidanceEnabled] = useState(() => {
-    const saved = localStorage.getItem('coffee_voice_guidance_enabled');
-    return saved !== null ? JSON.parse(saved) : false;
+    return safeGetItem('coffee_voice_guidance_enabled', false, (v) => typeof v === 'boolean');
   });
 
   const [theme, setTheme] = useState(() => {
-    const saved = localStorage.getItem('theme');
-    if (saved) return saved;
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    const defaultTheme = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    return safeGetItem('theme', defaultTheme, (v) => typeof v === 'string');
   });
 
   const [collapsedMethods, setCollapsedMethods] = useState(() => {
-    const saved = localStorage.getItem('collapsed_methods_v1');
-    return saved ? JSON.parse(saved) : {};
+    return safeGetItem('collapsed_methods_v1', {}, (v) => typeof v === 'object' && v !== null && !Array.isArray(v));
   });
 
   const [activeRecipe, setActiveRecipe] = useState(null);
@@ -95,8 +88,7 @@ export default function App() {
 
   const [activeTab, setActiveTab] = useState('recipes'); // 'recipes', 'beans', or 'history'
   const [history, setHistory] = useState(() => {
-    const saved = localStorage.getItem('coffee_history_v1');
-    return saved ? JSON.parse(saved) : [];
+    return safeGetItem('coffee_history_v1', [], Array.isArray);
   });
   const [editingHistoryId, setEditingHistoryId] = useState(null);
   const [editingHistoryNotes, setEditingHistoryNotes] = useState(null);
@@ -130,8 +122,7 @@ export default function App() {
   const [beanToDelete, setBeanToDelete] = useState(null);
 
   const [autoLogEnabled, setAutoLogEnabled] = useState(() => {
-    const saved = localStorage.getItem('auto_log_enabled');
-    return saved !== null ? JSON.parse(saved) : true;
+    return safeGetItem('auto_log_enabled', true, (v) => typeof v === 'boolean');
   });
 
   const [newRecipe, setNewRecipe] = useState({
@@ -288,23 +279,23 @@ export default function App() {
   }
 
   useEffect(() => {
-    localStorage.setItem('coffee_beans_v1', JSON.stringify(beans));
+    safeSetItem('coffee_beans_v1', beans);
   }, [beans]);
 
   useEffect(() => {
-    localStorage.setItem('coffee_sound_enabled', JSON.stringify(soundEnabled));
+    safeSetItem('coffee_sound_enabled', soundEnabled);
   }, [soundEnabled]);
 
   useEffect(() => {
-    localStorage.setItem('coffee_vibration_enabled', JSON.stringify(vibrationEnabled));
+    safeSetItem('coffee_vibration_enabled', vibrationEnabled);
   }, [vibrationEnabled]);
 
   useEffect(() => {
-    localStorage.setItem('coffee_vibration_type', vibrationType);
+    safeSetItem('coffee_vibration_type', vibrationType);
   }, [vibrationType]);
 
   useEffect(() => {
-    localStorage.setItem('coffee_voice_guidance_enabled', JSON.stringify(voiceGuidanceEnabled));
+    safeSetItem('coffee_voice_guidance_enabled', voiceGuidanceEnabled);
   }, [voiceGuidanceEnabled]);
 
   useEffect(() => {
@@ -313,11 +304,11 @@ export default function App() {
     } else {
       document.documentElement.classList.remove('dark');
     }
-    localStorage.setItem('theme', theme);
+    safeSetItem('theme', theme);
   }, [theme]);
 
   useEffect(() => {
-    localStorage.setItem('collapsed_methods_v1', JSON.stringify(collapsedMethods));
+    safeSetItem('collapsed_methods_v1', collapsedMethods);
   }, [collapsedMethods]);
 
   const toggleMethodCollapse = (method) => {
@@ -525,11 +516,11 @@ export default function App() {
 
 
   useEffect(() => {
-    localStorage.setItem('coffee_history_v1', JSON.stringify(history));
+    safeSetItem('coffee_history_v1', history);
   }, [history]);
 
   useEffect(() => {
-    localStorage.setItem('auto_log_enabled', JSON.stringify(autoLogEnabled));
+    safeSetItem('auto_log_enabled', autoLogEnabled);
   }, [autoLogEnabled]);
 
   useEffect(() => {
@@ -700,7 +691,7 @@ export default function App() {
 
 
   useEffect(() => {
-    localStorage.setItem('coffee_recipes_v1', JSON.stringify(recipes));
+    safeSetItem('coffee_recipes_v1', recipes);
   }, [recipes]);
 
   const handleUnifiedImportJson = (e) => {
@@ -1064,7 +1055,7 @@ export default function App() {
       const updated = prevRecipes.map((r) =>
         r.id === recipeId ? { ...r, is_favorite: !r.is_favorite } : r
       );
-      localStorage.setItem('coffee_recipes_v1', JSON.stringify(updated));
+      safeSetItem('coffee_recipes_v1', updated);
       return updated;
     });
 

@@ -46,6 +46,7 @@ Los agentes de IA deben leer este archivo para saber qué implementar a continua
 ---
 
 ## ✅ Completado
+- [x] Manejo defensivo con `try/catch` en operaciones de `localStorage` y validación de esquemas de datos al cargar mediante el módulo `storageUtils` (`v1.11.1`).
 - [x] Reemplazo de IDs basados en `Date.now()` por `crypto.randomUUID()` en recetas, granos, beans importados e historial para eliminar riesgo de colisión (`v1.11.0`).
 - [x] Unificación de la paleta de color de fondo en modo oscuro (Slate) para los modales de compartir e importar recetas y granos (`v1.10.2`).
 - [x] Corrección de la expansión del título de receta en el modal de resumen activando el botón de alternancia chevron para nombres largos y aplicando ajuste multilínica (`v1.10.1`).
@@ -108,14 +109,6 @@ Los agentes de IA deben leer este archivo para saber qué implementar a continua
 - [ ] **Corregir clases Tailwind no estándar**
   - *Etiquetas:* [Prioridad: Media] [Complejidad: Baja]
   - *Descripción:* Aparecen clases como `text-slate-655`, `dark:bg-emerald-650`, `dark:text-slate-450`, `dark:hover:bg-red-750`. Usar la paleta estándar de Tailwind (50-950) para evitar errores de compilación o suciedad en el bundle.
-
-- [ ] **Agregar try/catch en operaciones de `localStorage`**
-  - *Etiquetas:* [Prioridad: Alta] [Complejidad: Media]
-  - *Descripción:* Los usos directos de `localStorage.setItem` / `JSON.parse` sin manejo de errores pueden romper la app si el storage está lleno, en modo privado o con datos corruptos.
-
-- [ ] **Definir esquema de datos y validación al cargar**
-  - *Etiquetas:* [Prioridad: Alta] [Complejidad: Media]
-  - *Descripción:* Antes de usar `JSON.parse(saved)`, validar que la estructura tenga los campos esperados. Si los datos están corruptos, caer a defaults en lugar de crashear.
 
 - [ ] **Usar `useCallback` en handlers pasados a componentes hijos**
   - *Etiquetas:* [Prioridad: Media] [Complejidad: Baja]

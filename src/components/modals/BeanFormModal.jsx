@@ -26,7 +26,7 @@ export default function BeanFormModal({
           <button
             type="button"
             onClick={handleCancelBean}
-            className="text-slate-400 dark:text-slate-350 hover:text-slate-650 dark:hover:text-slate-200 text-xl font-bold leading-none cursor-pointer"
+            className="text-slate-400 dark:text-slate-300 hover:text-slate-600 dark:hover:text-slate-200 text-xl font-bold leading-none cursor-pointer"
           >
             &times;
           </button>
@@ -250,8 +250,8 @@ export default function BeanFormModal({
                       onClick={() => handleAddTastingNote(note)}
                       className={`px-2 py-0.5 rounded-full text-[9px] font-bold border transition cursor-pointer ${
                         isAdded
-                          ? 'bg-slate-105 dark:bg-slate-800 text-slate-350 dark:text-slate-600 border-slate-200 dark:border-slate-700/50'
-                          : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-655 dark:text-slate-300 hover:bg-amber-50 dark:hover:bg-amber-950/20'
+                          ? 'bg-slate-100 dark:bg-slate-800 text-slate-300 dark:text-slate-600 border-slate-200 dark:border-slate-700/50'
+                          : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-amber-50 dark:hover:bg-amber-950/20'
                       }`}
                     >
                       {note}
@@ -304,7 +304,7 @@ export default function BeanFormModal({
           <button
             type="button"
             onClick={handleCancelBean}
-            className="flex-1 py-2.5 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-655 dark:text-slate-350 rounded-xl font-bold text-sm transition cursor-pointer"
+            className="flex-1 py-2.5 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl font-bold text-sm transition cursor-pointer"
           >
             Cancelar
           </button>

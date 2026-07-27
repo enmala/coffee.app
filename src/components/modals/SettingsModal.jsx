@@ -28,7 +28,7 @@ export default function SettingsModal({
           </div>
           <button
             onClick={onClose}
-            className="text-slate-400 dark:text-slate-350 hover:text-slate-600 dark:hover:text-slate-200 text-xl font-bold leading-none cursor-pointer"
+            className="text-slate-400 dark:text-slate-300 hover:text-slate-600 dark:hover:text-slate-200 text-xl font-bold leading-none cursor-pointer"
           >
             &times;
           </button>
@@ -63,7 +63,7 @@ export default function SettingsModal({
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
                   voiceGuidanceEnabled
                     ? 'bg-amber-800 text-white hover:bg-amber-900'
-                    : 'bg-slate-200 dark:bg-slate-700 text-slate-650 dark:text-slate-400 hover:bg-slate-300 dark:hover:bg-slate-700'
+                    : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-300 dark:hover:bg-slate-700'
                 }`}
               >
                 {voiceGuidanceEnabled ? 'Activado' : 'Desactivado'}
@@ -83,7 +83,7 @@ export default function SettingsModal({
               className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
                 soundEnabled 
                   ? 'bg-amber-800 text-white hover:bg-amber-900' 
-                  : 'bg-slate-200 dark:bg-slate-700 text-slate-650 dark:text-slate-400 hover:bg-slate-300 dark:hover:bg-slate-700'
+                  : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-300 dark:hover:bg-slate-700'
               }`}
             >
               {soundEnabled ? 'Activado' : 'Desactivado'}
@@ -102,7 +102,7 @@ export default function SettingsModal({
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
                   vibrationEnabled 
                     ? 'bg-amber-800 text-white hover:bg-amber-900' 
-                    : 'bg-slate-200 dark:bg-slate-700 text-slate-650 dark:text-slate-400 hover:bg-slate-300 dark:hover:bg-slate-700'
+                    : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-300 dark:hover:bg-slate-700'
                 }`}
               >
                 {vibrationEnabled ? 'Activado' : 'Desactivado'}
@@ -158,7 +158,7 @@ export default function SettingsModal({
         <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
           <button
             onClick={onClose}
-            className="w-full py-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-650 dark:text-slate-300 rounded-xl font-bold text-xs transition cursor-pointer"
+            className="w-full py-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl font-bold text-xs transition cursor-pointer"
           >
             Cerrar
           </button>

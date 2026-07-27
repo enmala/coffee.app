@@ -61,7 +61,7 @@ export default function BeansTab({
                 <div>
                   <h3 className="font-bold text-slate-900 dark:text-white text-base leading-tight">{bean.name}</h3>
                   {bean.roaster && (
-                    <p className="text-xs text-slate-550 dark:text-slate-400 font-medium">{bean.roaster}</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">{bean.roaster}</p>
                   )}
                 </div>
                 
@@ -69,7 +69,7 @@ export default function BeansTab({
                 <div className="flex gap-2">
                   <button
                     onClick={() => onShareBean(bean.id)}
-                    className="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded transition text-slate-500 dark:text-slate-400 hover:text-amber-850 dark:hover:text-amber-500 cursor-pointer flex items-center justify-center"
+                    className="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded transition text-slate-500 dark:text-slate-400 hover:text-amber-800 dark:hover:text-amber-500 cursor-pointer flex items-center justify-center"
                     title="Compartir grano"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 overflow-visible">
@@ -164,7 +164,7 @@ export default function BeansTab({
 
               {/* Notas generales */}
               {bean.notes && (
-                <p className="text-xs text-slate-600 dark:text-slate-400 pt-1.5 border-t border-slate-150 dark:border-slate-800 italic">
+                <p className="text-xs text-slate-600 dark:text-slate-400 pt-1.5 border-t border-slate-100 dark:border-slate-800 italic">
                   "{bean.notes}"
                 </p>
               )}

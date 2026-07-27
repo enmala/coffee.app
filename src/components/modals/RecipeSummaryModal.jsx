@@ -209,13 +209,13 @@ export default function RecipeSummaryModal({
           </button>
           <button
             onClick={() => onEdit(summaryRecipe)}
-            className="flex-1 py-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-650 dark:text-slate-355 rounded-xl font-bold text-xs transition cursor-pointer flex items-center justify-center gap-1"
+            className="flex-1 py-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl font-bold text-xs transition cursor-pointer flex items-center justify-center gap-1"
           >
             ✏️ Editar
           </button>
           <button
             onClick={() => onDuplicate && onDuplicate(summaryRecipe)}
-            className="flex-1 py-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-650 dark:text-slate-355 rounded-xl font-bold text-xs transition cursor-pointer flex items-center justify-center gap-1"
+            className="flex-1 py-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl font-bold text-xs transition cursor-pointer flex items-center justify-center gap-1"
             title="Duplicar esta receta como base para una nueva"
           >
             📋 Duplicar

@@ -75,7 +75,7 @@ export default function HistoryTab({
                       </div>
                     )}
 
-                    <p className="text-[11px] text-slate-505 dark:text-slate-350 mt-1">
+                    <p className="text-[11px] text-slate-500 dark:text-slate-300 mt-1">
                       {entry.coffee_g}g • {entry.grind_size || 'Molienda N/D'} • {entry.water_g}g agua
                     </p>
 
@@ -183,7 +183,7 @@ export default function HistoryTab({
                           setEditingHistoryId(null);
                           safeBack('edit-history');
                         }}
-                        className="px-2 py-1 text-[10px] border border-slate-200 dark:border-slate-700 text-slate-550 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded font-semibold cursor-pointer"
+                        className="px-2 py-1 text-[10px] border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded font-semibold cursor-pointer"
                       >
                         Cancelar
                       </button>
@@ -202,7 +202,7 @@ export default function HistoryTab({
                 ) : entry.notes || entry.rating || (entry.descriptors && entry.descriptors.length > 0) ? (
                   <div className="space-y-1 bg-amber-500/5 dark:bg-amber-500/10 border-l-2 border-amber-600/50 p-2 rounded-r text-left">
                     {entry.notes && (
-                      <p className="text-xs text-slate-650 dark:text-slate-350 italic">
+                      <p className="text-xs text-slate-600 dark:text-slate-300 italic">
                         "{entry.notes}"
                       </p>
                     )}

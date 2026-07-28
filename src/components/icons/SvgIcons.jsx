@@ -40,7 +40,7 @@ export function ClockIcon({ className = "w-4 h-4", ...props }) {
 
 export function WaterDropIcon({ className = "w-4 h-4", ...props }) {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className} {...props}>
+    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" fillOpacity="0.25" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className} {...props}>
       <path strokeLinecap="round" strokeLinejoin="round" d="M12 2.25c-5.25 6-7.5 9.75-7.5 13.5a7.5 7.5 0 0 0 15 0c0-3.75-2.25-7.5-7.5-13.5Z" />
     </svg>
   );

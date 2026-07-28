@@ -62,6 +62,19 @@ export const getGrindLabel = (recipe) => {
   return getRecipeCategory(recipe) === 'tea' ? 'Presentación' : 'Molienda';
 };
 
+export const calculateRatio = (coffeeG, totalWaterG) => {
+  const coffee = Number(coffeeG) || 0;
+  const water = Number(totalWaterG) || 0;
+
+  if (coffee <= 0 || water <= 0) {
+    return '1:--';
+  }
+
+  const ratio = water / coffee;
+  const formatted = ratio % 1 === 0 ? ratio.toFixed(0) : ratio.toFixed(1);
+  return `1:${formatted}`;
+};
+
 // Iconos SVG en formato de glifos minimalistas
 export const getMethodIcon = (method) => {
   const m = (method || '').toLowerCase();

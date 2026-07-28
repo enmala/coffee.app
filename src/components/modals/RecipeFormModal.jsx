@@ -1,4 +1,4 @@
-import { getGrindLabel, getRecipeCategory } from '../../utils/coffeeUtils';
+import { getGrindLabel, getRecipeCategory, calculateRatio } from '../../utils/coffeeUtils';
 import { ClockIcon, WaterDropIcon, ChevronUpIcon, ChevronDownIcon, CloseIcon } from '../icons/SvgIcons';
 
 export default function RecipeFormModal({
@@ -17,6 +17,7 @@ export default function RecipeFormModal({
   handleCancelForm
 }) {
   const grindLabel = getGrindLabel(newRecipe);
+  const computedRatio = calculateRatio(newRecipe.coffee_g, totalStepsWater);
 
   return (
     <div>
@@ -133,7 +134,7 @@ export default function RecipeFormModal({
             </h3>
             {newRecipe.steps.length > 0 && (
               <span className="text-xs font-semibold text-amber-900 dark:text-amber-400 bg-amber-100/60 dark:bg-amber-950/20 px-2 py-0.5 rounded-lg border border-amber-200/20 inline-flex items-center gap-1">
-                <ClockIcon className="w-3 h-3" /> {totalStepsTime}s • <WaterDropIcon className="w-3 h-3 text-blue-500" /> {totalStepsWater}g
+                <ClockIcon className="w-3 h-3" /> {totalStepsTime}s • <WaterDropIcon className="w-3 h-3 text-blue-500" /> {totalStepsWater}g • ⚖️ Ratio {computedRatio}
               </span>
             )}
           </div>

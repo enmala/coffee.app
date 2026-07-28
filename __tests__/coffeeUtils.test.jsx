@@ -6,6 +6,7 @@ import {
   speakText,
   getIngredientLabel,
   getGrindLabel,
+  calculateRatio,
   formatSecondsToMinutes,
   compressRecipe,
   decompressRecipe,
@@ -67,6 +68,15 @@ describe('coffeeUtils', () => {
       expect(getGrindLabel({ category: 'tea' })).toBe('Presentación');
       expect(getGrindLabel({ category: 'coffee' })).toBe('Molienda');
       expect(getGrindLabel()).toBe('Molienda');
+    });
+
+    test('calculateRatio computes coffee to water ratio correctly', () => {
+      expect(calculateRatio(15, 255)).toBe('1:17');
+      expect(calculateRatio(15, 250)).toBe('1:16.7');
+      expect(calculateRatio(20, 300)).toBe('1:15');
+      expect(calculateRatio(0, 250)).toBe('1:--');
+      expect(calculateRatio(15, 0)).toBe('1:--');
+      expect(calculateRatio(null, null)).toBe('1:--');
     });
 
     test('formatSecondsToMinutes formats seconds to m:ss string correctly', () => {

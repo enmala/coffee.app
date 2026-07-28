@@ -4,6 +4,7 @@ import {
   getMethodIcon,
   playBeep,
   speakText,
+  resetSharedAudioContext,
   getIngredientLabel,
   getGrindLabel,
   calculateRatio,
@@ -115,17 +116,19 @@ describe('coffeeUtils', () => {
     beforeEach(() => {
       originalAudioContext = window.AudioContext;
       originalWebkitAudioContext = window.webkitAudioContext;
+      resetSharedAudioContext();
     });
 
     afterEach(() => {
       window.AudioContext = originalAudioContext;
       window.webkitAudioContext = originalWebkitAudioContext;
+      resetSharedAudioContext();
     });
 
     test('instantiates AudioContext and starts oscillator', () => {
       vi.useFakeTimers();
       const mockCtx = new originalAudioContext();
-      const mockConstructor = vi.fn().mockImplementation(() => mockCtx);
+      const mockConstructor = vi.fn().mockImplementation(function () { return mockCtx; });
       window.AudioContext = mockConstructor;
       window.webkitAudioContext = undefined;
 
@@ -138,7 +141,7 @@ describe('coffeeUtils', () => {
     test('falls back to webkitAudioContext if AudioContext is undefined', () => {
       vi.useFakeTimers();
       const mockCtx = new originalWebkitAudioContext();
-      const mockConstructor = vi.fn().mockImplementation(() => mockCtx);
+      const mockConstructor = vi.fn().mockImplementation(function () { return mockCtx; });
       window.AudioContext = undefined;
       window.webkitAudioContext = mockConstructor;
 
@@ -154,6 +157,36 @@ describe('coffeeUtils', () => {
 
       // Should not throw and should return undefined
       expect(playBeep()).toBeUndefined();
+    });
+
+    test('reuses the same AudioContext instance across calls', () => {
+      vi.useFakeTimers();
+      const mockCtx = new originalAudioContext();
+      const mockConstructor = vi.fn().mockImplementation(function () { return mockCtx; });
+      window.AudioContext = mockConstructor;
+      window.webkitAudioContext = undefined;
+
+      playBeep();
+      playBeep();
+      // El constructor sólo se invoca una vez: la segunda llamada reutiliza
+      expect(mockConstructor).toHaveBeenCalledTimes(1);
+      vi.runAllTimers();
+      vi.useRealTimers();
+    });
+
+    test('resumes suspended AudioContext before playing', () => {
+      vi.useFakeTimers();
+      const mockCtx = new originalAudioContext();
+      mockCtx.state = 'suspended';
+      mockCtx.resume = vi.fn().mockResolvedValue(undefined);
+      const mockConstructor = vi.fn().mockImplementation(function () { return mockCtx; });
+      window.AudioContext = mockConstructor;
+      window.webkitAudioContext = undefined;
+
+      playBeep();
+      expect(mockCtx.resume).toHaveBeenCalled();
+      vi.runAllTimers();
+      vi.useRealTimers();
     });
   });
 

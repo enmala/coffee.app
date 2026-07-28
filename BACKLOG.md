@@ -46,6 +46,7 @@ Los agentes de IA deben leer este archivo para saber qué implementar a continua
 ---
 
 ## ✅ Completado
+- [x] Reutilización de instancia única de `AudioContext` en `playBeep` con `resume()` ante autoplay policy y `resetSharedAudioContext` para limpieza, evitando creación/cierre por cada pitido (`v1.11.7`).
 - [x] Rediseño de acciones inferiores en modal de resumen (Opción A: botones secundarios sólo icono) para otorgar jerarquía primaria a "Iniciar Timer", e integración del cálculo dinámico del Ratio café/agua ($1:X$) en la vista de resumen y formulario de edición (`v1.11.6`).
 - [x] Memorización con `useCallback` de handlers y funciones prop pasadas a componentes hijos (`RecipesTab`, `BeansTab`, `HistoryTab`, modales, etc.) en `App.jsx` eliminando re-renderizados innecesarios (`v1.11.5`).
 - [x] Incremento de cobertura de pruebas unitarias para `RecipeSummaryModal.jsx` (100% líneas) y `coffeeUtils.jsx` (92.9% líneas), elevando la cobertura global del proyecto al 91.66% (`v1.11.4`).
@@ -119,9 +120,9 @@ Los agentes de IA deben leer este archivo para saber qué implementar a continua
   - *Etiquetas:* [Prioridad: Media] [Complejidad: Baja]
   - *Descripción:* Funciones como `handleSaveRecipe`, `handleEditRecipe`, `handleDeleteRecipe`, etc., se recrean en cada render. Memorizarlas con `useCallback` evitaría re-renderizados innecesarios en `RecipesTab`, `BeansTab`, modales y tab components. (`v1.11.5`).
 
-- [ ] **Gestión y reutilización de `AudioContext` en Web Audio API**
+- [x] **Gestión y reutilización de `AudioContext` en Web Audio API**
   - *Etiquetas:* [Prioridad: Media] [Complejidad: Baja]
-  - *Descripción:* En `src/utils/coffeeUtils.jsx`, `playBeep` instancia un `new AudioContext()` y lo cierra en cada sonido. Reutilizar una única instancia de `AudioContext` previene consumo innecesario de memoria y bloqueos de audio en móviles/TWA.
+  - *Descripción:* En `src/utils/coffeeUtils.jsx`, `playBeep` instancia un `new AudioContext()` y lo cierra en cada sonido. Reutilizar una única instancia de `AudioContext` previene consumo innecesario de memoria y bloqueos de audio en móviles/TWA. (`v1.11.7`).
 
 - [ ] **Memorización (`useMemo`) en filtrado y búsqueda de recetas y granos**
   - *Etiquetas:* [Prioridad: Baja] [Complejidad: Baja]

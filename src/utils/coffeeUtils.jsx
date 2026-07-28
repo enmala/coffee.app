@@ -1,9 +1,38 @@
+// Instancia única y reutilizable de AudioContext para evitar crear/cerrar
+// contextos en cada pitido, lo que previene consumo innecesario de memoria
+// y bloqueos de audio en móviles/TWA.
+let sharedAudioContext = null;
+
+const getSharedAudioContext = () => {
+  const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+  if (!AudioContextClass) return null;
+  if (sharedAudioContext && sharedAudioContext.state !== 'closed') {
+    return sharedAudioContext;
+  }
+  sharedAudioContext = new AudioContextClass();
+  return sharedAudioContext;
+};
+
+// Reinicia la instancia compartida de AudioContext. Pensado para tests y
+// para liberar el recurso cuando la app se desmonta.
+export const resetSharedAudioContext = () => {
+  if (sharedAudioContext) {
+    try { sharedAudioContext.close(); } catch { /* noop */ }
+    sharedAudioContext = null;
+  }
+};
+
 // Sonido sintetizado nativo para avisar el cambio de paso
 export const playBeep = () => {
   try {
-    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-    if (!AudioContextClass) return;
-    const audioCtx = new AudioContextClass();
+    const audioCtx = getSharedAudioContext();
+    if (!audioCtx) return;
+
+    // Autoplay policy: reanudar el contexto si está suspendido
+    if (audioCtx.state === 'suspended' && typeof audioCtx.resume === 'function') {
+      audioCtx.resume();
+    }
+
     const oscillator = audioCtx.createOscillator();
     const gainNode = audioCtx.createGain();
 
@@ -17,7 +46,6 @@ export const playBeep = () => {
     oscillator.start();
     setTimeout(() => {
       oscillator.stop();
-      audioCtx.close();
     }, 400); 
   } catch (e) {
     console.warn("La reproducción de audio falló o fue bloqueada por el navegador:", e);

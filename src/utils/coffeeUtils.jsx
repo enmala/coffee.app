@@ -377,3 +377,9 @@ export const decompressBean = async (encodedStr) => {
   };
 };
 
+export const formatSecondsToMinutes = (seconds) => {
+  const mins = Math.floor((seconds || 0) / 60);
+  const secs = (seconds || 0) % 60;
+  return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+};
+

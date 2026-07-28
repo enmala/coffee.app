@@ -1,17 +1,17 @@
 import { useState } from 'react';
-import { getIngredientLabel, getGrindLabel } from '../../utils/coffeeUtils';
+import { getIngredientLabel, getGrindLabel, formatSecondsToMinutes as formatTime } from '../../utils/coffeeUtils';
 import { MapPinIcon, GearIcon, MountainIcon, PencilIcon, ClipboardIcon, ClockIcon } from '../icons/SvgIcons';
 
 export default function RecipeSummaryModal({
   summaryRecipe,
-  beans,
+  beans = [],
   onClose,
   onShare,
   onDelete,
   onEdit,
   onDuplicate,
   onStartTimer,
-  formatSecondsToMinutes,
+  formatSecondsToMinutes = formatTime,
   onToggleFavorite
 }) {
   const [isRecipeNameExpanded, setIsRecipeNameExpanded] = useState(false);
@@ -103,13 +103,13 @@ export default function RecipeSummaryModal({
             <div className="mt-1">
               <span className="text-slate-500 dark:text-slate-300 block font-semibold text-[10px] uppercase">Agua Total</span>
               <span className="text-sm font-bold text-slate-800 dark:text-slate-200">
-                {summaryRecipe.steps.reduce((acc, s) => acc + s.water_g, 0)}g
+                {(summaryRecipe.steps || []).reduce((acc, s) => acc + (s.water_g || 0), 0)}g
               </span>
             </div>
             <div className="col-span-2 mt-2 pt-2 border-t border-slate-200 dark:border-slate-700 flex justify-between">
               <span className="text-slate-500 dark:text-slate-300 font-semibold text-[10px] uppercase">Tiempo Total Estimado</span>
               <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
-                {formatSecondsToMinutes(summaryRecipe.steps.reduce((acc, s) => acc + s.duration_s, 0))}
+                {(formatSecondsToMinutes || formatTime)((summaryRecipe.steps || []).reduce((acc, s) => acc + (s.duration_s || 0), 0))}
               </span>
             </div>
           </div>
@@ -180,7 +180,7 @@ export default function RecipeSummaryModal({
           <div className="space-y-2">
             <h4 className="text-xs font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider pl-1">Pasos</h4>
             <div className="space-y-2">
-              {summaryRecipe.steps.map((step, idx) => (
+              {(summaryRecipe.steps || []).map((step, idx) => (
                 <div key={idx} className="bg-slate-50 dark:bg-slate-800 p-2.5 rounded-lg border border-slate-100 dark:border-slate-800/80 space-y-1 text-xs">
                   <div className="flex justify-between font-bold text-slate-700 dark:text-slate-300">
                     <span>Paso {step.step_number}: {step.title}</span>

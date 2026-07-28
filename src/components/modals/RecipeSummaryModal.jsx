@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { getIngredientLabel, getGrindLabel } from '../../utils/coffeeUtils';
+import { MapPinIcon, GearIcon, MountainIcon, PencilIcon, ClipboardIcon, ClockIcon } from '../icons/SvgIcons';
 
 export default function RecipeSummaryModal({
   summaryRecipe,
@@ -144,13 +145,13 @@ export default function RecipeSummaryModal({
                     <div className="px-3 pb-3 pt-1.5 border-t border-amber-200/10 dark:border-amber-900/10 space-y-2 text-[11px] animate-fade-in">
                       <div className="flex flex-wrap gap-1">
                         {bean.origin && <span className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[9px] px-1.5 py-0.5 rounded font-medium text-slate-600 dark:text-slate-300">📍 {bean.origin}</span>}
-                        {bean.region && <span className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[9px] px-1.5 py-0.5 rounded font-medium text-slate-600 dark:text-slate-300">🗺️ {bean.region}</span>}
+                        {bean.region && <span className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[9px] px-1.5 py-0.5 rounded font-medium text-slate-600 dark:text-slate-300 flex items-center gap-1"><MapPinIcon className="w-2.5 h-2.5 inline" /> {bean.region}</span>}
                         {bean.farm && <span className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[9px] px-1.5 py-0.5 rounded font-medium text-slate-600 dark:text-slate-300">🏡 {bean.farm}</span>}
                         {bean.producer && <span className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[9px] px-1.5 py-0.5 rounded font-medium text-slate-600 dark:text-slate-300">🧑‍🌾 {bean.producer}</span>}
-                        {bean.process && <span className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[9px] px-1.5 py-0.5 rounded font-medium text-slate-600 dark:text-slate-300">⚙️ {bean.process}</span>}
+                        {bean.process && <span className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[9px] px-1.5 py-0.5 rounded font-medium text-slate-600 dark:text-slate-300 flex items-center gap-1"><GearIcon className="w-2.5 h-2.5 inline" /> {bean.process}</span>}
                         {bean.roast_level && <span className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[9px] px-1.5 py-0.5 rounded font-medium text-slate-600 dark:text-slate-300">🔥 Tueste {bean.roast_level}</span>}
                         {bean.variety && <span className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[9px] px-1.5 py-0.5 rounded font-medium text-slate-600 dark:text-slate-300">🌱 {bean.variety}</span>}
-                        {bean.altitude && <span className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[9px] px-1.5 py-0.5 rounded font-medium text-slate-600 dark:text-slate-300">🏔️ {bean.altitude}</span>}
+                        {bean.altitude && <span className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[9px] px-1.5 py-0.5 rounded font-medium text-slate-600 dark:text-slate-300 flex items-center gap-1"><MountainIcon className="w-2.5 h-2.5 inline" /> {bean.altitude}</span>}
                         {bean.harvest_year && <span className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[9px] px-1.5 py-0.5 rounded font-medium text-slate-600 dark:text-slate-300">🌾 {bean.harvest_year}</span>}
                         {bean.sca_score && <span className="bg-emerald-100/50 dark:bg-emerald-950/30 text-emerald-800 dark:text-emerald-400 text-[9px] px-1.5 py-0.5 rounded font-bold border border-emerald-250/10">🏆 SCA {bean.sca_score}</span>}
                       </div>
@@ -211,20 +212,20 @@ export default function RecipeSummaryModal({
             onClick={() => onEdit(summaryRecipe)}
             className="flex-1 py-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl font-bold text-xs transition cursor-pointer flex items-center justify-center gap-1"
           >
-            ✏️ Editar
+            <PencilIcon className="w-3.5 h-3.5" /> Editar
           </button>
           <button
             onClick={() => onDuplicate && onDuplicate(summaryRecipe)}
             className="flex-1 py-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl font-bold text-xs transition cursor-pointer flex items-center justify-center gap-1"
             title="Duplicar esta receta como base para una nueva"
           >
-            📋 Duplicar
+            <ClipboardIcon className="w-3.5 h-3.5" /> Duplicar
           </button>
           <button
             onClick={() => onStartTimer(summaryRecipe)}
             className="flex-[1.5] py-2 bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-800 text-white rounded-xl font-bold text-xs transition shadow-sm cursor-pointer flex items-center justify-center gap-1.5"
           >
-            <span aria-hidden="true">⏱️ </span>Iniciar Timer
+            <ClockIcon className="w-4 h-4" /> Iniciar Timer
           </button>
         </div>
       </div>

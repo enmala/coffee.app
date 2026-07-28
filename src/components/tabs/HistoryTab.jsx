@@ -1,4 +1,5 @@
 import { getMethodIcon, COFFEE_DESCRIPTORS } from '../../utils/coffeeUtils';
+import { PencilIcon, TrashIcon } from '../icons/SvgIcons';
 
 export default function HistoryTab({
   history,
@@ -103,14 +104,14 @@ export default function HistoryTab({
                       className="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded text-slate-500 dark:text-slate-300 cursor-pointer"
                       title="Editar observaciones"
                     >
-                      ✏️
+                      <PencilIcon className="w-3.5 h-3.5" />
                     </button>
                     <button
                       onClick={() => onDeleteHistoryEntry(entry)}
                       className="p-1 hover:bg-red-50 dark:hover:bg-red-950/20 rounded text-red-500 dark:text-red-400 cursor-pointer"
                       title="Eliminar registro"
                     >
-                      🗑️
+                      <TrashIcon className="w-3.5 h-3.5" />
                     </button>
                   </div>
                 </div>

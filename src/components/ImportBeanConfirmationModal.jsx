@@ -1,3 +1,5 @@
+import { MapPinIcon, GearIcon, MountainIcon } from './icons/SvgIcons';
+
 export default function ImportBeanConfirmationModal({ bean, existingBeans = [], onConfirm, onCancel }) {
   if (!bean) return null;
 
@@ -68,7 +70,7 @@ export default function ImportBeanConfirmationModal({ bean, existingBeans = [], 
               {bean.region && (
                 <div className="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-800/80">
                   <span className="block text-[10px] text-slate-400 dark:text-slate-500 font-semibold uppercase">Región</span>
-                  <span className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate block">🗺️ {bean.region}</span>
+                  <span className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate flex items-center gap-1"><MapPinIcon className="w-3.5 h-3.5 text-slate-500 inline" /> {bean.region}</span>
                 </div>
               )}
               {bean.farm && (
@@ -86,7 +88,7 @@ export default function ImportBeanConfirmationModal({ bean, existingBeans = [], 
               {bean.process && (
                 <div className="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-800/80">
                   <span className="block text-[10px] text-slate-400 dark:text-slate-500 font-semibold uppercase">Proceso</span>
-                  <span className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate block">⚙️ {bean.process}</span>
+                  <span className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate flex items-center gap-1"><GearIcon className="w-3.5 h-3.5 text-slate-500 inline" /> {bean.process}</span>
                 </div>
               )}
               {bean.roast_level && (
@@ -104,7 +106,7 @@ export default function ImportBeanConfirmationModal({ bean, existingBeans = [], 
               {bean.altitude && (
                 <div className="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-800/80">
                   <span className="block text-[10px] text-slate-400 dark:text-slate-500 font-semibold uppercase">Altitud</span>
-                  <span className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate block">🏔️ {bean.altitude}</span>
+                  <span className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate flex items-center gap-1"><MountainIcon className="w-3.5 h-3.5 text-slate-500 inline" /> {bean.altitude}</span>
                 </div>
               )}
               {bean.harvest_year && (

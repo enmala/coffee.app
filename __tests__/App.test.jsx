@@ -197,7 +197,7 @@ describe('App Component', () => {
     const menuBtns = screen.getAllByTitle('Más opciones');
     fireEvent.click(menuBtns[0]);
     
-    const editBtn = screen.getByText('✏️ Editar');
+    const editBtn = screen.getByText(/Editar/);
     fireEvent.click(editBtn);
     
     // Modify name
@@ -219,7 +219,7 @@ describe('App Component', () => {
     const menuBtns = screen.getAllByTitle('Más opciones');
     fireEvent.click(menuBtns[0]);
     
-    const deleteBtn = screen.getByText('🗑️ Eliminar');
+    const deleteBtn = screen.getByText(/Eliminar/);
     fireEvent.click(deleteBtn);
     
     // Custom confirm modal should show up
@@ -597,7 +597,7 @@ describe('App Component', () => {
     const menuBtns = screen.getAllByTitle('Más opciones');
     fireEvent.click(menuBtns[0]);
     
-    const deleteBtn = screen.getByText('🗑️ Eliminar');
+    const deleteBtn = screen.getByText(/Eliminar/);
     fireEvent.click(deleteBtn);
     
     // Custom confirm modal should show up
@@ -790,19 +790,20 @@ describe('App Component', () => {
     expect(screen.getByText(/Volver al listado/i)).toBeInTheDocument();
   });
 
-  test('closes recipe menu by clicking outside (click-away listener)', () => {
+  test('toggling menu options twice opens and closes menu', () => {
     render(<App />);
+    
     const menuBtns = screen.getAllByTitle('Más opciones');
     
     // Open menu
     fireEvent.click(menuBtns[0]);
-    expect(screen.getByText('✏️ Editar')).toBeInTheDocument();
+    expect(screen.getByText(/Editar/)).toBeInTheDocument();
     
     // Click outside
     fireEvent.click(document.body);
     
     // Menu options should be closed
-    expect(screen.queryByText('✏️ Editar')).not.toBeInTheDocument();
+    expect(screen.queryByText(/Editar/)).not.toBeInTheDocument();
   });
 
   test('cancels clearing history when confirm returns false', () => {
@@ -1018,13 +1019,13 @@ describe('App Component', () => {
     // Toggle recipe menu twice (first open, then close)
     const menuBtn = screen.getByTitle('Más opciones');
     fireEvent.click(menuBtn);
-    expect(screen.getByText('✏️ Editar')).toBeInTheDocument();
+    expect(screen.getByText(/Editar/)).toBeInTheDocument();
     fireEvent.click(menuBtn);
-    expect(screen.queryByText('✏️ Editar')).not.toBeInTheDocument();
+    expect(screen.queryByText(/Editar/)).not.toBeInTheDocument();
 
     // Trigger edit of recipe to hit method / grind_size default logic
     fireEvent.click(menuBtn);
-    fireEvent.click(screen.getByText('✏️ Editar'));
+    fireEvent.click(screen.getByText(/Editar/));
     expect(screen.getByPlaceholderText('Ej: Mi V60 Balanceado')).toHaveValue('No Grind Size Recipe');
     
     // Test selecting a different method
@@ -1277,7 +1278,7 @@ describe('App Component', () => {
 
     // 5. Verify that step is added and totals are displayed
     expect(screen.getByText('1. Preinfusion')).toBeInTheDocument();
-    expect(screen.getAllByText(/⏱️ 30s • 💧 50g/)[0]).toBeInTheDocument();
+    expect(screen.getAllByText(/30s •/)[0]).toBeInTheDocument();
 
     // 6. Start typing another step (Auto-Save new step test)
     fireEvent.click(screen.getByText('+ Agregar Paso'));
@@ -1353,7 +1354,7 @@ describe('App Component', () => {
     fireEvent.click(summaryBtn);
 
     // 2. Click '📋 Duplicar' in summary modal
-    const duplicateBtn = screen.getByText('📋 Duplicar');
+    const duplicateBtn = screen.getByText(/Duplicar/);
     fireEvent.click(duplicateBtn);
 
     // 3. Verify form modal opens pre-filled with (Copia) name
@@ -1379,7 +1380,7 @@ describe('App Component', () => {
     fireEvent.click(summaryBtn);
 
     // 2. Click '📋 Duplicar' in summary modal
-    const duplicateBtn = screen.getByText('📋 Duplicar');
+    const duplicateBtn = screen.getByText(/Duplicar/);
     fireEvent.click(duplicateBtn);
 
     // 3. Click 'Cancelar' in recipe form
@@ -1400,7 +1401,7 @@ describe('App Component', () => {
     fireEvent.click(summaryBtn);
 
     // 2. Click "📋 Duplicar" in summary modal
-    const duplicateSummaryBtn = screen.getByText('📋 Duplicar');
+    const duplicateSummaryBtn = screen.getByText(/Duplicar/);
     fireEvent.click(duplicateSummaryBtn);
 
     // 3. Save first copy as default "Aeropress Tradicional (Copia)"
@@ -1412,7 +1413,7 @@ describe('App Component', () => {
     const originalCard = screen.getAllByText('Aeropress Tradicional')[0].closest('.group');
     const summaryBtn2 = originalCard.querySelector('button[title="Ver Resumen"]');
     fireEvent.click(summaryBtn2);
-    const duplicateSummaryBtn2 = screen.getByText('📋 Duplicar');
+    const duplicateSummaryBtn2 = screen.getByText(/Duplicar/);
     fireEvent.click(duplicateSummaryBtn2);
 
     // 5. Verify pre-filled name is "Aeropress Tradicional (Copia 2)"

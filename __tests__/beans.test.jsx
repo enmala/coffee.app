@@ -34,14 +34,14 @@ describe('Coffee Beans Management Tests', () => {
     expect(screen.getByText('Etiopía Sidamo')).toBeInTheDocument();
     expect(screen.getByText('Tostaduría Artesanal')).toBeInTheDocument();
     expect(screen.getByText('📍 Etiopía')).toBeInTheDocument();
-    expect(screen.getByText('🗺️ Región: Sidama')).toBeInTheDocument();
+    expect(screen.getByText(/Región: Sidama/)).toBeInTheDocument();
     expect(screen.getByText('🏡 Finca: Finca Shantawene')).toBeInTheDocument();
     expect(screen.getByText('🧑‍🌾 Productor: Daye Bensa')).toBeInTheDocument();
     expect(screen.getByText('🌾 Cosecha: 2025')).toBeInTheDocument();
-    expect(screen.getByText('⚙️ Lavado')).toBeInTheDocument();
+    expect(screen.getByText(/Lavado/)).toBeInTheDocument();
     expect(screen.getByText('🔥 Tueste Claro')).toBeInTheDocument();
     expect(screen.getByText('🌱 Heirloom')).toBeInTheDocument();
-    expect(screen.getByText('🏔️ 1900 msnm')).toBeInTheDocument();
+    expect(screen.getByText(/1900 msnm/)).toBeInTheDocument();
     expect(screen.getByText('🏆 SCA: 86.5')).toBeInTheDocument();
   });
 
@@ -96,14 +96,14 @@ describe('Coffee Beans Management Tests', () => {
     expect(screen.getByText('Colombia Supremo')).toBeInTheDocument();
     expect(screen.getByText('Supracafé')).toBeInTheDocument();
     expect(screen.getByText('📍 Colombia')).toBeInTheDocument();
-    expect(screen.getByText('🗺️ Región: Cauca')).toBeInTheDocument();
+    expect(screen.getByText(/Región: Cauca/)).toBeInTheDocument();
     expect(screen.getByText('🏡 Finca: La Esperanza')).toBeInTheDocument();
     expect(screen.getByText('🧑‍🌾 Productor: Juan Valdez')).toBeInTheDocument();
     expect(screen.getByText('🌾 Cosecha: 2026')).toBeInTheDocument();
-    expect(screen.getByText('⚙️ Natural')).toBeInTheDocument();
+    expect(screen.getByText(/Natural/)).toBeInTheDocument();
     expect(screen.getByText('🔥 Tueste Medio')).toBeInTheDocument();
     expect(screen.getByText('🌱 Castillo')).toBeInTheDocument();
-    expect(screen.getByText('🏔️ 1750 msnm')).toBeInTheDocument();
+    expect(screen.getByText(/1750 msnm/)).toBeInTheDocument();
     expect(screen.getByText('🏆 SCA: 84.75')).toBeInTheDocument();
     expect(screen.getByText('Cacao')).toBeInTheDocument();
     expect(screen.getByText('Fruta de la pasión')).toBeInTheDocument();
@@ -339,7 +339,7 @@ describe('Coffee Beans Management Tests', () => {
     expect(screen.getByText('Imported Geisha')).toBeInTheDocument();
     expect(screen.getByText('Tostador: Panama Farms')).toBeInTheDocument();
     expect(screen.getByText('📍 Boquete')).toBeInTheDocument();
-    expect(screen.getByText('⚙️ Natural')).toBeInTheDocument();
+    expect(screen.getByText(/Natural/)).toBeInTheDocument();
     expect(screen.getByText('🏆 89.5')).toBeInTheDocument();
 
     const confirmBtn = screen.getByRole('button', { name: 'Guardar Grano' });

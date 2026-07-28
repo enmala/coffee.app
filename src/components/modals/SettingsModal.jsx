@@ -1,3 +1,5 @@
+import { GearIcon, SunIcon, MoonIcon } from '../icons/SvgIcons';
+
 export default function SettingsModal({
   isOpen,
   onClose,
@@ -22,7 +24,7 @@ export default function SettingsModal({
         <div className="flex justify-between items-start border-b border-slate-200 dark:border-slate-800 pb-3">
           <div className="text-left">
             <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
-              <span>⚙️</span> Configuración
+              <GearIcon className="w-5 h-5 text-amber-800 dark:text-amber-500" /> Configuración
             </h3>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Personaliza tu experiencia de preparación</p>
           </div>
@@ -46,7 +48,7 @@ export default function SettingsModal({
               className="px-3 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition cursor-pointer text-xs font-bold flex items-center gap-1"
               title={theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
             >
-              <span>{theme === 'dark' ? '☀️ Claro' : '🌙 Oscuro'}</span>
+              <span className="flex items-center gap-1">{theme === 'dark' ? <><SunIcon className="w-3.5 h-3.5" /> Claro</> : <><MoonIcon className="w-3.5 h-3.5" /> Oscuro</>}</span>
             </button>
           </div>
 

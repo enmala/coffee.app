@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { decompressRecipe, decompressBean } from './utils/coffeeUtils';
 import { safeGetItem, safeSetItem } from './utils/storageUtils';
+import { TrashIcon, WarningTriangleIcon, CloseIcon } from './components/icons/SvgIcons';
 import TimerComponent from './components/TimerComponent';
 import ShareModal from './components/ShareModal';
 import ShareBeanModal from './components/ShareBeanModal';
@@ -1348,7 +1349,7 @@ export default function App() {
                   onClick={handleCloseStepEditor}
                   className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-sm font-semibold p-1"
                 >
-                  ✕
+                  <CloseIcon className="w-4 h-4" />
                 </button>
               </div>
 
@@ -1529,7 +1530,7 @@ export default function App() {
         {beanToDelete && (
           <div className="fixed inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
             <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-sm w-full p-6 shadow-xl border border-slate-100 dark:border-slate-800 space-y-4 text-center">
-              <div className="text-red-500 dark:text-red-400 text-3xl select-none">🗑️</div>
+              <div className="flex justify-center text-red-500 dark:text-red-400 my-1"><TrashIcon className="w-10 h-10" /></div>
               {recipes.some((r) => r.bean_id === beanToDelete.id) ? (
                 <div>
                   <h3 className="text-lg font-bold text-slate-900 dark:text-white">Eliminar Grano en Uso</h3>
@@ -1579,7 +1580,7 @@ export default function App() {
         {recipeToDelete && (
           <div className="fixed inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
             <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-sm w-full p-6 shadow-xl border border-slate-100 dark:border-slate-800 space-y-4 text-center">
-              <div className="text-red-500 dark:text-red-400 text-3xl select-none">🗑️</div>
+              <div className="flex justify-center text-red-500 dark:text-red-400 my-1"><TrashIcon className="w-10 h-10" /></div>
               <div>
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white">Eliminar Receta</h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
@@ -1610,7 +1611,7 @@ export default function App() {
         {historyEntryToDelete && (
           <div className="fixed inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
             <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-sm w-full p-6 shadow-xl border border-slate-100 dark:border-slate-800 space-y-4 text-center">
-              <div className="text-red-500 dark:text-red-400 text-3xl select-none">🗑️</div>
+              <div className="flex justify-center text-red-500 dark:text-red-400 my-1"><TrashIcon className="w-10 h-10" /></div>
               <div>
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white">Eliminar Registro</h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
@@ -1641,7 +1642,7 @@ export default function App() {
         {showClearHistoryConfirm && (
           <div className="fixed inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
             <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-sm w-full p-6 shadow-xl border border-slate-100 dark:border-slate-800 space-y-4 text-center">
-              <div className="text-red-500 dark:text-red-400 text-3xl select-none">⚠️</div>
+              <div className="flex justify-center text-amber-500 dark:text-amber-400 my-1"><WarningTriangleIcon className="w-10 h-10" /></div>
               <div>
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white">Limpiar Historial</h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">

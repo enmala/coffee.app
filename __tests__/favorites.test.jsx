@@ -133,7 +133,7 @@ describe('Favorite Recipes Tests', () => {
     const menuBtns = screen.getAllByTitle('Más opciones');
     fireEvent.click(menuBtns[0]);
 
-    const editBtn = screen.getByText('✏️ Editar');
+    const editBtn = screen.getByText(/Editar/);
     fireEvent.click(editBtn);
 
     const nameInput = screen.getByPlaceholderText('Ej: Mi V60 Balanceado');

@@ -34,10 +34,10 @@ describe('ImportBeanConfirmationModal Component Tests', () => {
     expect(screen.getByText('Geisha de Panamá')).toBeInTheDocument();
     expect(screen.getByText('Tostador: Specialty Roasters')).toBeInTheDocument();
     expect(screen.getByText('📍 Panamá')).toBeInTheDocument();
-    expect(screen.getByText('⚙️ Honey')).toBeInTheDocument();
+    expect(screen.getByText(/Honey/)).toBeInTheDocument();
     expect(screen.getByText('🔥 Claro')).toBeInTheDocument();
     expect(screen.getByText('🌱 Geisha')).toBeInTheDocument();
-    expect(screen.getByText('🏔️ 1800m')).toBeInTheDocument();
+    expect(screen.getByText(/1800m/)).toBeInTheDocument();
     expect(screen.getByText('🏆 90.5')).toBeInTheDocument();
     expect(screen.getByText('Jazmín')).toBeInTheDocument();
     expect(screen.getByText('Melocotón')).toBeInTheDocument();

@@ -1,3 +1,5 @@
+import { PencilIcon, TrashIcon, MapPinIcon, GearIcon, MountainIcon } from '../icons/SvgIcons';
+
 export default function BeansTab({
   beans,
   beanSearchQuery,
@@ -85,14 +87,14 @@ export default function BeansTab({
                     className="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded transition text-xs cursor-pointer"
                     title="Editar grano"
                   >
-                    ✏️
+                    <PencilIcon className="w-3.5 h-3.5 text-slate-500 hover:text-slate-700 dark:text-slate-400" />
                   </button>
                   <button
                     onClick={() => onDeleteBean(bean)}
                     className="p-1 hover:bg-red-50 dark:hover:bg-red-950/20 rounded transition text-xs cursor-pointer"
                     title="Eliminar grano"
                   >
-                    🗑️
+                    <TrashIcon className="w-3.5 h-3.5 text-red-500 hover:text-red-700" />
                   </button>
                 </div>
               </div>
@@ -105,8 +107,8 @@ export default function BeansTab({
                   </span>
                 )}
                 {bean.region && (
-                  <span className="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded text-[10px] font-semibold">
-                    🗺️ Región: {bean.region}
+                  <span className="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded text-[10px] font-semibold flex items-center gap-1">
+                    <MapPinIcon className="w-2.5 h-2.5 inline" /> Región: {bean.region}
                   </span>
                 )}
                 {bean.farm && (
@@ -120,8 +122,8 @@ export default function BeansTab({
                   </span>
                 )}
                 {bean.process && (
-                  <span className="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded text-[10px] font-semibold">
-                    ⚙️ {bean.process}
+                  <span className="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded text-[10px] font-semibold flex items-center gap-1">
+                    <GearIcon className="w-2.5 h-2.5 inline" /> {bean.process}
                   </span>
                 )}
                 {bean.roast_level && (
@@ -135,8 +137,8 @@ export default function BeansTab({
                   </span>
                 )}
                 {bean.altitude && (
-                  <span className="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded text-[10px] font-semibold">
-                    🏔️ {bean.altitude}
+                  <span className="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded text-[10px] font-semibold flex items-center gap-1">
+                    <MountainIcon className="w-2.5 h-2.5 inline" /> {bean.altitude}
                   </span>
                 )}
                 {bean.harvest_year && (

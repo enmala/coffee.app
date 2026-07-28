@@ -46,6 +46,7 @@ Los agentes de IA deben leer este archivo para saber qué implementar a continua
 ---
 
 ## ✅ Completado
+- [x] Incremento de cobertura de pruebas unitarias para `RecipeSummaryModal.jsx` (100% líneas) y `coffeeUtils.jsx` (92.9% líneas), elevando la cobertura global del proyecto al 91.66% (`v1.11.4`).
 - [x] Eliminación de emojis inconsistentes y creación del módulo `SvgIcons.jsx` con componentes React SVG reutilizables para acciones y etiquetas (`v1.11.3`).
 - [x] Corrección de clases Tailwind no estándar reemplazando valores fuera de la paleta oficial por equivalentes estándar (50-950) en 11 archivos (`v1.11.2`).
 - [x] Manejo defensivo con `try/catch` en operaciones de `localStorage` y validación de esquemas de datos al cargar mediante el módulo `storageUtils` (`v1.11.1`).
@@ -100,9 +101,9 @@ Los agentes de IA deben leer este archivo para saber qué implementar a continua
   - *Etiquetas:* [Prioridad: Alta] [Complejidad: Media]
   - *Descripción:* Mover la lógica de recipes, beans, history y navigation a hooks personalizados (`useRecipes`, `useBeans`, `useHistory`, `useNavigation`) para reducir la complejidad de `App.jsx`.
 
-- [ ] **Aumentar cobertura de `RecipeSummaryModal` y `coffeeUtils`**
+- [x] **Aumentar cobertura de `RecipeSummaryModal` y `coffeeUtils`**
   - *Etiquetas:* [Prioridad: Media] [Complejidad: Media]
-  - *Descripción:* `RecipeSummaryModal` está en 60% statements / 39.39% branches. `coffeeUtils.jsx` está en 71.42% statements. Ambas jalan el promedio y dejan poco margen ante futuros cambios.
+  - *Descripción:* `RecipeSummaryModal` está en 100% statements / 98.75% branches. `coffeeUtils.jsx` está en 90.11% statements. Ambas pruebas unitarias garantizan robustez ante futuros cambios. (`v1.11.4`).
 
 - [x] **Eliminar emojis inconsistentes y usar solo iconos SVG**
   - *Etiquetas:* [Prioridad: Baja] [Complejidad: Baja]

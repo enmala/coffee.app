@@ -1,7 +1,7 @@
 {
   "name": "Barista Timer",
   "private": true,
-  "version": "1.11.4",
+  "version": "1.11.5",
   "type": "module",
   "scripts": {
     "dev": "vite",

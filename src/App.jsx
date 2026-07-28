@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { decompressRecipe, decompressBean } from './utils/coffeeUtils';
 import { safeGetItem, safeSetItem } from './utils/storageUtils';
 import { TrashIcon, WarningTriangleIcon, CloseIcon } from './components/icons/SvgIcons';
@@ -146,20 +146,18 @@ export default function App() {
   const [stepTitleError, setStepTitleError] = useState(false);
   const [isStepFormOpen, setIsStepFormOpen] = useState(false);
 
-  const showAlert = (message, type = 'info', title = null) => {
+  const showAlert = useCallback((message, type = 'info', title = null) => {
     setCustomAlert({ message, type, title });
-  };
+  }, []);
 
-  function syncStateWithHistory(state) {
-    
+  const syncStateWithHistory = useCallback((state) => {
     if (state.view !== 'timer') {
       setAutoStartTimer(false);
     }
 
     // Active Recipe / Timer
     if (state.view === 'timer' && state.recipeId) {
-      const rec = recipes.find((r) => r.id === state.recipeId);
-      setActiveRecipe(rec || null);
+      setActiveRecipe((prev) => (prev && prev.id === state.recipeId ? prev : recipes.find((r) => r.id === state.recipeId) || prev || null));
     } else {
       setActiveRecipe(null);
     }
@@ -222,43 +220,37 @@ export default function App() {
     setIsAboutOpen(state.view === 'about');
     
     if (state.view === 'summary' && state.recipeId) {
-      const rec = recipes.find((r) => r.id === state.recipeId);
-      setSummaryRecipe(rec || null);
+      setSummaryRecipe((prev) => (prev && prev.id === state.recipeId ? prev : recipes.find((r) => r.id === state.recipeId) || prev || null));
     } else {
       setSummaryRecipe(null);
     }
 
     if (state.view === 'share' && state.recipeId) {
-      const rec = recipes.find((r) => r.id === state.recipeId);
-      setRecipeToShare(rec || null);
+      setRecipeToShare((prev) => (prev && prev.id === state.recipeId ? prev : recipes.find((r) => r.id === state.recipeId) || prev || null));
     } else {
       setRecipeToShare(null);
     }
 
     if (state.view === 'share-bean' && state.beanId) {
-      const bn = beans.find((b) => b.id === state.beanId);
-      setBeanToShare(bn || null);
+      setBeanToShare((prev) => (prev && prev.id === state.beanId ? prev : beans.find((b) => b.id === state.beanId) || prev || null));
     } else {
       setBeanToShare(null);
     }
 
     if (state.view === 'delete-recipe' && state.recipeId) {
-      const rec = recipes.find((r) => r.id === state.recipeId);
-      setRecipeToDelete(rec || null);
+      setRecipeToDelete((prev) => (prev && prev.id === state.recipeId ? prev : recipes.find((r) => r.id === state.recipeId) || prev || null));
     } else {
       setRecipeToDelete(null);
     }
 
     if (state.view === 'delete-bean' && state.beanId) {
-      const bn = beans.find((b) => b.id === state.beanId);
-      setBeanToDelete(bn || null);
+      setBeanToDelete((prev) => (prev && prev.id === state.beanId ? prev : beans.find((b) => b.id === state.beanId) || prev || null));
     } else {
       setBeanToDelete(null);
     }
 
     if (state.view === 'delete-history-entry' && state.entryId) {
-      const entry = history.find((h) => h.id === state.entryId);
-      setHistoryEntryToDelete(entry || null);
+      setHistoryEntryToDelete((prev) => (prev && prev.id === state.entryId ? prev : history.find((h) => h.id === state.entryId) || prev || null));
     } else {
       setHistoryEntryToDelete(null);
     }
@@ -272,12 +264,12 @@ export default function App() {
     if (state.view !== 'import-bean') {
       setBeanToImport(null);
     }
-  }
+  }, [recipes, beans, history]);
 
-  function navigateTo(view, data = {}) {
+  const navigateTo = useCallback((view, data = {}) => {
     window.history.pushState({ view, ...data }, '');
     syncStateWithHistory({ view, ...data });
-  }
+  }, [syncStateWithHistory]);
 
   useEffect(() => {
     safeSetItem('coffee_beans_v1', beans);
@@ -312,12 +304,12 @@ export default function App() {
     safeSetItem('collapsed_methods_v1', collapsedMethods);
   }, [collapsedMethods]);
 
-  const toggleMethodCollapse = (method) => {
+  const toggleMethodCollapse = useCallback((method) => {
     setCollapsedMethods((prev) => ({
       ...prev,
       [method]: !prev[method]
     }));
-  };
+  }, []);
 
   useEffect(() => {
     if (!window.history.state) {
@@ -375,7 +367,7 @@ export default function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const safeBack = (targetView) => {
+  const safeBack = useCallback((targetView) => {
     const isTest = typeof globalThis.__vitest_worker__ !== 'undefined' || typeof globalThis.vi !== 'undefined' || typeof globalThis.describe !== 'undefined';
     if (window.history.state && window.history.state.view === targetView) {
       if (isTest) {
@@ -388,14 +380,14 @@ export default function App() {
         window.history.back();
       }
     }
-  };
+  }, []);
 
-  const closeTimer = () => {
+  const closeTimer = useCallback(() => {
     setActiveRecipe(null);
     safeBack('timer');
-  };
+  }, [safeBack]);
 
-  const handleCancelForm = (isSaving = false) => {
+  const handleCancelForm = useCallback((isSaving = false) => {
     const originalRecipeToRestore = isSaving === true ? null : duplicatingFromRecipe;
     setIsCreating(false);
     setEditingRecipeId(null);
@@ -421,9 +413,9 @@ export default function App() {
       setSummaryRecipe(null);
       safeBack('edit-recipe');
     }
-  };
+  }, [duplicatingFromRecipe, safeBack, syncStateWithHistory]);
 
-  const handleCancelBean = () => {
+  const handleCancelBean = useCallback(() => {
     setIsEditingBean(false);
     setEditingBeanId(null);
     setNewBean({
@@ -444,62 +436,70 @@ export default function App() {
       notes: ''
     });
     safeBack('edit-bean');
-  };
+  }, [safeBack]);
 
-  const closeSettings = () => {
+  const closeSettings = useCallback(() => {
     setIsSettingsOpen(false);
     safeBack('settings');
-  };
+  }, [safeBack]);
 
-  const closeAbout = () => {
+  const closeAbout = useCallback(() => {
     setIsAboutOpen(false);
     safeBack('about');
-  };
+  }, [safeBack]);
 
-  const closeSummary = () => {
+  const closeSummary = useCallback(() => {
     setSummaryRecipe(null);
     safeBack('summary');
-  };
+  }, [safeBack]);
 
-  const closeShare = () => {
+  const closeShare = useCallback(() => {
     setRecipeToShare(null);
     safeBack('share');
-  };
+  }, [safeBack]);
 
-  const closeImport = () => {
+  const closeImport = useCallback(() => {
     setRecipeToImport(null);
     safeBack('import');
-  };
+  }, [safeBack]);
 
-  const closeShareBean = () => {
+  const closeShareBean = useCallback(() => {
     setBeanToShare(null);
     safeBack('share-bean');
-  };
+  }, [safeBack]);
 
-  const closeImportBean = () => {
+  const closeImportBean = useCallback(() => {
     setBeanToImport(null);
     safeBack('import-bean');
-  };
+  }, [safeBack]);
 
-  const closeDeleteRecipe = () => {
+  const closeDeleteRecipe = useCallback(() => {
     setRecipeToDelete(null);
     safeBack('delete-recipe');
-  };
+  }, [safeBack]);
 
-  const closeDeleteBean = () => {
+  const closeDeleteBean = useCallback(() => {
     setBeanToDelete(null);
     safeBack('delete-bean');
-  };
+  }, [safeBack]);
 
-  const closeDeleteHistoryEntry = () => {
+  const closeDeleteHistoryEntry = useCallback(() => {
     setHistoryEntryToDelete(null);
     safeBack('delete-history-entry');
-  };
+  }, [safeBack]);
 
-  const closeClearHistory = () => {
+  const closeClearHistory = useCallback(() => {
     setShowClearHistoryConfirm(false);
     safeBack('clear-history');
-  };
+  }, [safeBack]);
+
+  const handleCloseStepEditor = useCallback(() => {
+    setIsStepFormOpen(false);
+    setStepInput({ title: '', water_g: 0, duration_s: 30, instruction: '' });
+    setEditingStepIndex(null);
+    setStepTitleError(false);
+    safeBack('step-editor');
+  }, [safeBack]);
 
   useEffect(() => {
     const handlePopState = (event) => {
@@ -545,7 +545,7 @@ export default function App() {
     };
   }, [menuOpenRecipeId]);
 
-  const handleAddTastingNote = (note) => {
+  const handleAddTastingNote = useCallback((note) => {
     const trimmed = note.trim();
     if (!trimmed) return;
     if (!newBean.tasting_notes.includes(trimmed)) {
@@ -555,16 +555,16 @@ export default function App() {
       }));
     }
     setCustomTastingNote('');
-  };
+  }, [newBean.tasting_notes]);
 
-  const handleRemoveTastingNote = (note) => {
+  const handleRemoveTastingNote = useCallback((note) => {
     setNewBean(prev => ({
       ...prev,
       tasting_notes: prev.tasting_notes.filter(t => t !== note)
     }));
-  };
+  }, []);
 
-  const handleSaveBean = (e) => {
+  const handleSaveBean = useCallback((e) => {
     e.preventDefault();
     if (!newBean.name.trim()) {
       showAlert("El nombre del grano es obligatorio.", "error");
@@ -599,9 +599,9 @@ export default function App() {
     }
 
     handleCancelBean();
-  };
+  }, [newBean, editingBeanId, handleCancelBean, showAlert]);
 
-  const handleStartEditBean = (bean) => {
+  const handleStartEditBean = useCallback((bean) => {
     setNewBean({
       name: bean.name,
       roaster: bean.roaster || '',
@@ -622,9 +622,9 @@ export default function App() {
     setEditingBeanId(bean.id);
     setIsEditingBean(true);
     navigateTo('edit-bean', { beanId: bean.id });
-  };
+  }, [navigateTo]);
 
-  const handleStartNewBean = () => {
+  const handleStartNewBean = useCallback(() => {
     setNewBean({
       name: '',
       roaster: '',
@@ -645,57 +645,57 @@ export default function App() {
     setEditingBeanId(null);
     setIsEditingBean(true);
     navigateTo('edit-bean');
-  };
+  }, [navigateTo]);
 
-  const handleStartEditHistory = (entry) => {
+  const handleStartEditHistory = useCallback((entry) => {
     setEditingHistoryId(entry.id);
     setEditingHistoryNotes(entry.notes || '');
     setEditingHistoryRating(entry.rating || 0);
     setEditingHistoryDescriptors(entry.descriptors || []);
     navigateTo('edit-history', { historyId: entry.id });
-  };
+  }, [navigateTo]);
 
-  const handleDeleteBeanClick = (bean) => {
+  const handleDeleteBeanClick = useCallback((bean) => {
     setBeanToDelete(bean);
     navigateTo('delete-bean', { beanId: bean.id });
-  };
+  }, [navigateTo]);
 
-  const handleConfirmDeleteBean = () => {
+  const handleConfirmDeleteBean = useCallback(() => {
     if (!beanToDelete) return;
     setRecipes(prev => prev.map(r => r.bean_id === beanToDelete.id ? { ...r, bean_id: null } : r));
     setBeans(prev => prev.filter(b => b.id !== beanToDelete.id));
     closeDeleteBean();
     showAlert("Grano de café eliminado correctamente.", "success");
-  };
+  }, [beanToDelete, closeDeleteBean, showAlert]);
 
-  const handleDeleteHistoryEntry = (entry) => {
+  const handleDeleteHistoryEntry = useCallback((entry) => {
     setHistoryEntryToDelete(entry);
     navigateTo('delete-history-entry', { entryId: entry.id });
-  };
+  }, [navigateTo]);
 
-  const handleConfirmDeleteHistoryEntry = () => {
+  const handleConfirmDeleteHistoryEntry = useCallback(() => {
     if (!historyEntryToDelete) return;
     setHistory((prev) => prev.filter((item) => item.id !== historyEntryToDelete.id));
     closeDeleteHistoryEntry();
-  };
+  }, [historyEntryToDelete, closeDeleteHistoryEntry]);
 
-  const handleConfirmClearHistory = () => {
+  const handleConfirmClearHistory = useCallback(() => {
     setHistory([]);
     closeClearHistory();
-  };
+  }, [closeClearHistory]);
 
-  const handleUpdateHistoryEntry = (id, newNotes, newRating, newDescriptors) => {
+  const handleUpdateHistoryEntry = useCallback((id, newNotes, newRating, newDescriptors) => {
     setHistory((prev) =>
       prev.map((item) => (item.id === id ? { ...item, notes: newNotes, rating: newRating, descriptors: newDescriptors } : item))
     );
-  };
+  }, []);
 
 
   useEffect(() => {
     safeSetItem('coffee_recipes_v1', recipes);
   }, [recipes]);
 
-  const handleUnifiedImportJson = (e) => {
+  const handleUnifiedImportJson = useCallback((e) => {
     const file = e.target.files[0];
     if (!file) return;
 
@@ -744,9 +744,9 @@ export default function App() {
     };
     reader.readAsText(file);
     e.target.value = '';
-  };
+  }, [navigateTo, showAlert]);
 
-  const confirmImportRecipe = () => {
+  const confirmImportRecipe = useCallback(() => {
     if (!recipeToImport) return;
 
     const uniqueId = `imported-${crypto.randomUUID()}`;
@@ -774,9 +774,9 @@ export default function App() {
     window.history.replaceState({ view: 'main' }, '');
     syncStateWithHistory({ view: 'main' });
     setActiveTab('recipes');
-  };
+  }, [recipeToImport, recipes, syncStateWithHistory, showAlert]);
 
-  const confirmImportBean = () => {
+  const confirmImportBean = useCallback(() => {
     if (!beanToImport) return;
 
     const uniqueId = `imported-${crypto.randomUUID()}`;
@@ -804,9 +804,9 @@ export default function App() {
     window.history.replaceState({ view: 'main' }, '');
     syncStateWithHistory({ view: 'main' });
     setActiveTab('beans');
-  };
+  }, [beanToImport, beans, syncStateWithHistory, showAlert]);
 
-  const handleExportJson = (recipe) => {
+  const handleExportJson = useCallback((recipe) => {
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(recipe, null, 2));
     const downloadAnchor = document.createElement('a');
     downloadAnchor.setAttribute("href", dataStr);
@@ -814,22 +814,24 @@ export default function App() {
     document.body.appendChild(downloadAnchor);
     downloadAnchor.click();
     downloadAnchor.remove();
-  };
+  }, []);
 
-  const handleDeleteRecipe = (recipe, e) => {
-    e.stopPropagation();
+  const handleDeleteRecipe = useCallback((recipe, e) => {
+    if (e && typeof e.stopPropagation === 'function') {
+      e.stopPropagation();
+    }
     setRecipeToDelete(recipe);
     navigateTo('delete-recipe', { recipeId: recipe.id });
-  };
+  }, [navigateTo]);
 
-  const handleConfirmDeleteRecipe = () => {
+  const handleConfirmDeleteRecipe = useCallback(() => {
     if (!recipeToDelete) return;
     setRecipes((prev) => prev.filter(r => r.id !== recipeToDelete.id));
     closeDeleteRecipe();
     showAlert("Receta eliminada correctamente.", "success");
-  };
+  }, [recipeToDelete, closeDeleteRecipe, showAlert]);
 
-  const handleAddStepToForm = () => {
+  const handleAddStepToForm = useCallback(() => {
     if (!stepInput.title.trim()) {
       setStepTitleError(true);
       showAlert("Por favor ingresa un título para el paso.", "error");
@@ -866,9 +868,9 @@ export default function App() {
       }));
     }
     handleCloseStepEditor();
-  };
+  }, [stepInput, editingStepIndex, handleCloseStepEditor, showAlert]);
 
-  const handleOpenStepEditor = (idx = null) => {
+  const handleOpenStepEditor = useCallback((idx = null) => {
     if (idx !== null) {
       const step = newRecipe.steps[idx];
       setStepInput({
@@ -885,17 +887,9 @@ export default function App() {
     setStepTitleError(false);
     setIsStepFormOpen(true);
     navigateTo('step-editor', { stepIndex: idx });
-  };
+  }, [newRecipe.steps, navigateTo]);
 
-  const handleCloseStepEditor = () => {
-    setIsStepFormOpen(false);
-    setStepInput({ title: '', water_g: 0, duration_s: 30, instruction: '' });
-    setEditingStepIndex(null);
-    setStepTitleError(false);
-    safeBack('step-editor');
-  };
-
-  const handleMoveStep = (idx, direction) => {
+  const handleMoveStep = useCallback((idx, direction) => {
     if (direction === 'up' && idx === 0) return;
     if (direction === 'down' && idx === newRecipe.steps.length - 1) return;
 
@@ -919,9 +913,9 @@ export default function App() {
     } else if (editingStepIndex === targetIdx) {
       setEditingStepIndex(idx);
     }
-  };
+  }, [newRecipe.steps.length, editingStepIndex]);
 
-  const handleEditRecipe = (recipe) => {
+  const handleEditRecipe = useCallback((recipe) => {
     setNewRecipe({
       name: recipe.name,
       method: recipe.method || 'V60',
@@ -936,9 +930,9 @@ export default function App() {
     setDuplicatingFromRecipe(null);
     setIsCreating(true);
     navigateTo('edit-recipe', { recipeId: recipe.id });
-  };
+  }, [navigateTo]);
 
-  const handleDuplicateRecipe = (recipe) => {
+  const handleDuplicateRecipe = useCallback((recipe) => {
     let copyName = `${recipe.name} (Copia)`;
     if (recipes.some((r) => r.name.toLowerCase() === copyName.toLowerCase())) {
       let counter = 2;
@@ -960,14 +954,12 @@ export default function App() {
       is_favorite: false
     });
     setEditingRecipeId(null);
-    if (summaryRecipe) {
-      setSummaryRecipe(null);
-    }
+    setSummaryRecipe(null);
     setIsCreating(true);
     navigateTo('edit-recipe');
-  };
+  }, [recipes, navigateTo]);
 
-  const handleNewRecipeClick = () => {
+  const handleNewRecipeClick = useCallback(() => {
     setDuplicatingFromRecipe(null);
     setNewRecipe({
       name: '',
@@ -981,9 +973,9 @@ export default function App() {
     setEditingRecipeId(null);
     setIsCreating(true);
     navigateTo('edit-recipe');
-  };
+  }, [navigateTo]);
 
-  const handleSaveRecipe = (e) => {
+  const handleSaveRecipe = useCallback((e) => {
     e.preventDefault();
     if (!newRecipe.name.trim()) {
       showAlert("Por favor, ingresa el nombre de la receta.", "error");
@@ -1049,9 +1041,9 @@ export default function App() {
       syncStateWithHistory({ view: 'main' });
     }
     handleCancelForm(true);
-  };
+  }, [newRecipe, stepInput, editingStepIndex, editingRecipeId, summaryRecipe, handleCancelForm, showAlert, syncStateWithHistory]);
 
-  const handleToggleFavorite = (recipeId) => {
+  const handleToggleFavorite = useCallback((recipeId) => {
     setRecipes((prevRecipes) => {
       const updated = prevRecipes.map((r) =>
         r.id === recipeId ? { ...r, is_favorite: !r.is_favorite } : r
@@ -1063,7 +1055,7 @@ export default function App() {
     if (summaryRecipe && summaryRecipe.id === recipeId) {
       setSummaryRecipe((prev) => (prev ? { ...prev, is_favorite: !prev.is_favorite } : null));
     }
-  };
+  }, [summaryRecipe]);
 
   const groupedRecipes = recipes.reduce((groups, recipe) => {
     const method = recipe.method || 'Otros';
@@ -1081,11 +1073,94 @@ export default function App() {
     });
   });
 
-  const formatSecondsToMinutes = (seconds) => {
+  const formatSecondsToMinutes = useCallback((seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins}m ${secs}s`;
-  };
+  }, []);
+
+  const handleSelectSummary = useCallback((recipe) => {
+    setSummaryRecipe(recipe);
+    navigateTo('summary', { recipeId: recipe.id });
+  }, [navigateTo]);
+
+  const handleStartTimerImmediate = useCallback((recipe) => {
+    setActiveRecipe(recipe);
+    setAutoStartTimer(true);
+    navigateTo('timer', { recipeId: recipe.id });
+  }, [navigateTo]);
+
+  const handleShareRecipe = useCallback((recipe) => {
+    navigateTo('share', { recipeId: recipe.id });
+  }, [navigateTo]);
+
+  const handleShareBean = useCallback((beanId) => {
+    navigateTo('share-bean', { beanId });
+  }, [navigateTo]);
+
+  const handleOpenClearHistory = useCallback(() => {
+    setShowClearHistoryConfirm(true);
+  }, []);
+
+  const handleShareFromSummary = useCallback((recipeId) => {
+    navigateTo('share', { recipeId });
+  }, [navigateTo]);
+
+  const handleDeleteFromSummary = useCallback((recipe, e) => {
+    handleDeleteRecipe(recipe, e);
+    closeSummary();
+  }, [handleDeleteRecipe, closeSummary]);
+
+  const handleEditFromSummary = useCallback((recipe) => {
+    handleEditRecipe(recipe);
+    closeSummary();
+  }, [handleEditRecipe, closeSummary]);
+
+  const handleStartTimerFromSummary = useCallback((recipe) => {
+    setAutoStartTimer(true);
+    window.history.replaceState({ view: 'timer', recipeId: recipe.id }, '');
+    syncStateWithHistory({ view: 'timer', recipeId: recipe.id });
+  }, [syncStateWithHistory]);
+
+  const handleOpenAboutFromSettings = useCallback(() => {
+    setIsSettingsOpen(false);
+    setIsAboutOpen(true);
+    navigateTo('about');
+  }, [navigateTo]);
+
+  const handleOpenAboutFromHeader = useCallback(() => {
+    setIsSettingsOpen(false);
+    setIsAboutOpen(true);
+    navigateTo('about');
+  }, [navigateTo]);
+
+  const handleOpenSettingsFromHeader = useCallback(() => {
+    setIsSettingsOpen(true);
+    navigateTo('settings');
+  }, [navigateTo]);
+
+  const handleTimerComplete = useCallback((rating = 0, notes = '', descriptors = []) => {
+    if (autoLogEnabled && activeRecipe) {
+      const totalWater = activeRecipe.steps.reduce((acc, s) => acc + s.water_g, 0);
+      const associatedBean = activeRecipe.bean_id ? beans.find(b => b.id === activeRecipe.bean_id) : null;
+      const newEntry = {
+        id: `history-${crypto.randomUUID()}`,
+        recipeId: activeRecipe.id,
+        recipeName: activeRecipe.name,
+        method: activeRecipe.method,
+        date: new Date().toISOString(),
+        coffee_g: activeRecipe.coffee_g,
+        water_g: totalWater,
+        grind_size: activeRecipe.grind_size,
+        bean_name: associatedBean ? associatedBean.name : undefined,
+        notes,
+        rating,
+        descriptors
+      };
+      setHistory((prev) => [newEntry, ...prev]);
+    }
+    closeTimer();
+  }, [activeRecipe, autoLogEnabled, beans, closeTimer]);
 
   const totalStepsTime = newRecipe.steps.reduce((sum, s) => sum + (Number(s.duration_s) || 0), 0);
   const totalStepsWater = newRecipe.steps.reduce((sum, s) => sum + (Number(s.water_g) || 0), 0);
@@ -1113,11 +1188,7 @@ export default function App() {
         </div>
         <div className="flex gap-2">
           <button
-            onClick={() => {
-              setIsSettingsOpen(false);
-              setIsAboutOpen(true);
-              navigateTo('about');
-            }}
+            onClick={handleOpenAboutFromHeader}
             className="px-2.5 py-2 bg-white/90 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition cursor-pointer text-slate-700 dark:text-slate-200 flex items-center justify-center gap-1.5 text-xs font-semibold"
             title="Acerca de"
           >
@@ -1125,10 +1196,7 @@ export default function App() {
             <span className="hidden sm:inline">Acerca de</span>
           </button>
           <button
-            onClick={() => {
-              setIsSettingsOpen(true);
-              navigateTo('settings');
-            }}
+            onClick={handleOpenSettingsFromHeader}
             className="p-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition cursor-pointer text-slate-600 dark:text-slate-200 flex items-center justify-center"
             title="Configuración"
           >
@@ -1157,28 +1225,7 @@ export default function App() {
               voiceGuidanceEnabled={voiceGuidanceEnabled}
               beanName={activeRecipe.bean_id ? beans.find(b => b.id === activeRecipe.bean_id)?.name : ''}
               autoStart={autoStartTimer}
-              onComplete={(rating = 0, notes = '', descriptors = []) => {
-                if (autoLogEnabled) {
-                  const totalWater = activeRecipe.steps.reduce((acc, s) => acc + s.water_g, 0);
-                  const associatedBean = activeRecipe.bean_id ? beans.find(b => b.id === activeRecipe.bean_id) : null;
-                  const newEntry = {
-                    id: `history-${crypto.randomUUID()}`,
-                    recipeId: activeRecipe.id,
-                    recipeName: activeRecipe.name,
-                    method: activeRecipe.method,
-                    date: new Date().toISOString(),
-                    coffee_g: activeRecipe.coffee_g,
-                    water_g: totalWater,
-                    grind_size: activeRecipe.grind_size,
-                    bean_name: associatedBean ? associatedBean.name : undefined,
-                    notes,
-                    rating,
-                    descriptors
-                  };
-                  setHistory((prev) => [newEntry, ...prev]);
-                }
-                closeTimer();
-              }}
+              onComplete={handleTimerComplete}
             />
           </div>
         ) : isCreating ? (
@@ -1250,19 +1297,12 @@ export default function App() {
                 menuOpenRecipeId={menuOpenRecipeId}
                 setMenuOpenRecipeId={setMenuOpenRecipeId}
                 onNewRecipe={handleNewRecipeClick}
-                onSelectSummary={(recipe) => {
-                  setSummaryRecipe(recipe);
-                  navigateTo('summary', { recipeId: recipe.id });
-                }}
-                onStartTimerImmediate={(recipe) => {
-                  setActiveRecipe(recipe);
-                  setAutoStartTimer(true);
-                  navigateTo('timer', { recipeId: recipe.id });
-                }}
-                onEditRecipe={(recipe) => handleEditRecipe(recipe)}
-                onShareRecipe={(recipe) => navigateTo('share', { recipeId: recipe.id })}
-                onExportJson={(recipe) => handleExportJson(recipe)}
-                onDeleteRecipe={(recipe, e) => handleDeleteRecipe(recipe, e)}
+                onSelectSummary={handleSelectSummary}
+                onStartTimerImmediate={handleStartTimerImmediate}
+                onEditRecipe={handleEditRecipe}
+                onShareRecipe={handleShareRecipe}
+                onExportJson={handleExportJson}
+                onDeleteRecipe={handleDeleteRecipe}
                 onToggleFavorite={handleToggleFavorite}
               />
             )}
@@ -1275,7 +1315,7 @@ export default function App() {
                 onAddBean={handleStartNewBean}
                 onEditBean={handleStartEditBean}
                 onDeleteBean={handleDeleteBeanClick}
-                onShareBean={(beanId) => navigateTo('share-bean', { beanId })}
+                onShareBean={handleShareBean}
               />
             )}
 
@@ -1284,7 +1324,7 @@ export default function App() {
                 history={history}
                 autoLogEnabled={autoLogEnabled}
                 setAutoLogEnabled={setAutoLogEnabled}
-                onClearHistory={() => setShowClearHistoryConfirm(true)}
+                onClearHistory={handleOpenClearHistory}
                 editingHistoryId={editingHistoryId}
                 setEditingHistoryId={setEditingHistoryId}
                 editingHistoryNotes={editingHistoryNotes}
@@ -1306,23 +1346,11 @@ export default function App() {
           summaryRecipe={summaryRecipe}
           beans={beans}
           onClose={closeSummary}
-          onShare={(recipeId) => navigateTo('share', { recipeId })}
-          onDelete={(recipe, e) => {
-            handleDeleteRecipe(recipe, e);
-            closeSummary();
-          }}
-          onEdit={(recipe) => {
-            handleEditRecipe(recipe);
-            closeSummary();
-          }}
-          onDuplicate={(recipe) => {
-            handleDuplicateRecipe(recipe);
-          }}
-          onStartTimer={(recipe) => {
-            setAutoStartTimer(true);
-            window.history.replaceState({ view: 'timer', recipeId: recipe.id }, '');
-            syncStateWithHistory({ view: 'timer', recipeId: recipe.id });
-          }}
+          onShare={handleShareFromSummary}
+          onDelete={handleDeleteFromSummary}
+          onEdit={handleEditFromSummary}
+          onDuplicate={handleDuplicateRecipe}
+          onStartTimer={handleStartTimerFromSummary}
           formatSecondsToMinutes={formatSecondsToMinutes}
           onToggleFavorite={handleToggleFavorite}
         />
@@ -1437,11 +1465,7 @@ export default function App() {
           vibrationType={vibrationType}
           setVibrationType={setVibrationType}
           onUnifiedImportJson={handleUnifiedImportJson}
-          onOpenAbout={() => {
-            setIsSettingsOpen(false);
-            setIsAboutOpen(true);
-            navigateTo('about');
-          }}
+          onOpenAbout={handleOpenAboutFromSettings}
         />
 
         <AboutModal

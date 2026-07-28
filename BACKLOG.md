@@ -46,6 +46,7 @@ Los agentes de IA deben leer este archivo para saber qué implementar a continua
 ---
 
 ## ✅ Completado
+- [x] Memorización con `useCallback` de handlers y funciones prop pasadas a componentes hijos (`RecipesTab`, `BeansTab`, `HistoryTab`, modales, etc.) en `App.jsx` eliminando re-renderizados innecesarios (`v1.11.5`).
 - [x] Incremento de cobertura de pruebas unitarias para `RecipeSummaryModal.jsx` (100% líneas) y `coffeeUtils.jsx` (92.9% líneas), elevando la cobertura global del proyecto al 91.66% (`v1.11.4`).
 - [x] Eliminación de emojis inconsistentes y creación del módulo `SvgIcons.jsx` con componentes React SVG reutilizables para acciones y etiquetas (`v1.11.3`).
 - [x] Corrección de clases Tailwind no estándar reemplazando valores fuera de la paleta oficial por equivalentes estándar (50-950) en 11 archivos (`v1.11.2`).
@@ -113,9 +114,9 @@ Los agentes de IA deben leer este archivo para saber qué implementar a continua
   - *Etiquetas:* [Prioridad: Media] [Complejidad: Baja]
   - *Descripción:* Aparecen clases como `text-slate-655`, `dark:bg-emerald-650`, `dark:text-slate-450`, `dark:hover:bg-red-750`. Usar la paleta estándar de Tailwind (50-950) para evitar errores de compilación o suciedad en el bundle.
 
-- [ ] **Usar `useCallback` en handlers pasados a componentes hijos**
+- [x] **Usar `useCallback` en handlers pasados a componentes hijos**
   - *Etiquetas:* [Prioridad: Media] [Complejidad: Baja]
-  - *Descripción:* Funciones como `handleSaveRecipe`, `handleEditRecipe`, `handleDeleteRecipe`, etc., se recrean en cada render. Memorizarlas con `useCallback` evitaría re-renderizados innecesarios en `RecipesTab`, `BeansTab`, modales y tab components.
+  - *Descripción:* Funciones como `handleSaveRecipe`, `handleEditRecipe`, `handleDeleteRecipe`, etc., se recrean en cada render. Memorizarlas con `useCallback` evitaría re-renderizados innecesarios en `RecipesTab`, `BeansTab`, modales y tab components. (`v1.11.5`).
 
 - [ ] **Gestión y reutilización de `AudioContext` en Web Audio API**
   - *Etiquetas:* [Prioridad: Media] [Complejidad: Baja]

@@ -1,4 +1,5 @@
 import { getMethodIcon } from '../utils/coffeeUtils';
+import { WaterDropIcon, ClockIcon } from './icons/SvgIcons';
 
 export default function ImportConfirmationModal({ recipe, existingRecipes = [], onConfirm, onCancel }) {
   if (!recipe) return null;
@@ -103,8 +104,8 @@ export default function ImportConfirmationModal({ recipe, existingRecipes = [], 
                     )}
                   </div>
                   <div className="text-right shrink-0 flex flex-col justify-center text-xs font-semibold text-slate-600 dark:text-slate-400">
-                    {step.water_g > 0 && <div>💧 {step.water_g}g</div>}
-                    <div>⏱️ {step.duration_s}s</div>
+                    {step.water_g > 0 && <div className="inline-flex items-center justify-end gap-1"><WaterDropIcon className="w-3 h-3 text-blue-500 inline" /> {step.water_g}g</div>}
+                    <div className="inline-flex items-center justify-end gap-1"><ClockIcon className="w-3 h-3 inline" /> {step.duration_s}s</div>
                   </div>
                 </div>
               ))}

@@ -46,6 +46,7 @@ Los agentes de IA deben leer este archivo para saber qué implementar a continua
 ---
 
 ## ✅ Completado
+- [x] Eliminación de emojis inconsistentes y creación del módulo `SvgIcons.jsx` con componentes React SVG reutilizables para acciones y etiquetas (`v1.11.3`).
 - [x] Corrección de clases Tailwind no estándar reemplazando valores fuera de la paleta oficial por equivalentes estándar (50-950) en 11 archivos (`v1.11.2`).
 - [x] Manejo defensivo con `try/catch` en operaciones de `localStorage` y validación de esquemas de datos al cargar mediante el módulo `storageUtils` (`v1.11.1`).
 - [x] Reemplazo de IDs basados en `Date.now()` por `crypto.randomUUID()` en recetas, granos, beans importados e historial para eliminar riesgo de colisión (`v1.11.0`).
@@ -103,7 +104,7 @@ Los agentes de IA deben leer este archivo para saber qué implementar a continua
   - *Etiquetas:* [Prioridad: Media] [Complejidad: Media]
   - *Descripción:* `RecipeSummaryModal` está en 60% statements / 39.39% branches. `coffeeUtils.jsx` está en 71.42% statements. Ambas jalan el promedio y dejan poco margen ante futuros cambios.
 
-- [ ] **Eliminar emojis inconsistentes y usar solo iconos SVG**
+- [x] **Eliminar emojis inconsistentes y usar solo iconos SVG**
   - *Etiquetas:* [Prioridad: Baja] [Complejidad: Baja]
   - *Descripción:* Se mezclan emojis (🗑️, ⚠️, ✅) con iconos SVG. Definir iconos SVG para acciones de confirmación/eliminación o usar emojis en todo para consistencia visual.
 

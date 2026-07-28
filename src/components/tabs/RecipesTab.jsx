@@ -1,4 +1,5 @@
 import { getMethodIcon } from '../../utils/coffeeUtils';
+import { ChevronRightIcon, ChevronDownIcon, ClipboardIcon, PencilIcon, TrashIcon } from '../icons/SvgIcons';
 
 export default function RecipesTab({
   groupedRecipes,
@@ -52,7 +53,7 @@ export default function RecipesTab({
                     <span>{method} ({groupedRecipes[method].length})</span>
                   </span>
                   <span className="text-[10px] transform transition-transform duration-200 mr-1">
-                    {isCollapsed ? '▶' : '▼'}
+                    {isCollapsed ? <ChevronRightIcon className="w-3.5 h-3.5" /> : <ChevronDownIcon className="w-3.5 h-3.5" />}
                   </span>
                 </h3>
 
@@ -114,7 +115,7 @@ export default function RecipesTab({
                               }}
                               title="Ver Resumen"
                             >
-                              📋
+                              <ClipboardIcon className="w-3.5 h-3.5" />
                             </button>
                             <button
                               data-menu-trigger={recipe.id}
@@ -129,7 +130,7 @@ export default function RecipesTab({
                             {menuOpenRecipeId === recipe.id && (
                               <div data-menu-content={recipe.id}>
                                 <button onClick={(e) => { e.stopPropagation(); onEditRecipe(recipe); setMenuOpenRecipeId(null); }}>
-                                  ✏️ Editar
+                                  <PencilIcon className="w-3.5 h-3.5 inline mr-1" /> Editar
                                 </button>
                                 <button onClick={(e) => { e.stopPropagation(); onShareRecipe(recipe); setMenuOpenRecipeId(null); }}>
                                   🔗 Compartir
@@ -138,7 +139,7 @@ export default function RecipesTab({
                                   📥 Exportar
                                 </button>
                                 <button onClick={(e) => { e.stopPropagation(); onDeleteRecipe(recipe, e); setMenuOpenRecipeId(null); }}>
-                                  🗑️ Eliminar
+                                  <TrashIcon className="w-3.5 h-3.5 inline mr-1" /> Eliminar
                                 </button>
                               </div>
                             )}

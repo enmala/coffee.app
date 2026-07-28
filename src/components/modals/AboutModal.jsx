@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { EnvelopeIcon, ClipboardIcon } from '../icons/SvgIcons';
 import { version } from '../../../package.json';
 
 export default function AboutModal({ isOpen, onClose, isTwa }) {
@@ -43,7 +44,7 @@ export default function AboutModal({ isOpen, onClose, isTwa }) {
 
         <div className="p-3.5 bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200/60 dark:border-amber-900/30 rounded-xl text-left space-y-1.5">
           <p className="text-xs font-bold text-slate-700 dark:text-slate-200 flex items-center gap-1.5">
-            <span>✉️</span> Contacto y Sugerencias
+            <EnvelopeIcon className="w-4 h-4 text-amber-800 dark:text-amber-400" /> Contacto y Sugerencias
           </p>
           <p className="text-[11px] text-slate-500 dark:text-slate-400">
             ¿Tienes dudas, comentarios o sugerencias? Escríbenos directamente:
@@ -62,7 +63,7 @@ export default function AboutModal({ isOpen, onClose, isTwa }) {
               className="px-2.5 py-1 text-[11px] font-bold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition cursor-pointer shrink-0"
               title="Copiar correo al portapapeles"
             >
-              {copied ? '¡Copiado!' : '📋 Copiar'}
+              {copied ? '¡Copiado!' : <span className="inline-flex items-center gap-1"><ClipboardIcon className="w-3 h-3" /> Copiar</span>}
             </button>
           </div>
         </div>

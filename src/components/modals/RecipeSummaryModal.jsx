@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { getIngredientLabel, getGrindLabel, formatSecondsToMinutes as formatTime } from '../../utils/coffeeUtils';
+import { getIngredientLabel, getGrindLabel, calculateRatio, formatSecondsToMinutes as formatTime } from '../../utils/coffeeUtils';
 import { MapPinIcon, GearIcon, MountainIcon, PencilIcon, ClipboardIcon, ClockIcon } from '../icons/SvgIcons';
 
 export default function RecipeSummaryModal({
@@ -18,6 +18,10 @@ export default function RecipeSummaryModal({
   const [isBeanExpanded, setIsBeanExpanded] = useState(false);
 
   if (!summaryRecipe) return null;
+
+  const totalWaterG = (summaryRecipe.steps || []).reduce((acc, s) => acc + (s.water_g || 0), 0);
+  const estimatedSeconds = (summaryRecipe.steps || []).reduce((acc, s) => acc + (s.duration_s || 0), 0);
+  const computedRatio = calculateRatio(summaryRecipe.coffee_g, totalWaterG);
 
   return (
     <div className="fixed inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
@@ -103,14 +107,22 @@ export default function RecipeSummaryModal({
             <div className="mt-1">
               <span className="text-slate-500 dark:text-slate-300 block font-semibold text-[10px] uppercase">Agua Total</span>
               <span className="text-sm font-bold text-slate-800 dark:text-slate-200">
-                {(summaryRecipe.steps || []).reduce((acc, s) => acc + (s.water_g || 0), 0)}g
+                {totalWaterG}g
               </span>
             </div>
-            <div className="col-span-2 mt-2 pt-2 border-t border-slate-200 dark:border-slate-700 flex justify-between">
-              <span className="text-slate-500 dark:text-slate-300 font-semibold text-[10px] uppercase">Tiempo Total Estimado</span>
-              <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
-                {(formatSecondsToMinutes || formatTime)((summaryRecipe.steps || []).reduce((acc, s) => acc + (s.duration_s || 0), 0))}
-              </span>
+            <div className="col-span-2 mt-2 pt-2 border-t border-slate-200 dark:border-slate-700 flex justify-between items-center">
+              <div>
+                <span className="text-slate-500 dark:text-slate-300 font-semibold text-[10px] uppercase block">Tiempo Total Estimado</span>
+                <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                  {(formatSecondsToMinutes || formatTime)(estimatedSeconds)}
+                </span>
+              </div>
+              <div className="text-right">
+                <span className="text-slate-500 dark:text-slate-300 font-semibold text-[10px] uppercase block">Proporción</span>
+                <span className="text-xs font-bold text-amber-800 dark:text-amber-400 bg-amber-100/60 dark:bg-amber-950/40 px-2 py-0.5 rounded border border-amber-200/40 dark:border-amber-900/30 inline-block">
+                  Ratio {computedRatio}
+                </span>
+              </div>
             </div>
           </div>
 
@@ -197,12 +209,13 @@ export default function RecipeSummaryModal({
           </div>
         </div>
 
-        {/* Footer Fijo */}
-        <div className="p-5 pt-3 border-t border-slate-100 dark:border-slate-800 flex gap-2 shrink-0 bg-white dark:bg-slate-900">
+        {/* Footer Fijo con Opción A: Botones secundarios sólo icono + Iniciar Timer principal */}
+        <div className="p-5 pt-3 border-t border-slate-100 dark:border-slate-800 flex gap-2 shrink-0 bg-white dark:bg-slate-900 items-center">
           <button
             onClick={(e) => onDelete(summaryRecipe, e)}
-            className="p-2 border border-red-200 dark:border-red-900/30 hover:bg-red-50 dark:hover:bg-red-950/20 text-red-600 dark:text-red-400 rounded-xl transition cursor-pointer flex items-center justify-center shrink-0"
+            className="p-2.5 border border-red-200 dark:border-red-900/30 hover:bg-red-50 dark:hover:bg-red-950/20 text-red-600 dark:text-red-400 rounded-xl transition cursor-pointer flex items-center justify-center shrink-0"
             title="Eliminar receta"
+            aria-label="Eliminar receta"
           >
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
               <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
@@ -210,20 +223,23 @@ export default function RecipeSummaryModal({
           </button>
           <button
             onClick={() => onEdit(summaryRecipe)}
-            className="flex-1 py-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl font-bold text-xs transition cursor-pointer flex items-center justify-center gap-1"
+            className="p-2.5 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl transition cursor-pointer flex items-center justify-center shrink-0"
+            title="Editar receta"
+            aria-label="Editar receta"
           >
-            <PencilIcon className="w-3.5 h-3.5" /> Editar
+            <PencilIcon className="w-5 h-5" />
           </button>
           <button
             onClick={() => onDuplicate && onDuplicate(summaryRecipe)}
-            className="flex-1 py-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl font-bold text-xs transition cursor-pointer flex items-center justify-center gap-1"
+            className="p-2.5 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl transition cursor-pointer flex items-center justify-center shrink-0"
             title="Duplicar esta receta como base para una nueva"
+            aria-label="Duplicar receta"
           >
-            <ClipboardIcon className="w-3.5 h-3.5" /> Duplicar
+            <ClipboardIcon className="w-5 h-5" />
           </button>
           <button
             onClick={() => onStartTimer(summaryRecipe)}
-            className="flex-[1.5] py-2 bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-800 text-white rounded-xl font-bold text-xs transition shadow-sm cursor-pointer flex items-center justify-center gap-1.5"
+            className="flex-1 py-2.5 bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-800 text-white rounded-xl font-bold text-xs md:text-sm transition shadow-sm cursor-pointer flex items-center justify-center gap-1.5"
           >
             <ClockIcon className="w-4 h-4" /> Iniciar Timer
           </button>

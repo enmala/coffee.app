@@ -1353,8 +1353,8 @@ describe('App Component', () => {
     const summaryBtn = recipeCard.querySelector('button[title="Ver Resumen"]');
     fireEvent.click(summaryBtn);
 
-    // 2. Click '📋 Duplicar' in summary modal
-    const duplicateBtn = screen.getByText(/Duplicar/);
+    // 2. Click 'Duplicar' in summary modal
+    const duplicateBtn = screen.getByTitle(/Duplicar esta receta/);
     fireEvent.click(duplicateBtn);
 
     // 3. Verify form modal opens pre-filled with (Copia) name
@@ -1379,8 +1379,8 @@ describe('App Component', () => {
     const summaryBtn = recipeCard.querySelector('button[title="Ver Resumen"]');
     fireEvent.click(summaryBtn);
 
-    // 2. Click '📋 Duplicar' in summary modal
-    const duplicateBtn = screen.getByText(/Duplicar/);
+    // 2. Click 'Duplicar' in summary modal
+    const duplicateBtn = screen.getByTitle(/Duplicar esta receta/);
     fireEvent.click(duplicateBtn);
 
     // 3. Click 'Cancelar' in recipe form
@@ -1400,8 +1400,8 @@ describe('App Component', () => {
     const summaryBtn = recipeCard.querySelector('button[title="Ver Resumen"]');
     fireEvent.click(summaryBtn);
 
-    // 2. Click "📋 Duplicar" in summary modal
-    const duplicateSummaryBtn = screen.getByText(/Duplicar/);
+    // 2. Click "Duplicar" in summary modal
+    const duplicateSummaryBtn = screen.getByTitle(/Duplicar esta receta/);
     fireEvent.click(duplicateSummaryBtn);
 
     // 3. Save first copy as default "Aeropress Tradicional (Copia)"
@@ -1413,7 +1413,7 @@ describe('App Component', () => {
     const originalCard = screen.getAllByText('Aeropress Tradicional')[0].closest('.group');
     const summaryBtn2 = originalCard.querySelector('button[title="Ver Resumen"]');
     fireEvent.click(summaryBtn2);
-    const duplicateSummaryBtn2 = screen.getByText(/Duplicar/);
+    const duplicateSummaryBtn2 = screen.getByTitle(/Duplicar esta receta/);
     fireEvent.click(duplicateSummaryBtn2);
 
     // 5. Verify pre-filled name is "Aeropress Tradicional (Copia 2)"

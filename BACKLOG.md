@@ -46,6 +46,7 @@ Los agentes de IA deben leer este archivo para saber qué implementar a continua
 ---
 
 ## ✅ Completado
+- [x] Rediseño de acciones inferiores en modal de resumen (Opción A: botones secundarios sólo icono) para otorgar jerarquía primaria a "Iniciar Timer", e integración del cálculo dinámico del Ratio café/agua ($1:X$) en la vista de resumen y formulario de edición (`v1.11.6`).
 - [x] Memorización con `useCallback` de handlers y funciones prop pasadas a componentes hijos (`RecipesTab`, `BeansTab`, `HistoryTab`, modales, etc.) en `App.jsx` eliminando re-renderizados innecesarios (`v1.11.5`).
 - [x] Incremento de cobertura de pruebas unitarias para `RecipeSummaryModal.jsx` (100% líneas) y `coffeeUtils.jsx` (92.9% líneas), elevando la cobertura global del proyecto al 91.66% (`v1.11.4`).
 - [x] Eliminación de emojis inconsistentes y creación del módulo `SvgIcons.jsx` con componentes React SVG reutilizables para acciones y etiquetas (`v1.11.3`).

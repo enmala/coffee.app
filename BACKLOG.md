@@ -46,6 +46,7 @@ Los agentes de IA deben leer este archivo para saber qué implementar a continua
 ---
 
 ## ✅ Completado
+- [x] Extraer la lógica de recetas, granos, historial y navegación de `App.jsx` a custom hooks personalizados (`useRecipes`, `useBeans`, `useHistory`, `useNavigation`), reduciendo la complejidad del componente principal y manteniendo el 100% de la suite de tests en Vitest (`v1.11.8`).
 - [x] Reutilización de instancia única de `AudioContext` en `playBeep` con `resume()` ante autoplay policy y `resetSharedAudioContext` para limpieza, evitando creación/cierre por cada pitido (`v1.11.7`).
 - [x] Rediseño de acciones inferiores en modal de resumen (Opción A: botones secundarios sólo icono) para otorgar jerarquía primaria a "Iniciar Timer", e integración del cálculo dinámico del Ratio café/agua ($1:X$) en la vista de resumen y formulario de edición (`v1.11.6`).
 - [x] Memorización con `useCallback` de handlers y funciones prop pasadas a componentes hijos (`RecipesTab`, `BeansTab`, `HistoryTab`, modales, etc.) en `App.jsx` eliminando re-renderizados innecesarios (`v1.11.5`).
@@ -100,7 +101,7 @@ Los agentes de IA deben leer este archivo para saber qué implementar a continua
 
 ## 🛠️ Deuda Técnica
 
-- [ ] **Extraer lógica de `App.jsx` a custom hooks**
+- [x] **Extraer lógica de `App.jsx` a custom hooks** (`v1.11.8`)
   - *Etiquetas:* [Prioridad: Alta] [Complejidad: Media]
   - *Descripción:* Mover la lógica de recipes, beans, history y navigation a hooks personalizados (`useRecipes`, `useBeans`, `useHistory`, `useNavigation`) para reducir la complejidad de `App.jsx`.
 

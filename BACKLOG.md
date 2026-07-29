@@ -46,6 +46,7 @@ Los agentes de IA deben leer este archivo para saber qué implementar a continua
 ---
 
 ## ✅ Completado
+- [x] Corrección de observaciones de Google Play Console: habilitación de pantalla Edge-to-Edge mediante `WindowCompat` para Android 15 (SDK 35), alineación de dependencias de `androidbrowserhelper` y eliminación de restricciones de orientación/pantalla grande (`orientation: default`) para compatibilidad con Android 16 en dispositivos de pantalla grande y plegables (`v1.11.9`).
 - [x] Extraer la lógica de recetas, granos, historial y navegación de `App.jsx` a custom hooks personalizados (`useRecipes`, `useBeans`, `useHistory`, `useNavigation`), reduciendo la complejidad del componente principal y manteniendo el 100% de la suite de tests en Vitest (`v1.11.8`).
 - [x] Reutilización de instancia única de `AudioContext` en `playBeep` con `resume()` ante autoplay policy y `resetSharedAudioContext` para limpieza, evitando creación/cierre por cada pitido (`v1.11.7`).
 - [x] Rediseño de acciones inferiores en modal de resumen (Opción A: botones secundarios sólo icono) para otorgar jerarquía primaria a "Iniciar Timer", e integración del cálculo dinámico del Ratio café/agua ($1:X$) en la vista de resumen y formulario de edición (`v1.11.6`).

@@ -334,7 +334,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 p-3 md:p-4 font-sans flex flex-col items-center transition-colors duration-300">
-      <header className="w-full max-w-md mb-4 mt-2 md:mb-6 md:mt-4 flex justify-between items-center px-1">
+      <header className="w-full max-w-md sm:max-w-xl md:max-w-3xl lg:max-w-5xl mb-4 mt-2 md:mb-6 md:mt-4 flex justify-between items-center px-1">
         <div className="text-left">
           <div className="flex items-center gap-2">
             <svg viewBox="0 0 24 24" className="w-8 h-8 md:w-9 md:h-9 text-amber-900 dark:text-amber-500" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -375,7 +375,7 @@ export default function App() {
         </div>
       </header>
 
-      <main className="w-full max-w-md bg-white dark:bg-slate-900 rounded-2xl shadow-md border border-slate-200 dark:border-slate-800 overflow-hidden p-4 md:p-6 relative transition-colors duration-300">
+      <main className="w-full max-w-md sm:max-w-xl md:max-w-3xl lg:max-w-5xl bg-white dark:bg-slate-900 rounded-2xl shadow-md border border-slate-200 dark:border-slate-800 p-4 md:p-6 relative transition-colors duration-300">
         {activeRecipe ? (
           <div>
             <button

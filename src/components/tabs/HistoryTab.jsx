@@ -43,7 +43,7 @@ export default function HistoryTab({
           )}
         </div>
       </div>
-      <div className="space-y-3 max-h-[480px] overflow-y-auto pr-1 pb-32">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
         {history.length === 0 ? (
           <p className="text-sm text-slate-500 dark:text-slate-300 text-center py-8">
             No tienes preparaciones registradas aún. ¡Completa tu primer timer para inaugurar tu historial!

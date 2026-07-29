@@ -31,7 +31,7 @@ export default function RecipesTab({
         </div>
       </div>
 
-      <div className="space-y-5 max-h-[480px] overflow-y-auto pr-1 pb-32">
+      <div className="space-y-5">
         {Object.keys(groupedRecipes).length === 0 ? (
           <p className="text-sm text-slate-500 dark:text-slate-300 text-center py-8">No tienes recetas guardadas.</p>
         ) : (
@@ -58,7 +58,7 @@ export default function RecipesTab({
                 </h3>
 
                 {!isCollapsed && (
-                  <div className="space-y-2">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
                     {groupedRecipes[method].map((recipe) => (
                       <div
                         key={recipe.id}

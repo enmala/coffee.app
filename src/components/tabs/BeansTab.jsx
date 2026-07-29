@@ -49,7 +49,7 @@ export default function BeansTab({
       </div>
 
       {/* Listado de granos */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-3">
         {filteredBeans.length === 0 ? (
           <p className="text-sm text-slate-500 dark:text-slate-300 text-center py-8 font-sans">
             {beans.length === 0 

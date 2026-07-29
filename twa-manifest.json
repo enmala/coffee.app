@@ -20,8 +20,8 @@
     "path": "./android.keystore",
     "alias": "android"
   },
-  "appVersionName": "1.11.8",
-  "appVersionCode": 44,
+  "appVersionName": "1.11.9",
+  "appVersionCode": 46,
   "shortcuts": [],
   "generatorApp": "bubblewrap-cli",
   "webManifestUrl": "https://barista.bitslab.cl/manifest.webmanifest",
@@ -34,10 +34,10 @@
   "isChromeOSOnly": false,
   "isMetaQuest": false,
   "minSdkVersion": 21,
-  "orientation": "portrait",
+  "orientation": "default",
   "fingerprints": [],
   "additionalTrustedOrigins": [],
   "retainedBundles": [],
   "displayOverride": [],
-  "appVersion": "1.11.8"
+  "appVersion": "1.11.9"
 }

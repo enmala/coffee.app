@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { PencilIcon, TrashIcon, MapPinIcon, GearIcon, MountainIcon } from '../icons/SvgIcons';
 
 export default function BeansTab({
@@ -9,15 +10,19 @@ export default function BeansTab({
   onDeleteBean,
   onShareBean
 }) {
-  const filteredBeans = beans.filter(b => 
-    b.name.toLowerCase().includes(beanSearchQuery.toLowerCase()) ||
-    (b.roaster && b.roaster.toLowerCase().includes(beanSearchQuery.toLowerCase())) ||
-    (b.origin && b.origin.toLowerCase().includes(beanSearchQuery.toLowerCase())) ||
-    (b.region && b.region.toLowerCase().includes(beanSearchQuery.toLowerCase())) ||
-    (b.farm && b.farm.toLowerCase().includes(beanSearchQuery.toLowerCase())) ||
-    (b.producer && b.producer.toLowerCase().includes(beanSearchQuery.toLowerCase())) ||
-    (b.variety && b.variety.toLowerCase().includes(beanSearchQuery.toLowerCase()))
-  );
+  const filteredBeans = useMemo(() => {
+    const query = beanSearchQuery.toLowerCase().trim();
+    if (!query) return beans;
+    return beans.filter(b => 
+      b.name.toLowerCase().includes(query) ||
+      (b.roaster && b.roaster.toLowerCase().includes(query)) ||
+      (b.origin && b.origin.toLowerCase().includes(query)) ||
+      (b.region && b.region.toLowerCase().includes(query)) ||
+      (b.farm && b.farm.toLowerCase().includes(query)) ||
+      (b.producer && b.producer.toLowerCase().includes(query)) ||
+      (b.variety && b.variety.toLowerCase().includes(query))
+    );
+  }, [beans, beanSearchQuery]);
 
   return (
     <div className="space-y-6">

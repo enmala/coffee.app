@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { safeGetItem, safeSetItem } from '../utils/storageUtils';
 import { DEFAULT_RECIPES } from '../constants/defaultData';
 
@@ -458,24 +458,34 @@ export function useRecipes() {
     closeSummary(safeBack);
   }, [handleEditRecipe, closeSummary]);
 
-  const groupedRecipes = recipes.reduce((groups, recipe) => {
-    const method = recipe.method || 'Otros';
-    if (!groups[method]) {
-      groups[method] = [];
-    }
-    groups[method].push(recipe);
-    return groups;
-  }, {});
+  const groupedRecipes = useMemo(() => {
+    const groups = recipes.reduce((acc, recipe) => {
+      const method = recipe.method || 'Otros';
+      if (!acc[method]) {
+        acc[method] = [];
+      }
+      acc[method].push(recipe);
+      return acc;
+    }, {});
 
-  Object.keys(groupedRecipes).forEach((method) => {
-    groupedRecipes[method].sort((a, b) => {
-      if (!!a.is_favorite === !!b.is_favorite) return 0;
-      return a.is_favorite ? -1 : 1;
+    Object.keys(groups).forEach((method) => {
+      groups[method].sort((a, b) => {
+        if (!!a.is_favorite === !!b.is_favorite) return 0;
+        return a.is_favorite ? -1 : 1;
+      });
     });
-  });
 
-  const totalStepsTime = newRecipe.steps.reduce((sum, s) => sum + (Number(s.duration_s) || 0), 0);
-  const totalStepsWater = newRecipe.steps.reduce((sum, s) => sum + (Number(s.water_g) || 0), 0);
+    return groups;
+  }, [recipes]);
+
+  const totalStepsTime = useMemo(
+    () => newRecipe.steps.reduce((sum, s) => sum + (Number(s.duration_s) || 0), 0),
+    [newRecipe.steps]
+  );
+  const totalStepsWater = useMemo(
+    () => newRecipe.steps.reduce((sum, s) => sum + (Number(s.water_g) || 0), 0),
+    [newRecipe.steps]
+  );
 
   return {
     recipes,

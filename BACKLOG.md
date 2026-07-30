@@ -46,6 +46,7 @@ Los agentes de IA deben leer este archivo para saber qué implementar a continua
 ---
 
 ## ✅ Completado
+- [x] Memorización (`useMemo`) en el agrupamiento de recetas (`useRecipes.js`) y filtrado por texto de granos (`BeansTab.jsx`), optimizando la fluidez de renderizado en dispositivos móviles (`v1.11.10`).
 - [x] Corrección de observaciones de Google Play Console: habilitación de pantalla Edge-to-Edge mediante `WindowCompat` para Android 15 (SDK 35), alineación de dependencias de `androidbrowserhelper` y eliminación de restricciones de orientación/pantalla grande (`orientation: default`) para compatibilidad con Android 16 en dispositivos de pantalla grande y plegables (`v1.11.9`).
 - [x] Extraer la lógica de recetas, granos, historial y navegación de `App.jsx` a custom hooks personalizados (`useRecipes`, `useBeans`, `useHistory`, `useNavigation`), reduciendo la complejidad del componente principal y manteniendo el 100% de la suite de tests en Vitest (`v1.11.8`).
 - [x] Reutilización de instancia única de `AudioContext` en `playBeep` con `resume()` ante autoplay policy y `resetSharedAudioContext` para limpieza, evitando creación/cierre por cada pitido (`v1.11.7`).
@@ -126,9 +127,9 @@ Los agentes de IA deben leer este archivo para saber qué implementar a continua
   - *Etiquetas:* [Prioridad: Media] [Complejidad: Baja]
   - *Descripción:* En `src/utils/coffeeUtils.jsx`, `playBeep` instancia un `new AudioContext()` y lo cierra en cada sonido. Reutilizar una única instancia de `AudioContext` previene consumo innecesario de memoria y bloqueos de audio en móviles/TWA. (`v1.11.7`).
 
-- [ ] **Memorización (`useMemo`) en filtrado y búsqueda de recetas y granos**
+- [x] **Memorización (`useMemo`) en filtrado y búsqueda de recetas y granos** (`v1.11.10`)
   - *Etiquetas:* [Prioridad: Baja] [Complejidad: Baja]
-  - *Descripción:* En `RecipesTab.jsx` y `BeansTab.jsx`, el filtrado por texto de búsqueda y método/categoría se evalúa en cada render. Memorizar las listas filtradas con `useMemo` optimizará la fluidez en dispositivos móviles.
+  - *Descripción:* En `useRecipes.js` y `BeansTab.jsx`, el agrupamiento por método y el filtrado por texto de búsqueda se memorizan con `useMemo` para evitar re-calculos innecesarios en cada render.
 
 - [ ] **Refactorizar patrones repetidos de vibración en `TimerComponent`**
   - *Etiquetas:* [Prioridad: Baja] [Complejidad: Baja]

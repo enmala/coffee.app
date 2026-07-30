@@ -456,4 +456,25 @@ describe('Coffee Beans Management Tests', () => {
 
     window.FileReader = originalFileReader;
   });
+
+  test('should filter beans dynamically based on search query', () => {
+    render(<App />);
+
+    // Switch to Granos tab
+    fireEvent.click(screen.getByRole('button', { name: /Granos/ }));
+
+    // Default bean is present
+    expect(screen.getByText('Etiopía Sidamo')).toBeInTheDocument();
+
+    // Type non-matching search term
+    const searchInput = screen.getByPlaceholderText(/Buscar por nombre, origen, finca/i);
+    fireEvent.change(searchInput, { target: { value: 'Inexistente' } });
+
+    expect(screen.queryByText('Etiopía Sidamo')).not.toBeInTheDocument();
+    expect(screen.getByText('No se encontraron granos que coincidan con la búsqueda.')).toBeInTheDocument();
+
+    // Type matching search term
+    fireEvent.change(searchInput, { target: { value: 'Sidama' } });
+    expect(screen.getByText('Etiopía Sidamo')).toBeInTheDocument();
+  });
 });

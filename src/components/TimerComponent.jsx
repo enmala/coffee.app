@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { playBeep, speakText, getIngredientLabel, getGrindLabel, getRecipeCategory } from '../utils/coffeeUtils';
+import { playBeep, speakText, getIngredientLabel, getGrindLabel, getRecipeCategory, triggerVibration } from '../utils/coffeeUtils';
 
 export default function TimerComponent({ recipe, onComplete, soundEnabled = true, vibrationEnabled = true, vibrationType = 'normal', voiceGuidanceEnabled = false, beanName, autoStart = false }) {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
@@ -75,26 +75,11 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
           if (currentStepIndex < recipe.steps.length - 1) {
             const nextIndex = currentStepIndex + 1;
             setCurrentStepIndex(nextIndex);
-            
-            if (vibrationEnabled && 'vibrate' in navigator) {
-              const pattern = vibrationType === 'short'
-                ? [75, 50, 75]
-                : vibrationType === 'long'
-                ? [300, 150, 300]
-                : [150, 100, 150];
-              navigator.vibrate(pattern);
-            }
+            triggerVibration(vibrationEnabled, vibrationType, false);
             return recipe.steps[nextIndex].duration_s;
           } else {
             setIsRunning(false);
-            if (vibrationEnabled && 'vibrate' in navigator) {
-              const duration = vibrationType === 'short'
-                ? 200
-                : vibrationType === 'long'
-                ? 800
-                : 400;
-              navigator.vibrate(duration);
-            }
+            triggerVibration(vibrationEnabled, vibrationType, true);
             if (voiceGuidanceEnabled) {
               speakText(getRecipeCategory(recipe) === 'tea' ? '¡Preparación completada! Tu té está listo.' : '¡Preparación completada! Tu café está listo.');
             }
@@ -119,25 +104,10 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
       const nextIndex = currentStepIndex + 1;
       setCurrentStepIndex(nextIndex);
       setTimeLeft(recipe.steps[nextIndex].duration_s);
-      
-      if (vibrationEnabled && 'vibrate' in navigator) {
-        const pattern = vibrationType === 'short'
-          ? [75, 50, 75]
-          : vibrationType === 'long'
-          ? [300, 150, 300]
-          : [150, 100, 150];
-        navigator.vibrate(pattern);
-      }
+      triggerVibration(vibrationEnabled, vibrationType, false);
     } else {
       setIsRunning(false);
-      if (vibrationEnabled && 'vibrate' in navigator) {
-        const duration = vibrationType === 'short'
-          ? 200
-          : vibrationType === 'long'
-          ? 800
-          : 400;
-        navigator.vibrate(duration);
-      }
+      triggerVibration(vibrationEnabled, vibrationType, true);
       if (voiceGuidanceEnabled) {
         speakText(getRecipeCategory(recipe) === 'tea' ? '¡Preparación completada! Tu té está listo.' : '¡Preparación completada! Tu café está listo.');
       }

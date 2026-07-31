@@ -12,7 +12,9 @@ import {
   compressRecipe,
   decompressRecipe,
   compressBean,
-  decompressBean
+  decompressBean,
+  getVibrationPattern,
+  triggerVibration
 } from '../src/utils/coffeeUtils';
 
 describe('coffeeUtils', () => {
@@ -391,6 +393,35 @@ describe('coffeeUtils', () => {
       expect(decompressed.name).toBe('Fallback Recipe Test');
 
       globalThis.CompressionStream = originalCS;
+    });
+  });
+
+  describe('Vibration Helpers', () => {
+    test('getVibrationPattern returns correct patterns for step transitions and completion', () => {
+      expect(getVibrationPattern('short', false)).toEqual([75, 50, 75]);
+      expect(getVibrationPattern('long', false)).toEqual([300, 150, 300]);
+      expect(getVibrationPattern('normal', false)).toEqual([150, 100, 150]);
+
+      expect(getVibrationPattern('short', true)).toBe(200);
+      expect(getVibrationPattern('long', true)).toBe(800);
+      expect(getVibrationPattern('normal', true)).toBe(400);
+    });
+
+    test('triggerVibration calls navigator.vibrate when enabled and supported', () => {
+      const vibrateMock = vi.fn();
+      vi.stubGlobal('navigator', { vibrate: vibrateMock });
+
+      triggerVibration(true, 'short', false);
+      expect(vibrateMock).toHaveBeenCalledWith([75, 50, 75]);
+
+      triggerVibration(true, 'long', true);
+      expect(vibrateMock).toHaveBeenCalledWith(800);
+
+      vibrateMock.mockClear();
+      triggerVibration(false, 'short', false);
+      expect(vibrateMock).not.toHaveBeenCalled();
+
+      vi.unstubAllGlobals();
     });
   });
 });

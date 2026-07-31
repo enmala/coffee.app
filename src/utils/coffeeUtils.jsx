@@ -424,3 +424,24 @@ export const formatSecondsToMinutes = (seconds) => {
   return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
 };
 
+// Obtiene el patrón o duración de vibración según el tipo y si es fin de preparación
+export const getVibrationPattern = (type = 'normal', isCompletion = false) => {
+  if (isCompletion) {
+    return type === 'short' ? 200 : type === 'long' ? 800 : 400;
+  }
+  return type === 'short'
+    ? [75, 50, 75]
+    : type === 'long'
+    ? [300, 150, 300]
+    : [150, 100, 150];
+};
+
+// Dispara la vibración si está habilitada y es soportada por el navegador
+export const triggerVibration = (vibrationEnabled, vibrationType = 'normal', isCompletion = false) => {
+  if (vibrationEnabled && typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+    const pattern = getVibrationPattern(vibrationType, isCompletion);
+    navigator.vibrate(pattern);
+  }
+};
+
+

@@ -46,6 +46,7 @@ Los agentes de IA deben leer este archivo para saber qué implementar a continua
 ---
 
 ## ✅ Completado
+- [x] Corrección de uso incorrecto de `className text-*` sobre elementos SVG `<rect>` en `getMethodIcon` (`coffeeUtils.jsx`), reemplazando por las utilidades canónicas de Tailwind `fill-*`/`dark:fill-*` que establecen directamente la propiedad `fill` CSS (`v1.11.12`).
 - [x] Refactorización de patrones repetidos de vibración en `TimerComponent.jsx` extrayendo las funciones auxiliares `getVibrationPattern` y `triggerVibration` en `coffeeUtils.jsx` (`v1.11.11`).
 - [x] Memorización (`useMemo`) en el agrupamiento de recetas (`useRecipes.js`) y filtrado por texto de granos (`BeansTab.jsx`), optimizando la fluidez de renderizado en dispositivos móviles (`v1.11.10`).
 - [x] Corrección de observaciones de Google Play Console: habilitación de pantalla Edge-to-Edge mediante `WindowCompat` para Android 15 (SDK 35), alineación de dependencias de `androidbrowserhelper` y eliminación de restricciones de orientación/pantalla grande (`orientation: default`) para compatibilidad con Android 16 en dispositivos de pantalla grande y plegables (`v1.11.9`).

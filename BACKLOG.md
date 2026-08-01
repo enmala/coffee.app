@@ -13,11 +13,11 @@ Los agentes de IA deben leer este archivo para saber qué implementar a continua
 ## ⏳ Pendiente (Backlog Priorizado)
 
 - [ ] **Buscador de Recetas**
-  - *Etiquetas:* [Prioridad: Media] [Complejidad: Baja]
+  - *Etiquetas:* [Prioridad: Baja] [Complejidad: Baja]
   - *Descripción:* Barra de búsqueda en tiempo real dentro de la pestaña de recetas para filtrar por nombre de receta, método, autor o notas.
 
 - [ ] **Calculadora Dinámica de Ratios**
-  - *Etiquetas:* [Prioridad: Media] [Complejidad: Alta]
+  - *Etiquetas:* [Prioridad: Baja] [Complejidad: Alta]
   - *Descripción:* Permitir al usuario modificar la cantidad de café inicial (`coffee_g`) en tiempo de ejecución (por ejemplo, desde el resumen o antes de iniciar el timer) y que la aplicación recalcule y escale proporcionalmente la cantidad de agua necesaria para cada paso individual basándose en la relación (ratio) original. Pendiente por definir estrategia de calculo teniendo en cuenta que no solamente se debe aumentar la cantidad de agua sino que ajustar los tiempos por cada etapa del proceso.
 
 - [ ] **Internacionalización**
@@ -32,15 +32,12 @@ Los agentes de IA deben leer este archivo para saber qué implementar a continua
   - *Etiquetas:* [Prioridad: Baja] [Complejidad: Alta]
   - *Descripción:* Como alternativa al almacenamiento puramente local (localStorage), permitir hacer un respaldo y sincronización automáticos de recetas e historial usando las cuentas personales del usuario en la nube sin necesidad de montar una infraestructura de backend compleja.
 
-- [ ] **Disponibilidad en tiendas de aplicaciones**
-  - *Etiquetas:* [Prioridad: Baja] [Complejidad: Media]
-  - *Descripción:* Publicar la PWA en Google Play Store (como TWA) y en Microsoft Store.
-
 - [ ] **Mejoras de Interfaz**
-  - En los formularios de edición de recetas y granos agregar un indicador de cambios sin guardar.
-  - En la edición de recetas mostrar un resumen en tiempo real (pasos totales, agua acumulada, tiempo total)
-  - Mejorar la visualización del timer especialmente en pantallas muy pequeñas
-  - Diferenciar tab de historial de los de recetas y granos
+  - *Etiquetas:* [Prioridad: Media] [Complejidad: Baja]
+  - [ ] En los formularios de edición de recetas y granos agregar un indicador de cambios sin guardar.
+  - [x] En la edición de recetas mostrar un resumen en tiempo real (pasos totales, agua acumulada, tiempo total)
+  - [ ] Mejorar la visualización del timer especialmente en pantallas muy pequeñas
+  - [ ] Diferenciar tab de historial de los de recetas y granos
 
 
 ---

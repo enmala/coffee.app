@@ -96,6 +96,7 @@ El listado de tareas pendientes, en progreso y completadas ha sido migrado al ar
 *   La versión de la app se guardará en el archivo `package.json`
 *   La versión de la app se mostrará en el footer de la app
 *   Cada vez que se realizen cambios en una nueva rama de trabajo se debe actualizar el versionamiento.
+*   No actualices directamente la versión en twa-manifest.json
 *   Al completar un trabajo y antes de subir los cambios al repositorio remoto se debe ejecutar el comando `npx @bubblewrap/cli update --appVersionName="<version>"` para actualizar el versionamiento de la app. Ejecutar este comando sobre la carpeta raíz del proyecto.
 
 ## 9. Tests

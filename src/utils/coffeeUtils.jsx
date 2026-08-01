@@ -141,7 +141,7 @@ export const getMethodIcon = (method) => {
     return (
       <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current text-amber-900/70 dark:text-amber-500/80" xmlns="http://www.w3.org/2000/svg">
         <path d="M6 3h12l-4.5 7.5c-.3.5-.3 1.1 0 1.6L18 20c.5.8-.1 1.8-1 1.8H7c-.9 0-1.5-1-1-1.8l4.5-7.9c.3-.5.3-1.1 0-1.6L6 3z" />
-        <rect x="8.5" y="10.5" width="7" height="2.5" rx="0.5" fill="currentColor" className="text-amber-700 dark:text-amber-600" />
+        <rect x="8.5" y="10.5" width="7" height="2.5" rx="0.5" className="fill-amber-700 dark:fill-amber-600" />
         <circle cx="12" cy="11.75" r="0.75" fill="white" />
       </svg>
     );
@@ -152,7 +152,7 @@ export const getMethodIcon = (method) => {
         <path d="M4 3h16l-3 9H7l-3-9z" />
         <rect x="5" y="12" width="14" height="2" rx="0.5" />
         <rect x="8" y="14" width="8" height="5" rx="1" opacity="0.6" />
-        <rect x="10" y="15.5" width="4" height="1.5" rx="0.5" fill="currentColor" className="text-amber-600 dark:text-amber-400" />
+        <rect x="10" y="15.5" width="4" height="1.5" rx="0.5" className="fill-amber-600 dark:fill-amber-400" />
       </svg>
     );
   }
@@ -187,7 +187,7 @@ export const getMethodIcon = (method) => {
         <circle cx="12" cy="2" r="1" />
         <rect x="7" y="4" width="10" height="1.5" rx="0.5" />
         <rect x="11.25" y="3" width="1.5" height="13" />
-        <rect x="6.5" y="15" width="11" height="1.5" fill="currentColor" className="text-amber-700 dark:text-amber-600" />
+        <rect x="6.5" y="15" width="11" height="1.5" className="fill-amber-700 dark:fill-amber-600" />
         <path d="M6 5.5v14a2.5 2.5 0 0 0 2.5 2.5h7a2.5 2.5 0 0 0 2.5-2.5v-14" fill="none" stroke="currentColor" strokeWidth="1.5" />
         <path d="M18 7.5h2a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-2" fill="none" stroke="currentColor" strokeWidth="1.5" />
       </svg>

@@ -82,13 +82,20 @@ export default function RecipeLibraryTab({
             <button
               key={method}
               onClick={() => setSelectedMethod(method)}
-              className={`px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap transition cursor-pointer ${
+              className={`px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap transition cursor-pointer flex items-center gap-1.5 ${
                 isSelected
                   ? 'bg-amber-800 text-white dark:bg-amber-700'
                   : 'bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
               }`}
             >
-              {method === 'Todos' ? '🌐 Todos' : `${getMethodIcon(method)} ${method}`}
+              {method === 'Todos' ? (
+                '🌐 Todos'
+              ) : (
+                <>
+                  <span className="w-4 h-4 flex items-center justify-center select-none">{getMethodIcon(method)}</span>
+                  <span>{method}</span>
+                </>
+              )}
             </button>
           );
         })}

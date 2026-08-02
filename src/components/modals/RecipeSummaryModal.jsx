@@ -215,28 +215,18 @@ export default function RecipeSummaryModal({
         {/* Footer Fijo con Opción A: Botones secundarios sólo icono + Iniciar Timer principal */}
         <div className="p-5 pt-3 border-t border-slate-100 dark:border-slate-800 flex gap-2 shrink-0 bg-white dark:bg-slate-900 items-center">
           {isLibraryPreview ? (
-            <>
-              {isImported ? (
-                <div className="flex-1 py-2.5 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900/40 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5">
-                  ✓ En tu catálogo
-                </div>
-              ) : (
-                <button
-                  onClick={() => onImport && onImport(summaryRecipe)}
-                  className="flex-1 py-2.5 bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-800 text-white rounded-xl font-bold text-xs transition shadow-sm cursor-pointer flex items-center justify-center gap-1.5"
-                >
-                  📥 Agregar a Mis Recetas
-                </button>
-              )}
-              {onStartTimer && (
-                <button
-                  onClick={() => onStartTimer(summaryRecipe)}
-                  className="py-2.5 px-3 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl font-bold text-xs transition cursor-pointer flex items-center justify-center gap-1 shrink-0"
-                >
-                  <ClockIcon className="w-4 h-4" /> Timer
-                </button>
-              )}
-            </>
+            isImported ? (
+              <div className="flex-1 py-2.5 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900/40 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5">
+                ✓ En tu catálogo
+              </div>
+            ) : (
+              <button
+                onClick={() => onImport && onImport(summaryRecipe)}
+                className="flex-1 py-2.5 bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-800 text-white rounded-xl font-bold text-xs transition shadow-sm cursor-pointer flex items-center justify-center gap-1.5"
+              >
+                📥 Agregar a Mis Recetas
+              </button>
+            )
           ) : (
             <>
               <button

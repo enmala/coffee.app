@@ -12,7 +12,10 @@ export default function RecipeSummaryModal({
   onDuplicate,
   onStartTimer,
   formatSecondsToMinutes = formatTime,
-  onToggleFavorite
+  onToggleFavorite,
+  isLibraryPreview = false,
+  isImported = false,
+  onImport
 }) {
   const [isRecipeNameExpanded, setIsRecipeNameExpanded] = useState(false);
   const [isBeanExpanded, setIsBeanExpanded] = useState(false);
@@ -211,38 +214,65 @@ export default function RecipeSummaryModal({
 
         {/* Footer Fijo con Opción A: Botones secundarios sólo icono + Iniciar Timer principal */}
         <div className="p-5 pt-3 border-t border-slate-100 dark:border-slate-800 flex gap-2 shrink-0 bg-white dark:bg-slate-900 items-center">
-          <button
-            onClick={(e) => onDelete(summaryRecipe, e)}
-            className="p-2.5 border border-red-200 dark:border-red-900/30 hover:bg-red-50 dark:hover:bg-red-950/20 text-red-600 dark:text-red-400 rounded-xl transition cursor-pointer flex items-center justify-center shrink-0"
-            title="Eliminar receta"
-            aria-label="Eliminar receta"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-            </svg>
-          </button>
-          <button
-            onClick={() => onEdit(summaryRecipe)}
-            className="p-2.5 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl transition cursor-pointer flex items-center justify-center shrink-0"
-            title="Editar receta"
-            aria-label="Editar receta"
-          >
-            <PencilIcon className="w-5 h-5" />
-          </button>
-          <button
-            onClick={() => onDuplicate && onDuplicate(summaryRecipe)}
-            className="p-2.5 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl transition cursor-pointer flex items-center justify-center shrink-0"
-            title="Duplicar esta receta como base para una nueva"
-            aria-label="Duplicar receta"
-          >
-            <ClipboardIcon className="w-5 h-5" />
-          </button>
-          <button
-            onClick={() => onStartTimer(summaryRecipe)}
-            className="flex-1 py-2.5 bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-800 text-white rounded-xl font-bold text-xs md:text-sm transition shadow-sm cursor-pointer flex items-center justify-center gap-1.5"
-          >
-            <ClockIcon className="w-4 h-4" /> Iniciar Timer
-          </button>
+          {isLibraryPreview ? (
+            <>
+              {isImported ? (
+                <div className="flex-1 py-2.5 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900/40 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5">
+                  ✓ En tu catálogo
+                </div>
+              ) : (
+                <button
+                  onClick={() => onImport && onImport(summaryRecipe)}
+                  className="flex-1 py-2.5 bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-800 text-white rounded-xl font-bold text-xs transition shadow-sm cursor-pointer flex items-center justify-center gap-1.5"
+                >
+                  📥 Agregar a Mis Recetas
+                </button>
+              )}
+              {onStartTimer && (
+                <button
+                  onClick={() => onStartTimer(summaryRecipe)}
+                  className="py-2.5 px-3 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl font-bold text-xs transition cursor-pointer flex items-center justify-center gap-1 shrink-0"
+                >
+                  <ClockIcon className="w-4 h-4" /> Timer
+                </button>
+              )}
+            </>
+          ) : (
+            <>
+              <button
+                onClick={(e) => onDelete && onDelete(summaryRecipe, e)}
+                className="p-2.5 border border-red-200 dark:border-red-900/30 hover:bg-red-50 dark:hover:bg-red-950/20 text-red-600 dark:text-red-400 rounded-xl transition cursor-pointer flex items-center justify-center shrink-0"
+                title="Eliminar receta"
+                aria-label="Eliminar receta"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                </svg>
+              </button>
+              <button
+                onClick={() => onEdit && onEdit(summaryRecipe)}
+                className="p-2.5 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl transition cursor-pointer flex items-center justify-center shrink-0"
+                title="Editar receta"
+                aria-label="Editar receta"
+              >
+                <PencilIcon className="w-5 h-5" />
+              </button>
+              <button
+                onClick={() => onDuplicate && onDuplicate(summaryRecipe)}
+                className="p-2.5 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl transition cursor-pointer flex items-center justify-center shrink-0"
+                title="Duplicar esta receta como base para una nueva"
+                aria-label="Duplicar receta"
+              >
+                <ClipboardIcon className="w-5 h-5" />
+              </button>
+              <button
+                onClick={() => onStartTimer && onStartTimer(summaryRecipe)}
+                className="flex-1 py-2.5 bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-800 text-white rounded-xl font-bold text-xs md:text-sm transition shadow-sm cursor-pointer flex items-center justify-center gap-1.5"
+              >
+                <ClockIcon className="w-4 h-4" /> Iniciar Timer
+              </button>
+            </>
+          )}
         </div>
       </div>
     </div>

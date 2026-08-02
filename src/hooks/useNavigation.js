@@ -8,6 +8,7 @@ export function useNavigation({ recipesSync, beansSync, historySync, recipes, se
   const [autoStartTimer, setAutoStartTimer] = useState(false);
   const [isAboutOpen, setIsAboutOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isLibraryOpen, setIsLibraryOpen] = useState(false);
 
   const [soundEnabled, setSoundEnabled] = useState(() => {
     return safeGetItem('coffee_sound_enabled', true, (v) => typeof v === 'boolean');
@@ -66,6 +67,7 @@ export function useNavigation({ recipesSync, beansSync, historySync, recipes, se
 
     setIsSettingsOpen(state.view === 'settings');
     setIsAboutOpen(state.view === 'about');
+    setIsLibraryOpen(state.view === 'library' || (state.view === 'summary' && !!state.fromLibrary));
 
     if (recipesSync) recipesSync(state);
     if (beansSync) beansSync(state);
@@ -105,6 +107,11 @@ export function useNavigation({ recipesSync, beansSync, historySync, recipes, se
   const closeAbout = useCallback(() => {
     setIsAboutOpen(false);
     safeBack('about');
+  }, [safeBack]);
+
+  const closeLibrary = useCallback(() => {
+    setIsLibraryOpen(false);
+    safeBack('library');
   }, [safeBack]);
 
   useEffect(() => {
@@ -278,6 +285,11 @@ export function useNavigation({ recipesSync, beansSync, historySync, recipes, se
     navigateTo('settings');
   }, [navigateTo]);
 
+  const handleOpenLibrary = useCallback(() => {
+    setIsLibraryOpen(true);
+    navigateTo('library');
+  }, [navigateTo]);
+
   return {
     activeTab,
     setActiveTab,
@@ -289,6 +301,8 @@ export function useNavigation({ recipesSync, beansSync, historySync, recipes, se
     setIsAboutOpen,
     isSettingsOpen,
     setIsSettingsOpen,
+    isLibraryOpen,
+    setIsLibraryOpen,
     soundEnabled,
     setSoundEnabled,
     vibrationEnabled,
@@ -309,11 +323,13 @@ export function useNavigation({ recipesSync, beansSync, historySync, recipes, se
     closeTimer,
     closeSettings,
     closeAbout,
+    closeLibrary,
     handleUnifiedImportJson,
     handleStartTimerImmediate,
     handleStartTimerFromSummary,
     handleOpenAboutFromSettings,
     handleOpenAboutFromHeader,
-    handleOpenSettingsFromHeader
+    handleOpenSettingsFromHeader,
+    handleOpenLibrary
   };
 }

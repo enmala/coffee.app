@@ -43,6 +43,7 @@ Los agentes de IA deben leer este archivo para saber qué implementar a continua
 ---
 
 ## ✅ Completado
+- [x] Biblioteca Pública de Recetas (`view: 'library'`) desacoplada con descarga remota de catálogo JSON, almacenamiento en caché local offline (`localStorage`), buscador por texto, filtros por método de extracción e importación a catálogo personal (`v1.12.0`).
 - [x] Corrección de uso incorrecto de `className text-*` sobre elementos SVG `<rect>` en `getMethodIcon` (`coffeeUtils.jsx`), reemplazando por las utilidades canónicas de Tailwind `fill-*`/`dark:fill-*` que establecen directamente la propiedad `fill` CSS (`v1.11.12`).
 - [x] Refactorización de patrones repetidos de vibración en `TimerComponent.jsx` extrayendo las funciones auxiliares `getVibrationPattern` y `triggerVibration` en `coffeeUtils.jsx` (`v1.11.11`).
 - [x] Memorización (`useMemo`) en el agrupamiento de recetas (`useRecipes.js`) y filtrado por texto de granos (`BeansTab.jsx`), optimizando la fluidez de renderizado en dispositivos móviles (`v1.11.10`).

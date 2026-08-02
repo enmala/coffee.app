@@ -8,6 +8,7 @@ export default function RecipesTab({
   menuOpenRecipeId,
   setMenuOpenRecipeId,
   onNewRecipe,
+  onOpenLibrary,
   onSelectSummary,
   onStartTimerImmediate,
   onEditRecipe,
@@ -22,6 +23,14 @@ export default function RecipesTab({
         <h2 className="text-xl font-bold text-slate-900 dark:text-white">Tus Recetas</h2>
 
         <div className="flex gap-2">
+          {onOpenLibrary && (
+            <button
+              onClick={onOpenLibrary}
+              className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-bold rounded-lg transition cursor-pointer border border-slate-200 dark:border-slate-700"
+            >
+              📖 Biblioteca
+            </button>
+          )}
           <button
             onClick={onNewRecipe}
             className="px-3 py-1.5 bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-800 text-white text-xs font-bold rounded-lg transition cursor-pointer"

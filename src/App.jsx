@@ -14,11 +14,13 @@ import BeanFormModal from './components/modals/BeanFormModal';
 import RecipesTab from './components/tabs/RecipesTab';
 import BeansTab from './components/tabs/BeansTab';
 import HistoryTab from './components/tabs/HistoryTab';
+import RecipeLibraryTab from './components/tabs/RecipeLibraryTab';
 import { DEFAULT_TASTING_NOTES } from './constants/defaultData';
 import { useRecipes } from './hooks/useRecipes';
 import { useBeans } from './hooks/useBeans';
 import { useHistory } from './hooks/useHistory';
 import { useNavigation } from './hooks/useNavigation';
+import { useRecipeLibrary } from './hooks/useRecipeLibrary';
 
 export default function App() {
   const recipesState = useRecipes();
@@ -33,6 +35,8 @@ export default function App() {
     setRecipeToImport: recipesState.setRecipeToImport,
     setBeanToImport: beansState.setBeanToImport
   });
+
+  const recipeLibraryState = useRecipeLibrary({ userRecipes: recipesState.recipes });
 
   const {
     recipes,
@@ -146,6 +150,7 @@ export default function App() {
     autoStartTimer,
     isAboutOpen,
     isSettingsOpen,
+    isLibraryOpen,
     soundEnabled,
     setSoundEnabled,
     vibrationEnabled,
@@ -166,13 +171,45 @@ export default function App() {
     closeTimer,
     closeSettings,
     closeAbout,
+    closeLibrary,
     handleUnifiedImportJson,
     handleStartTimerImmediate,
     handleStartTimerFromSummary,
     handleOpenAboutFromSettings,
     handleOpenAboutFromHeader,
-    handleOpenSettingsFromHeader
+    handleOpenSettingsFromHeader,
+    handleOpenLibrary
   } = navigationState;
+
+  const handleLibraryImportRecipe = useCallback((libraryRecipe) => {
+    if (!libraryRecipe) return;
+
+    const uniqueId = `imported-${crypto.randomUUID()}`;
+    let recipeName = libraryRecipe.name.trim();
+
+    const nameExists = recipes.some((r) => r.name.toLowerCase() === recipeName.toLowerCase());
+    if (nameExists) {
+      let counter = 1;
+      while (recipes.some((r) => r.name.toLowerCase() === `${recipeName} (${counter})`.toLowerCase())) {
+        counter++;
+      }
+      recipeName = `${recipeName} (${counter})`;
+    }
+
+    const importedRecipe = {
+      ...libraryRecipe,
+      id: uniqueId,
+      name: recipeName
+    };
+
+    setRecipes((prev) => [...prev, importedRecipe]);
+    showAlert(`Receta "${recipeName}" agregada a tu catálogo personal.`, "success");
+  }, [recipes, setRecipes, showAlert]);
+
+  const handleLibrarySelectSummary = useCallback((libraryRecipe) => {
+    recipesState.setSummaryRecipe(libraryRecipe);
+    navigateTo('summary', { recipeId: libraryRecipe.id, fromLibrary: true });
+  }, [recipesState, navigateTo]);
 
   const formatSecondsToMinutes = useCallback((seconds) => {
     const mins = Math.floor(seconds / 60);
@@ -376,7 +413,25 @@ export default function App() {
       </header>
 
       <main className="w-full max-w-md sm:max-w-xl md:max-w-3xl lg:max-w-5xl bg-white dark:bg-slate-900 rounded-2xl shadow-md border border-slate-200 dark:border-slate-800 p-4 md:p-6 relative transition-colors duration-300">
-        {activeRecipe ? (
+        {isLibraryOpen ? (
+          <RecipeLibraryTab
+            recipes={recipeLibraryState.recipes}
+            filteredRecipes={recipeLibraryState.filteredRecipes}
+            methodsList={recipeLibraryState.methodsList}
+            isLoading={recipeLibraryState.isLoading}
+            error={recipeLibraryState.error}
+            isOffline={recipeLibraryState.isOffline}
+            searchQuery={recipeLibraryState.searchQuery}
+            setSearchQuery={recipeLibraryState.setSearchQuery}
+            selectedMethod={recipeLibraryState.selectedMethod}
+            setSelectedMethod={recipeLibraryState.setSelectedMethod}
+            isRecipeImported={recipeLibraryState.isRecipeImported}
+            onSelectRecipe={handleLibrarySelectSummary}
+            onImportRecipe={handleLibraryImportRecipe}
+            onClose={closeLibrary}
+            onReload={recipeLibraryState.reloadCatalog}
+          />
+        ) : activeRecipe ? (
           <div>
             <button
               onClick={closeTimer}
@@ -464,6 +519,7 @@ export default function App() {
                 menuOpenRecipeId={menuOpenRecipeId}
                 setMenuOpenRecipeId={setMenuOpenRecipeId}
                 onNewRecipe={onNewRecipeClick}
+                onOpenLibrary={handleOpenLibrary}
                 onSelectSummary={onSelectSummary}
                 onStartTimerImmediate={handleStartTimerImmediate}
                 onEditRecipe={onEditRecipe}
@@ -520,6 +576,9 @@ export default function App() {
           onStartTimer={handleStartTimerFromSummary}
           formatSecondsToMinutes={formatSecondsToMinutes}
           onToggleFavorite={handleToggleFavorite}
+          isLibraryPreview={isLibraryOpen}
+          isImported={summaryRecipe ? recipeLibraryState.isRecipeImported(summaryRecipe) : false}
+          onImport={(r) => handleLibraryImportRecipe(r)}
         />
 
         {isStepFormOpen && (

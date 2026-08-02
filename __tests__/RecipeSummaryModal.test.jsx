@@ -226,4 +226,18 @@ describe('RecipeSummaryModal Component Tests', () => {
     expect(screen.getByText('0:00')).toBeInTheDocument();
     expect(screen.getByText('0g')).toBeInTheDocument();
   });
+
+  test('does not render favorite or share buttons when isLibraryPreview is true', () => {
+    render(
+      <RecipeSummaryModal
+        summaryRecipe={mockRecipe}
+        beans={[]}
+        onClose={vi.fn()}
+        isLibraryPreview={true}
+      />
+    );
+
+    expect(screen.queryByTitle('Marcar como favorita')).not.toBeInTheDocument();
+    expect(screen.queryByTitle('Compartir receta')).not.toBeInTheDocument();
+  });
 });

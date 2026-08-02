@@ -180,7 +180,7 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
       </div>
 
       {/* Progress circular SVG */}
-      <div className="relative flex justify-center items-center my-6">
+      <div className="relative flex justify-center items-center my-3 md:my-4">
         <svg className="w-44 h-44 transform -rotate-90">
           {/* Circle background */}
           <circle

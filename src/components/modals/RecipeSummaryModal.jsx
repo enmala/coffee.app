@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { getIngredientLabel, getGrindLabel, calculateRatio, formatSecondsToMinutes as formatTime } from '../../utils/coffeeUtils';
-import { MapPinIcon, GearIcon, MountainIcon, PencilIcon, ClipboardIcon, ClockIcon } from '../icons/SvgIcons';
+import { MapPinIcon, GearIcon, MountainIcon, ClockIcon, HomeIcon, UserIcon, FireIcon, PlantIcon, CalendarIcon, TrophyIcon } from '../icons/SvgIcons';
 
 export default function RecipeSummaryModal({
   summaryRecipe,
@@ -8,8 +8,6 @@ export default function RecipeSummaryModal({
   onClose,
   onShare,
   onDelete,
-  onEdit,
-  onDuplicate,
   onStartTimer,
   formatSecondsToMinutes = formatTime,
   onToggleFavorite,
@@ -17,8 +15,8 @@ export default function RecipeSummaryModal({
   isImported = false,
   onImport
 }) {
-  const [isRecipeNameExpanded, setIsRecipeNameExpanded] = useState(false);
   const [isBeanExpanded, setIsBeanExpanded] = useState(false);
+  const [isDetailsExpanded, setIsDetailsExpanded] = useState(false);
 
   if (!summaryRecipe) return null;
 
@@ -30,30 +28,35 @@ export default function RecipeSummaryModal({
     <div className="fixed inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
       <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-sm w-full shadow-xl max-h-[85vh] border border-slate-100 dark:border-slate-800 flex flex-col overflow-hidden text-left">
         {/* Header Fijo */}
-        <div className="p-5 pb-3 border-b border-slate-200 dark:border-slate-800 flex justify-between items-start shrink-0 bg-white dark:bg-slate-900">
-          <div className="min-w-0 flex-1">
-            <div className="flex items-start gap-1.5 min-w-0">
-              <h3 className={`font-bold text-base text-slate-900 dark:text-white ${isRecipeNameExpanded ? 'whitespace-normal break-words leading-snug' : 'truncate'}`}>
-                {summaryRecipe.name}
-              </h3>
-              {summaryRecipe.name.length > 18 && (
-                <button
-                  onClick={() => setIsRecipeNameExpanded(!isRecipeNameExpanded)}
-                  className="p-0.5 mt-0.5 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 shrink-0 transition cursor-pointer"
-                  title={isRecipeNameExpanded ? "Contraer nombre" : "Expandir nombre"}
-                  aria-label={isRecipeNameExpanded ? "Contraer nombre" : "Expandir nombre"}
-                >
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`w-4 h-4 transition-transform duration-200 ${isRecipeNameExpanded ? 'rotate-180' : ''}`} xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                    <polyline points="6 9 12 15 18 9"></polyline>
-                  </svg>
-                </button>
-              )}
+        <div className="p-5 pb-3 border-b border-slate-200 dark:border-slate-800 shrink-0 bg-white dark:bg-slate-900 space-y-2">
+          {/* Fila Superior: Título completo y botón de cierre */}
+          <div className="flex justify-between items-start gap-2">
+            <h3 className="font-bold text-base text-slate-900 dark:text-white whitespace-normal break-words leading-snug flex-1">
+              {summaryRecipe.name}
+            </h3>
+            <div className="shrink-0 flex items-center">
+              <button
+                onClick={onClose}
+                className="p-1.5 text-slate-500 dark:text-slate-300 hover:text-slate-700 dark:hover:text-slate-100 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+                title="Cerrar"
+                aria-label="Cerrar"
+              >
+                <span className="hidden">×</span>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
             </div>
-            <span className="inline-block text-[10px] bg-amber-50 dark:bg-amber-950/20 text-amber-900 dark:text-amber-300 border border-amber-200 dark:border-amber-900/30 px-2 py-0.5 rounded font-bold uppercase tracking-wider mt-1">{summaryRecipe.method}</span>
           </div>
-          <div className="flex items-center gap-1 shrink-0 ml-2">
+
+          {/* Fila Secundaria: Badge del método a la izq, Favorita y Compartir a la der */}
+          <div className="flex justify-between items-center pt-1">
+            <span className="inline-block text-[10px] bg-amber-50 dark:bg-amber-950/20 text-amber-900 dark:text-amber-300 border border-amber-200 dark:border-amber-900/30 px-2 py-0.5 rounded font-bold uppercase tracking-wider">
+              {summaryRecipe.method}
+            </span>
+
             {!isLibraryPreview && (
-              <>
+              <div className="flex items-center gap-1">
                 <button
                   onClick={() => onToggleFavorite && onToggleFavorite(summaryRecipe.id)}
                   className="p-1.5 text-slate-500 dark:text-slate-300 hover:text-amber-500 dark:hover:text-amber-400 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
@@ -69,6 +72,7 @@ export default function RecipeSummaryModal({
                   onClick={() => onShare && onShare(summaryRecipe.id)}
                   className="p-1.5 text-slate-500 dark:text-slate-300 hover:text-amber-800 dark:hover:text-amber-500 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
                   title="Compartir receta"
+                  aria-label="Compartir receta"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 overflow-visible">
                     <circle cx="18" cy="5" r="3" />
@@ -78,59 +82,71 @@ export default function RecipeSummaryModal({
                     <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
                   </svg>
                 </button>
-              </>
+              </div>
             )}
-
-            <button
-              onClick={onClose}
-              className="p-1.5 text-slate-500 dark:text-slate-300 hover:text-slate-700 dark:hover:text-slate-100 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
-              title="Cerrar"
-            >
-              <span className="hidden">×</span>
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-            <button onClick={onClose} className="hidden">Cerrar</button>
           </div>
         </div>
 
         {/* Cuerpo Scrollable Único */}
         <div className="p-5 py-4 overflow-y-auto flex-1 space-y-4">
-          {/* Parámetros Físicos */}
-          <div className="grid grid-cols-2 gap-2 text-xs bg-slate-50 dark:bg-slate-800/40 p-3 rounded-xl border border-slate-100 dark:border-slate-800/80">
-            <div>
-              <span className="text-slate-500 dark:text-slate-300 block font-semibold text-[10px] uppercase">{getIngredientLabel(summaryRecipe)}</span>
-              <span className="text-sm font-bold text-slate-800 dark:text-slate-200">{summaryRecipe.coffee_g}g</span>
+          {/* Parámetros Físicos Principales */}
+          <div className="bg-slate-50 dark:bg-slate-800/40 p-3 rounded-xl border border-slate-100 dark:border-slate-800/80 space-y-2 text-xs">
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <span className="text-slate-500 dark:text-slate-300 block font-semibold text-[10px] uppercase">{getIngredientLabel(summaryRecipe)}</span>
+                <span className="text-sm font-bold text-slate-800 dark:text-slate-200">{summaryRecipe.coffee_g}g</span>
+              </div>
+              <div>
+                <span className="text-slate-500 dark:text-slate-300 block font-semibold text-[10px] uppercase">Temperatura</span>
+                <span className="text-sm font-bold text-slate-800 dark:text-slate-200">{summaryRecipe.water_temp_c}°C</span>
+              </div>
             </div>
-            <div>
-              <span className="text-slate-500 dark:text-slate-300 block font-semibold text-[10px] uppercase">{getGrindLabel(summaryRecipe)}</span>
-              <span className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate block">{summaryRecipe.grind_size || 'N/D'}</span>
-            </div>
-            <div className="mt-1">
-              <span className="text-slate-500 dark:text-slate-300 block font-semibold text-[10px] uppercase">Temperatura</span>
-              <span className="text-sm font-bold text-slate-800 dark:text-slate-200">{summaryRecipe.water_temp_c}°C</span>
-            </div>
-            <div className="mt-1">
-              <span className="text-slate-500 dark:text-slate-300 block font-semibold text-[10px] uppercase">Agua Total</span>
-              <span className="text-sm font-bold text-slate-800 dark:text-slate-200">
-                {totalWaterG}g
+            <div className="pt-2 border-t border-slate-200/60 dark:border-slate-700/60 flex justify-between items-center">
+              <span className="text-slate-500 dark:text-slate-300 font-semibold text-[10px] uppercase">Proporción</span>
+              <span className="text-xs font-bold text-amber-800 dark:text-amber-400 bg-amber-100/60 dark:bg-amber-950/40 px-2.5 py-0.5 rounded border border-amber-200/40 dark:border-amber-900/30">
+                Ratio {computedRatio}
               </span>
             </div>
-            <div className="col-span-2 mt-2 pt-2 border-t border-slate-200 dark:border-slate-700 flex justify-between items-center">
-              <div>
-                <span className="text-slate-500 dark:text-slate-300 font-semibold text-[10px] uppercase block">Tiempo Total Estimado</span>
-                <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
-                  {(formatSecondsToMinutes || formatTime)(estimatedSeconds)}
-                </span>
+          </div>
+
+          {/* Acordeón "Detalles de Extracción" */}
+          <div className="border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden bg-slate-50/50 dark:bg-slate-800/20">
+            <button
+              onClick={() => setIsDetailsExpanded(!isDetailsExpanded)}
+              className="w-full flex justify-between items-center p-3 text-xs text-left cursor-pointer transition-all hover:bg-slate-100/50 dark:hover:bg-slate-800/50"
+              title="Detalles de extracción"
+              aria-label="Detalles de extracción"
+            >
+              <span className="font-extrabold text-[10px] text-slate-600 dark:text-slate-400 uppercase tracking-wider">
+                Detalles de Extracción
+              </span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                className={`w-4 h-4 text-slate-500 transition-transform duration-200 ${isDetailsExpanded ? 'rotate-180' : ''}`}
+              >
+                <path fillRule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clipRule="evenodd" />
+              </svg>
+            </button>
+            {isDetailsExpanded && (
+              <div className="px-3 pb-3 pt-1 border-t border-slate-200/60 dark:border-slate-700/60 grid grid-cols-2 gap-2 text-xs animate-fade-in">
+                <div>
+                  <span className="text-slate-500 dark:text-slate-400 block font-semibold text-[10px] uppercase">{getGrindLabel(summaryRecipe)}</span>
+                  <span className="text-xs font-bold text-slate-800 dark:text-slate-200 truncate block">{summaryRecipe.grind_size || 'N/D'}</span>
+                </div>
+                <div>
+                  <span className="text-slate-500 dark:text-slate-400 block font-semibold text-[10px] uppercase">Agua Total</span>
+                  <span className="text-xs font-bold text-slate-800 dark:text-slate-200">{totalWaterG}g</span>
+                </div>
+                <div className="col-span-2 pt-1 border-t border-slate-100 dark:border-slate-800/40">
+                  <span className="text-slate-500 dark:text-slate-400 block font-semibold text-[10px] uppercase">Tiempo Total Estimado</span>
+                  <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                    {(formatSecondsToMinutes || formatTime)(estimatedSeconds)}
+                  </span>
+                </div>
               </div>
-              <div className="text-right">
-                <span className="text-slate-500 dark:text-slate-300 font-semibold text-[10px] uppercase block">Proporción</span>
-                <span className="text-xs font-bold text-amber-800 dark:text-amber-400 bg-amber-100/60 dark:bg-amber-950/40 px-2 py-0.5 rounded border border-amber-200/40 dark:border-amber-900/30 inline-block">
-                  Ratio {computedRatio}
-                </span>
-              </div>
-            </div>
+            )}
           </div>
 
           {/* Acordeón de Grano de Café */}
@@ -155,7 +171,7 @@ export default function RecipeSummaryModal({
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 20 20"
                       fill="currentColor"
-                      className={`w-4 h-4 text-slate-405 transition-transform duration-200 ${isBeanExpanded ? 'rotate-180' : ''}`}
+                      className={`w-4 h-4 text-slate-500 transition-transform duration-200 ${isBeanExpanded ? 'rotate-180' : ''}`}
                     >
                       <path fillRule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clipRule="evenodd" />
                     </svg>
@@ -163,16 +179,56 @@ export default function RecipeSummaryModal({
                   {isBeanExpanded && (
                     <div className="px-3 pb-3 pt-1.5 border-t border-amber-200/10 dark:border-amber-900/10 space-y-2 text-[11px] animate-fade-in">
                       <div className="flex flex-wrap gap-1">
-                        {bean.origin && <span className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[9px] px-1.5 py-0.5 rounded font-medium text-slate-600 dark:text-slate-300">📍 {bean.origin}</span>}
-                        {bean.region && <span className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[9px] px-1.5 py-0.5 rounded font-medium text-slate-600 dark:text-slate-300 flex items-center gap-1"><MapPinIcon className="w-2.5 h-2.5 inline" /> {bean.region}</span>}
-                        {bean.farm && <span className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[9px] px-1.5 py-0.5 rounded font-medium text-slate-600 dark:text-slate-300">🏡 {bean.farm}</span>}
-                        {bean.producer && <span className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[9px] px-1.5 py-0.5 rounded font-medium text-slate-600 dark:text-slate-300">🧑‍🌾 {bean.producer}</span>}
-                        {bean.process && <span className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[9px] px-1.5 py-0.5 rounded font-medium text-slate-600 dark:text-slate-300 flex items-center gap-1"><GearIcon className="w-2.5 h-2.5 inline" /> {bean.process}</span>}
-                        {bean.roast_level && <span className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[9px] px-1.5 py-0.5 rounded font-medium text-slate-600 dark:text-slate-300">🔥 Tueste {bean.roast_level}</span>}
-                        {bean.variety && <span className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[9px] px-1.5 py-0.5 rounded font-medium text-slate-600 dark:text-slate-300">🌱 {bean.variety}</span>}
-                        {bean.altitude && <span className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[9px] px-1.5 py-0.5 rounded font-medium text-slate-600 dark:text-slate-300 flex items-center gap-1"><MountainIcon className="w-2.5 h-2.5 inline" /> {bean.altitude}</span>}
-                        {bean.harvest_year && <span className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[9px] px-1.5 py-0.5 rounded font-medium text-slate-600 dark:text-slate-300">🌾 {bean.harvest_year}</span>}
-                        {bean.sca_score && <span className="bg-emerald-100/50 dark:bg-emerald-950/30 text-emerald-800 dark:text-emerald-400 text-[9px] px-1.5 py-0.5 rounded font-bold border border-emerald-250/10">🏆 SCA {bean.sca_score}</span>}
+                        {bean.origin && (
+                          <span className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[9px] px-1.5 py-0.5 rounded font-medium text-slate-600 dark:text-slate-300 flex items-center gap-1">
+                            <MapPinIcon className="w-2.5 h-2.5 inline" /> {bean.origin}
+                          </span>
+                        )}
+                        {bean.region && (
+                          <span className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[9px] px-1.5 py-0.5 rounded font-medium text-slate-600 dark:text-slate-300 flex items-center gap-1">
+                            <MapPinIcon className="w-2.5 h-2.5 inline" /> Región: {bean.region}
+                          </span>
+                        )}
+                        {bean.farm && (
+                          <span className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[9px] px-1.5 py-0.5 rounded font-medium text-slate-600 dark:text-slate-300 flex items-center gap-1">
+                            <HomeIcon className="w-2.5 h-2.5 inline" /> Finca: {bean.farm}
+                          </span>
+                        )}
+                        {bean.producer && (
+                          <span className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[9px] px-1.5 py-0.5 rounded font-medium text-slate-600 dark:text-slate-300 flex items-center gap-1">
+                            <UserIcon className="w-2.5 h-2.5 inline" /> Productor: {bean.producer}
+                          </span>
+                        )}
+                        {bean.process && (
+                          <span className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[9px] px-1.5 py-0.5 rounded font-medium text-slate-600 dark:text-slate-300 flex items-center gap-1">
+                            <GearIcon className="w-2.5 h-2.5 inline" /> {bean.process}
+                          </span>
+                        )}
+                        {bean.roast_level && (
+                          <span className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[9px] px-1.5 py-0.5 rounded font-medium text-slate-600 dark:text-slate-300 flex items-center gap-1">
+                            <FireIcon className="w-2.5 h-2.5 inline text-amber-600 dark:text-amber-400" /> Tueste {bean.roast_level}
+                          </span>
+                        )}
+                        {bean.variety && (
+                          <span className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[9px] px-1.5 py-0.5 rounded font-medium text-slate-600 dark:text-slate-300 flex items-center gap-1">
+                            <PlantIcon className="w-2.5 h-2.5 inline text-emerald-600 dark:text-emerald-400" /> {bean.variety}
+                          </span>
+                        )}
+                        {bean.altitude && (
+                          <span className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[9px] px-1.5 py-0.5 rounded font-medium text-slate-600 dark:text-slate-300 flex items-center gap-1">
+                            <MountainIcon className="w-2.5 h-2.5 inline" /> {bean.altitude}
+                          </span>
+                        )}
+                        {bean.harvest_year && (
+                          <span className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[9px] px-1.5 py-0.5 rounded font-medium text-slate-600 dark:text-slate-300 flex items-center gap-1">
+                            <CalendarIcon className="w-2.5 h-2.5 inline" /> Cosecha: {bean.harvest_year}
+                          </span>
+                        )}
+                        {bean.sca_score && (
+                          <span className="bg-emerald-100/50 dark:bg-emerald-950/30 text-emerald-800 dark:text-emerald-400 text-[9px] px-1.5 py-0.5 rounded font-bold border border-emerald-250/10 flex items-center gap-1">
+                            <TrophyIcon className="w-2.5 h-2.5 inline text-emerald-600 dark:text-emerald-400" /> SCA {bean.sca_score}
+                          </span>
+                        )}
                       </div>
                       {bean.tasting_notes && bean.tasting_notes.length > 0 && (
                         <div className="flex flex-wrap gap-0.5 pt-1.5 border-t border-amber-200/10 dark:border-amber-900/10">
@@ -216,7 +272,7 @@ export default function RecipeSummaryModal({
           </div>
         </div>
 
-        {/* Footer Fijo con Opción A: Botones secundarios sólo icono + Iniciar Timer principal */}
+        {/* Footer Fijo con Iniciar Timer principal y Eliminar secundario */}
         <div className="p-5 pt-3 border-t border-slate-100 dark:border-slate-800 flex gap-2 shrink-0 bg-white dark:bg-slate-900 items-center">
           {isLibraryPreview ? (
             isImported ? (
@@ -242,22 +298,6 @@ export default function RecipeSummaryModal({
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
                 </svg>
-              </button>
-              <button
-                onClick={() => onEdit && onEdit(summaryRecipe)}
-                className="p-2.5 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl transition cursor-pointer flex items-center justify-center shrink-0"
-                title="Editar receta"
-                aria-label="Editar receta"
-              >
-                <PencilIcon className="w-5 h-5" />
-              </button>
-              <button
-                onClick={() => onDuplicate && onDuplicate(summaryRecipe)}
-                className="p-2.5 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl transition cursor-pointer flex items-center justify-center shrink-0"
-                title="Duplicar esta receta como base para una nueva"
-                aria-label="Duplicar receta"
-              >
-                <ClipboardIcon className="w-5 h-5" />
               </button>
               <button
                 onClick={() => onStartTimer && onStartTimer(summaryRecipe)}

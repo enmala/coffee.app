@@ -44,22 +44,29 @@ describe('RecipeSummaryModal Component Tests', () => {
     expect(container.firstChild).toBeNull();
   });
 
-  test('renders basic recipe information and total calculated time', () => {
+  test('renders basic recipe information and toggles details accordion', () => {
     render(
       <RecipeSummaryModal
         summaryRecipe={mockRecipe}
         beans={mockBeans}
         onClose={vi.fn()}
         onStartTimer={vi.fn()}
-        onEdit={vi.fn()}
         onDelete={vi.fn()}
-        onDuplicate={vi.fn()}
       />
     );
 
     expect(screen.getByText('V60 Specialty Pour Over')).toBeInTheDocument();
     expect(screen.getByText(/15g/)).toBeInTheDocument();
     expect(screen.getByText(/93°C/)).toBeInTheDocument();
+    expect(screen.getByText('Ratio 1:16.7')).toBeInTheDocument();
+
+    // Details accordion is closed by default
+    expect(screen.queryByText(/Medio-Fina/)).not.toBeInTheDocument();
+
+    // Open details accordion
+    const detailsBtn = screen.getByRole('button', { name: /Detalles de Extracción/i });
+    fireEvent.click(detailsBtn);
+
     expect(screen.getByText(/Medio-Fina/)).toBeInTheDocument();
     expect(screen.getByText('2:30')).toBeInTheDocument(); // 30s + 90s + 30s = 150s = 2:30
     expect(screen.getByText('250g')).toBeInTheDocument(); // 50g + 200g
@@ -85,17 +92,17 @@ describe('RecipeSummaryModal Component Tests', () => {
     const beanExpandBtn = screen.getByRole('button', { name: /Grano de Café/i });
     fireEvent.click(beanExpandBtn);
 
-    // Verify all technical attributes are rendered
-    expect(screen.getByText('📍 Panamá')).toBeInTheDocument();
+    // Verify technical attributes are rendered
+    expect(screen.getAllByText(/Panamá/)[0]).toBeInTheDocument();
     expect(screen.getByText(/Boquete/)).toBeInTheDocument();
-    expect(screen.getByText('🏡 Finca La Esmeralda')).toBeInTheDocument();
-    expect(screen.getByText('🧑‍🌾 Familia Peterson')).toBeInTheDocument();
+    expect(screen.getByText(/Finca La Esmeralda/)).toBeInTheDocument();
+    expect(screen.getByText(/Familia Peterson/)).toBeInTheDocument();
     expect(screen.getByText(/Natural/)).toBeInTheDocument();
-    expect(screen.getByText('🔥 Tueste Claro')).toBeInTheDocument();
-    expect(screen.getByText('🌱 Geisha')).toBeInTheDocument();
+    expect(screen.getByText(/Tueste Claro/)).toBeInTheDocument();
+    expect(screen.getAllByText(/Geisha/)[0]).toBeInTheDocument();
     expect(screen.getByText(/1800m/)).toBeInTheDocument();
-    expect(screen.getByText('🌾 2025')).toBeInTheDocument();
-    expect(screen.getByText('🏆 SCA 91.5')).toBeInTheDocument();
+    expect(screen.getByText(/2025/)).toBeInTheDocument();
+    expect(screen.getByText(/SCA 91.5/)).toBeInTheDocument();
     expect(screen.getByText('Jazmín')).toBeInTheDocument();
     expect(screen.getByText('Bergamota')).toBeInTheDocument();
     expect(screen.getByText('Durazno')).toBeInTheDocument();
@@ -103,7 +110,7 @@ describe('RecipeSummaryModal Component Tests', () => {
 
     // Toggle collapse
     fireEvent.click(beanExpandBtn);
-    expect(screen.queryByText('🏡 Finca La Esmeralda')).not.toBeInTheDocument();
+    expect(screen.queryByText(/Finca La Esmeralda/)).not.toBeInTheDocument();
   });
 
   test('renders step list correctly including untimed / water-less steps', () => {
@@ -129,9 +136,7 @@ describe('RecipeSummaryModal Component Tests', () => {
   test('triggers callback functions on button clicks', () => {
     const handleClose = vi.fn();
     const handleStartTimer = vi.fn();
-    const handleEdit = vi.fn();
     const handleDelete = vi.fn();
-    const handleDuplicate = vi.fn();
 
     render(
       <RecipeSummaryModal
@@ -139,9 +144,7 @@ describe('RecipeSummaryModal Component Tests', () => {
         beans={mockBeans}
         onClose={handleClose}
         onStartTimer={handleStartTimer}
-        onEdit={handleEdit}
         onDelete={handleDelete}
-        onDuplicate={handleDuplicate}
       />
     );
 
@@ -149,16 +152,6 @@ describe('RecipeSummaryModal Component Tests', () => {
     const deleteBtn = screen.getByTitle('Eliminar receta');
     fireEvent.click(deleteBtn);
     expect(handleDelete).toHaveBeenCalledWith(mockRecipe, expect.anything());
-
-    // Test Edit button
-    const editBtn = screen.getByRole('button', { name: /Editar/i });
-    fireEvent.click(editBtn);
-    expect(handleEdit).toHaveBeenCalledWith(mockRecipe);
-
-    // Test Duplicate button
-    const duplicateBtn = screen.getByRole('button', { name: /Duplicar/i });
-    fireEvent.click(duplicateBtn);
-    expect(handleDuplicate).toHaveBeenCalledWith(mockRecipe);
 
     // Test Start Timer button
     const timerBtn = screen.getByRole('button', { name: /Iniciar Timer/i });
@@ -171,7 +164,7 @@ describe('RecipeSummaryModal Component Tests', () => {
     expect(handleClose).toHaveBeenCalledTimes(1);
   });
 
-  test('triggers favorite, share and long title expand callbacks correctly', () => {
+  test('triggers favorite and share callbacks correctly and auto-expands long title', () => {
     const handleToggleFavorite = vi.fn();
     const handleShare = vi.fn();
     const longRecipe = {
@@ -190,6 +183,9 @@ describe('RecipeSummaryModal Component Tests', () => {
       />
     );
 
+    // Test title renders full text without truncation/button
+    expect(screen.getByText('Super Long Recipe Title That Exceeds Eighteen Characters')).toBeInTheDocument();
+
     // Test favorite button (currently favorite)
     const favoriteBtn = screen.getByTitle('Quitar de favoritas');
     fireEvent.click(favoriteBtn);
@@ -199,11 +195,6 @@ describe('RecipeSummaryModal Component Tests', () => {
     const shareBtn = screen.getByRole('button', { name: /Compartir receta/i });
     fireEvent.click(shareBtn);
     expect(handleShare).toHaveBeenCalledWith(longRecipe.id);
-
-    // Test long title toggle button
-    const expandTitleBtn = screen.getByTitle('Expandir nombre');
-    fireEvent.click(expandTitleBtn);
-    expect(screen.getByTitle('Contraer nombre')).toBeInTheDocument();
   });
 
   test('handles recipes with empty or undefined steps gracefully', () => {
@@ -223,6 +214,11 @@ describe('RecipeSummaryModal Component Tests', () => {
     );
 
     expect(screen.getByText('Empty Steps Recipe')).toBeInTheDocument();
+
+    // Expand details to check empty calculations
+    const detailsBtn = screen.getByRole('button', { name: /Detalles de Extracción/i });
+    fireEvent.click(detailsBtn);
+
     expect(screen.getByText('0:00')).toBeInTheDocument();
     expect(screen.getByText('0g')).toBeInTheDocument();
   });

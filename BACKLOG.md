@@ -43,6 +43,7 @@ Los agentes de IA deben leer este archivo para saber qué implementar a continua
 ---
 
 ## ✅ Completado
+- [x] Rediseño de `RecipeSummaryModal` (ajuste multilínea de título sin truncación ni chevron, acordeón colapsable "Detalles de Extracción", simplificación del footer a Iniciar Timer y Eliminar), reactivación de menús contextuales `•••` en tarjetas de recetas y granos, y estandarización de emojis a iconos SVG (`v1.13.0`).
 - [x] Fijación del header superior (`sticky top-0 z-30 backdrop-blur-md`) para mantener visibles el título y los iconos de configuración y acerca de durante el desplazamiento de listados, y ajuste de contenedores (`min-h-dvh`) y márgenes en `TimerComponent` para eliminar el scroll vertical artificial cuando el contenido cabe en pantalla (`v1.12.2`).
 - [x] Corrección en la Biblioteca Pública de Recetas: renderizado del icono SVG de método en botones de filtro evitando `[object Object]`, y eliminación de los botones redundantes de "Timer", favoritos y compartir en el modal de resumen de recetas del catálogo (`v1.12.1`).
 - [x] Biblioteca Pública de Recetas (`view: 'library'`) desacoplada con descarga remota de catálogo JSON, almacenamiento en caché local offline (`localStorage`), buscador por texto, filtros por método de extracción e importación a catálogo personal (`v1.12.0`).

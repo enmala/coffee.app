@@ -115,6 +115,7 @@ export default function RecipesTab({
                             </button>
 
                             <button
+                              data-menu-trigger={recipe.id}
                               onClick={(e) => {
                                 e.stopPropagation();
                                 setMenuOpenRecipeId(menuOpenRecipeId === recipe.id ? null : recipe.id);

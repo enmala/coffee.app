@@ -147,11 +147,9 @@ describe('App Component', () => {
 
   test('shows recipe summary modal and starts timer', () => {
     render(<App />);
-    const summaryBtns = screen.getAllByTitle('Ver Resumen');
-    
-    // Click summary of the first recipe
-    fireEvent.click(summaryBtns[0]);
-    expect(screen.getByText('Tiempo Total Estimado')).toBeInTheDocument();
+    const recipeCard = screen.getByText('Método 4:6 (Tetsu Kasuya)').closest('.group');
+    fireEvent.click(recipeCard);
+    expect(screen.getByText('Proporción')).toBeInTheDocument();
     
     // Start timer from summary
     const startTimerBtn = screen.getByText('Iniciar Timer');
@@ -253,7 +251,10 @@ describe('App Component', () => {
     const menuBtns = screen.getAllByTitle('Más opciones');
     fireEvent.click(menuBtns[0]);
     
-    const exportBtn = screen.getByText('📥 Exportar');
+    const shareBtn = screen.getByText('Compartir');
+    fireEvent.click(shareBtn);
+    
+    const exportBtn = screen.getByRole('button', { name: /Descargar archivo/i });
     const clickSpy = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});
     
     fireEvent.click(exportBtn);
@@ -280,8 +281,8 @@ describe('App Component', () => {
     render(<App />);
     
     // Open summary and start timer
-    const summaryBtns = screen.getAllByTitle('Ver Resumen');
-    fireEvent.click(summaryBtns[0]);
+    const recipeCard = screen.getByText('Método 4:6 (Tetsu Kasuya)').closest('.group');
+    fireEvent.click(recipeCard);
     const startTimerBtn = screen.getByText('Iniciar Timer');
     vi.useFakeTimers();
     fireEvent.click(startTimerBtn);
@@ -386,12 +387,12 @@ describe('App Component', () => {
 
   test('closes recipe summary modal with close button', () => {
     render(<App />);
-    const summaryBtns = screen.getAllByTitle('Ver Resumen');
-    fireEvent.click(summaryBtns[0]);
+    const recipeCard = screen.getByText('Método 4:6 (Tetsu Kasuya)').closest('.group');
+    fireEvent.click(recipeCard);
     
-    const closeBtn = screen.getAllByText('Cerrar').find(btn => btn.tagName === 'BUTTON');
+    const closeBtn = screen.getByTitle('Cerrar');
     fireEvent.click(closeBtn);
-    expect(screen.queryByText('Tiempo Total Estimado')).not.toBeInTheDocument();
+    expect(screen.queryByText('Proporción')).not.toBeInTheDocument();
   });
 
   test('toggles auto log and clears all history', () => {
@@ -702,13 +703,13 @@ describe('App Component', () => {
 
   test('closes recipe summary modal with top header close button', () => {
     render(<App />);
-    const summaryBtns = screen.getAllByTitle('Ver Resumen');
-    fireEvent.click(summaryBtns[0]);
+    const recipeCard = screen.getByText('Método 4:6 (Tetsu Kasuya)').closest('.group');
+    fireEvent.click(recipeCard);
     
     // Click X at the top of the summary modal
     const closeXBtn = screen.getByText('×');
     fireEvent.click(closeXBtn);
-    expect(screen.queryByText('Tiempo Total Estimado')).not.toBeInTheDocument();
+    expect(screen.queryByText('Proporción')).not.toBeInTheDocument();
   });
 
   test('JSON import duplicate resolution with multiple counters', async () => {
@@ -870,8 +871,8 @@ describe('App Component', () => {
 
   test('starts active recipe timer and goes back to list using back button', () => {
     render(<App />);
-    const summaryBtns = screen.getAllByTitle('Ver Resumen');
-    fireEvent.click(summaryBtns[0]);
+    const recipeCard = screen.getByText('Método 4:6 (Tetsu Kasuya)').closest('.group');
+    fireEvent.click(recipeCard);
     fireEvent.click(screen.getByText('Iniciar Timer'));
     
     // Go back to list
@@ -1035,8 +1036,11 @@ describe('App Component', () => {
     fireEvent.click(screen.getByText('Cancelar'));
 
     // Open summary of the custom recipe
-    fireEvent.click(screen.getByTitle('Ver Resumen'));
+    fireEvent.click(screen.getByText('No Grind Size Recipe').closest('.group'));
     
+    // Open details accordion
+    fireEvent.click(screen.getByRole('button', { name: /Detalles de Extracción/i }));
+
     // Check fallback for grind_size in summary: "N/D"
     expect(screen.getByText('N/D')).toBeInTheDocument();
 
@@ -1044,7 +1048,7 @@ describe('App Component', () => {
     expect(screen.getByText(/Sin agua/i)).toBeInTheDocument();
 
     // Close summary
-    fireEvent.click(screen.getByText('Cerrar'));
+    fireEvent.click(screen.getByRole('button', { name: 'Cerrar' }));
   });
 
   test('App no saved recipes screen scenario', () => {
@@ -1293,11 +1297,10 @@ describe('App Component', () => {
     expect(screen.queryByText('Nueva Receta')).not.toBeInTheDocument();
     expect(screen.getByText('UX Test Recipe')).toBeInTheDocument();
 
-    // 9. Click on the recipe card's summary button to open summary
+    // 9. Click on the recipe card to open summary
     const recipeCard = screen.getByText('UX Test Recipe').closest('.group');
-    const summaryBtn = recipeCard.querySelector('button[title="Ver Resumen"]');
-    fireEvent.click(summaryBtn);
-    expect(screen.getByText('Tiempo Total Estimado')).toBeInTheDocument();
+    fireEvent.click(recipeCard);
+    expect(screen.getByText('Proporción')).toBeInTheDocument();
     
     // Check that BOTH steps are present
     expect(screen.getByText('Paso 1: Preinfusion')).toBeInTheDocument();
@@ -1336,25 +1339,24 @@ describe('App Component', () => {
     // 6. Verify recipe details show the modified step
     expect(screen.queryByText('Nueva Receta')).not.toBeInTheDocument();
     const recipeCard = screen.getByText('UX Edit Test Recipe').closest('.group');
-    const summaryBtn = recipeCard.querySelector('button[title="Ver Resumen"]');
-    fireEvent.click(summaryBtn);
-    expect(screen.getByText('Tiempo Total Estimado')).toBeInTheDocument();
+    fireEvent.click(recipeCard);
+    expect(screen.getByText('Proporción')).toBeInTheDocument();
     expect(screen.getByText('Paso 1: Step A Modificado')).toBeInTheDocument();
 
     // Close summary
     fireEvent.click(screen.getByRole('button', { name: 'Cerrar' }));
   });
 
-  test('App recipe duplication from summary modal pre-fills form, saves and returns to recipes list view', async () => {
+  test('App recipe duplication from contextual menu pre-fills form, saves and returns to recipes list view', async () => {
     render(<App />);
 
-    // 1. Open summary for Aeropress Tradicional
+    // 1. Open contextual menu for Aeropress Tradicional
     const recipeCard = screen.getByText('Aeropress Tradicional').closest('.group');
-    const summaryBtn = recipeCard.querySelector('button[title="Ver Resumen"]');
-    fireEvent.click(summaryBtn);
+    const menuBtn = recipeCard.querySelector('button[title="Más opciones"]');
+    fireEvent.click(menuBtn);
 
-    // 2. Click 'Duplicar' in summary modal
-    const duplicateBtn = screen.getByTitle(/Duplicar esta receta/);
+    // 2. Click 'Duplicar' in contextual menu
+    const duplicateBtn = screen.getByText('Duplicar');
     fireEvent.click(duplicateBtn);
 
     // 3. Verify form modal opens pre-filled with (Copia) name
@@ -1366,42 +1368,40 @@ describe('App Component', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Guardar Receta' }));
 
     // 5. Verify returned to recipes list view and both recipes exist
-    expect(screen.queryByText('Tiempo Total Estimado')).not.toBeInTheDocument();
+    expect(screen.queryByText('Proporción')).not.toBeInTheDocument();
     expect(screen.getByText('Aeropress Tradicional')).toBeInTheDocument();
     expect(screen.getByText('Aeropress Variación Fina')).toBeInTheDocument();
   });
 
-  test('App recipe duplication cancel restores original recipe summary modal', async () => {
+  test('App recipe duplication cancel restores recipes list view', async () => {
     render(<App />);
 
-    // 1. Open summary for Aeropress Tradicional
+    // 1. Open contextual menu for Aeropress Tradicional
     const recipeCard = screen.getByText('Aeropress Tradicional').closest('.group');
-    const summaryBtn = recipeCard.querySelector('button[title="Ver Resumen"]');
-    fireEvent.click(summaryBtn);
+    const menuBtn = recipeCard.querySelector('button[title="Más opciones"]');
+    fireEvent.click(menuBtn);
 
-    // 2. Click 'Duplicar' in summary modal
-    const duplicateBtn = screen.getByTitle(/Duplicar esta receta/);
+    // 2. Click 'Duplicar' in contextual menu
+    const duplicateBtn = screen.getByText('Duplicar');
     fireEvent.click(duplicateBtn);
 
     // 3. Click 'Cancelar' in recipe form
     fireEvent.click(screen.getByRole('button', { name: 'Cancelar' }));
 
-    // 4. Verify app returns to Aeropress Tradicional summary modal
-    expect(screen.getByText('Tiempo Total Estimado')).toBeInTheDocument();
-    const summaryHeading = screen.getByRole('heading', { level: 3, name: 'Aeropress Tradicional' });
-    expect(summaryHeading).toBeInTheDocument();
+    // 4. Verify app returns to recipes list view
+    expect(screen.getAllByText('Aeropress Tradicional')[0]).toBeInTheDocument();
   });
 
-  test('App recipe duplication generates sequential copy names when duplicating from summary modal', async () => {
+  test('App recipe duplication generates sequential copy names when duplicating from contextual menu', async () => {
     render(<App />);
 
-    // 1. Open summary for Aeropress Tradicional
+    // 1. Open contextual menu for Aeropress Tradicional
     const recipeCard = screen.getByText('Aeropress Tradicional').closest('.group');
-    const summaryBtn = recipeCard.querySelector('button[title="Ver Resumen"]');
-    fireEvent.click(summaryBtn);
+    const menuBtn = recipeCard.querySelector('button[title="Más opciones"]');
+    fireEvent.click(menuBtn);
 
-    // 2. Click "Duplicar" in summary modal
-    const duplicateSummaryBtn = screen.getByTitle(/Duplicar esta receta/);
+    // 2. Click "Duplicar" in contextual menu
+    const duplicateSummaryBtn = screen.getByText('Duplicar');
     fireEvent.click(duplicateSummaryBtn);
 
     // 3. Save first copy as default "Aeropress Tradicional (Copia)"
@@ -1409,11 +1409,11 @@ describe('App Component', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Guardar Receta' }));
     expect(screen.getByText('Aeropress Tradicional (Copia)')).toBeInTheDocument();
 
-    // 4. Duplicate again from the summary of Aeropress Tradicional
+    // 4. Duplicate again from the contextual menu of Aeropress Tradicional
     const originalCard = screen.getAllByText('Aeropress Tradicional')[0].closest('.group');
-    const summaryBtn2 = originalCard.querySelector('button[title="Ver Resumen"]');
-    fireEvent.click(summaryBtn2);
-    const duplicateSummaryBtn2 = screen.getByTitle(/Duplicar esta receta/);
+    const menuBtn2 = originalCard.querySelector('button[title="Más opciones"]');
+    fireEvent.click(menuBtn2);
+    const duplicateSummaryBtn2 = screen.getByText('Duplicar');
     fireEvent.click(duplicateSummaryBtn2);
 
     // 5. Verify pre-filled name is "Aeropress Tradicional (Copia 2)"
@@ -1422,30 +1422,18 @@ describe('App Component', () => {
     expect(screen.getByText('Aeropress Tradicional (Copia 2)')).toBeInTheDocument();
   });
 
-  test('expands and collapses long recipe title with chevron button in RecipeSummaryModal', () => {
+  test('renders long recipe title automatically multiline without truncation or chevron button in RecipeSummaryModal', () => {
     render(<App />);
 
     // Open summary for "Método 4:6 (Tetsu Kasuya)" (26 chars long)
     const card = screen.getByText('Método 4:6 (Tetsu Kasuya)').closest('.group');
-    const summaryBtn = card.querySelector('button[title="Ver Resumen"]');
-    fireEvent.click(summaryBtn);
+    fireEvent.click(card);
 
-    // Chevron toggle should be present
-    const expandBtn = screen.getByTitle('Expandir nombre');
-    expect(expandBtn).toBeInTheDocument();
+    // Chevron toggle should NOT be present
+    expect(screen.queryByTitle('Expandir nombre')).not.toBeInTheDocument();
 
     const titleHeader = screen.getByRole('heading', { level: 3, name: 'Método 4:6 (Tetsu Kasuya)' });
-    expect(titleHeader).toHaveClass('truncate');
-
-    // Click expand
-    fireEvent.click(expandBtn);
-    expect(screen.getByTitle('Contraer nombre')).toBeInTheDocument();
     expect(titleHeader).toHaveClass('whitespace-normal');
-
-    // Click collapse
-    fireEvent.click(screen.getByTitle('Contraer nombre'));
-    expect(screen.getByTitle('Expandir nombre')).toBeInTheDocument();
-    expect(titleHeader).toHaveClass('truncate');
   });
 
   test('uses crypto.randomUUID for generated entity IDs', () => {

@@ -33,16 +33,16 @@ describe('Coffee Beans Management Tests', () => {
     // Verify the example bean Sidamo is displayed
     expect(screen.getByText('Etiopía Sidamo')).toBeInTheDocument();
     expect(screen.getByText('Tostaduría Artesanal')).toBeInTheDocument();
-    expect(screen.getByText('📍 Etiopía')).toBeInTheDocument();
+    expect(screen.getAllByText(/Etiopía/)[0]).toBeInTheDocument();
     expect(screen.getByText(/Región: Sidama/)).toBeInTheDocument();
-    expect(screen.getByText('🏡 Finca: Finca Shantawene')).toBeInTheDocument();
-    expect(screen.getByText('🧑‍🌾 Productor: Daye Bensa')).toBeInTheDocument();
-    expect(screen.getByText('🌾 Cosecha: 2025')).toBeInTheDocument();
+    expect(screen.getByText(/Finca: Finca Shantawene/)).toBeInTheDocument();
+    expect(screen.getByText(/Productor: Daye Bensa/)).toBeInTheDocument();
+    expect(screen.getByText(/Cosecha: 2025/)).toBeInTheDocument();
     expect(screen.getByText(/Lavado/)).toBeInTheDocument();
-    expect(screen.getByText('🔥 Tueste Claro')).toBeInTheDocument();
-    expect(screen.getByText('🌱 Heirloom')).toBeInTheDocument();
+    expect(screen.getByText(/Tueste Claro/)).toBeInTheDocument();
+    expect(screen.getByText(/Heirloom/)).toBeInTheDocument();
     expect(screen.getByText(/1900 msnm/)).toBeInTheDocument();
-    expect(screen.getByText('🏆 SCA: 86.5')).toBeInTheDocument();
+    expect(screen.getByText(/SCA: 86.5/)).toBeInTheDocument();
   });
 
   test('should register a new coffee bean with technical attributes and tasting notes', () => {
@@ -95,16 +95,16 @@ describe('Coffee Beans Management Tests', () => {
     // Verify new bean is rendered
     expect(screen.getByText('Colombia Supremo')).toBeInTheDocument();
     expect(screen.getByText('Supracafé')).toBeInTheDocument();
-    expect(screen.getByText('📍 Colombia')).toBeInTheDocument();
+    expect(screen.getAllByText(/Colombia/)[0]).toBeInTheDocument();
     expect(screen.getByText(/Región: Cauca/)).toBeInTheDocument();
-    expect(screen.getByText('🏡 Finca: La Esperanza')).toBeInTheDocument();
-    expect(screen.getByText('🧑‍🌾 Productor: Juan Valdez')).toBeInTheDocument();
-    expect(screen.getByText('🌾 Cosecha: 2026')).toBeInTheDocument();
+    expect(screen.getByText(/Finca: La Esperanza/)).toBeInTheDocument();
+    expect(screen.getByText(/Productor: Juan Valdez/)).toBeInTheDocument();
+    expect(screen.getByText(/Cosecha: 2026/)).toBeInTheDocument();
     expect(screen.getByText(/Natural/)).toBeInTheDocument();
-    expect(screen.getByText('🔥 Tueste Medio')).toBeInTheDocument();
-    expect(screen.getByText('🌱 Castillo')).toBeInTheDocument();
+    expect(screen.getByText(/Tueste Medio/)).toBeInTheDocument();
+    expect(screen.getByText(/Castillo/)).toBeInTheDocument();
     expect(screen.getByText(/1750 msnm/)).toBeInTheDocument();
-    expect(screen.getByText('🏆 SCA: 84.75')).toBeInTheDocument();
+    expect(screen.getByText(/SCA: 84.75/)).toBeInTheDocument();
     expect(screen.getByText('Cacao')).toBeInTheDocument();
     expect(screen.getByText('Fruta de la pasión')).toBeInTheDocument();
     expect(screen.getByText('"Perfil dulce y balanceado."')).toBeInTheDocument();
@@ -116,6 +116,10 @@ describe('Coffee Beans Management Tests', () => {
     // Click on Granos tab
     const beansTabBtn = screen.getByRole('button', { name: /Granos/ });
     fireEvent.click(beansTabBtn);
+
+    // Open contextual menu
+    const menuBtn = screen.getAllByTitle('Más opciones')[0];
+    fireEvent.click(menuBtn);
 
     // Click edit on the example bean
     const editBtn = screen.getByTitle('Editar grano');
@@ -142,13 +146,20 @@ describe('Coffee Beans Management Tests', () => {
     const beansTabBtn = screen.getByRole('button', { name: /Granos/ });
     fireEvent.click(beansTabBtn);
 
+    // Open contextual menu
+    const menuBtn = screen.getAllByTitle('Más opciones')[0];
+    fireEvent.click(menuBtn);
+
     // Click delete
     const deleteBtn = screen.getByTitle('Eliminar grano');
     fireEvent.click(deleteBtn);
 
     // Verify custom modal is opened and click confirm
     expect(screen.getByText('Eliminar Grano')).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: 'Sí, Eliminar' }));
+    expect(screen.getByText(/¿Estás seguro de que deseas eliminar/)).toBeInTheDocument();
+
+    const confirmDeleteBtn = screen.getByRole('button', { name: 'Sí, Eliminar' });
+    fireEvent.click(confirmDeleteBtn);
 
     // Dismiss custom success alert modal
     expect(screen.getByText('Grano de café eliminado correctamente.')).toBeInTheDocument();
@@ -158,7 +169,7 @@ describe('Coffee Beans Management Tests', () => {
     expect(screen.queryByText('Etiopía Sidamo')).not.toBeInTheDocument();
   });
 
-  test('should associate a bean with a recipe and warn when deleting the bean in use', () => {
+  test('should handle deletion of bean associated with recipes', () => {
     render(<App />);
 
     // 1. Create a recipe and associate it with example bean
@@ -183,8 +194,7 @@ describe('Coffee Beans Management Tests', () => {
 
     // 2. Open recipe summary and verify bean is shown
     const recipeCard = screen.getByText('V60 con Sidamo').closest('.group');
-    const summaryBtn = recipeCard.querySelector('[title="Ver Resumen"]');
-    fireEvent.click(summaryBtn);
+    fireEvent.click(recipeCard);
     expect(screen.getByText('Grano de Café')).toBeInTheDocument();
     expect(screen.getByText(/Etiopía Sidamo/)).toBeInTheDocument();
     expect(screen.getByText(/Tostaduría Artesanal/)).toBeInTheDocument();
@@ -195,6 +205,10 @@ describe('Coffee Beans Management Tests', () => {
     // 3. Go to Beans tab and try to delete
     const beansTabBtn = screen.getByRole('button', { name: /Granos/ });
     fireEvent.click(beansTabBtn);
+
+    // Open contextual menu
+    const menuBtn = screen.getAllByTitle('Más opciones')[0];
+    fireEvent.click(menuBtn);
 
     const deleteBtn = screen.getByTitle('Eliminar grano');
     fireEvent.click(deleteBtn);
@@ -218,8 +232,7 @@ describe('Coffee Beans Management Tests', () => {
     const recipesTabBtn = screen.getByRole('button', { name: /Recetas/ });
     fireEvent.click(recipesTabBtn);
     const updatedRecipeCard = screen.getByText('V60 con Sidamo').closest('.group');
-    const updatedSummaryBtn = updatedRecipeCard.querySelector('[title="Ver Resumen"]');
-    fireEvent.click(updatedSummaryBtn);
+    fireEvent.click(updatedRecipeCard);
     expect(screen.queryByText('Grano de Café')).not.toBeInTheDocument();
   });
 
@@ -248,8 +261,7 @@ describe('Coffee Beans Management Tests', () => {
 
     // 2. Open recipe summary and click "Iniciar Timer"
     const recipeCardHist = screen.getByText('V60 para Historial').closest('.group');
-    const summaryBtnHist = recipeCardHist.querySelector('[title="Ver Resumen"]');
-    fireEvent.click(summaryBtnHist);
+    fireEvent.click(recipeCardHist);
     const startTimerBtn = screen.getByRole('button', { name: 'Iniciar Timer' });
     vi.useFakeTimers();
     fireEvent.click(startTimerBtn);
@@ -274,6 +286,10 @@ describe('Coffee Beans Management Tests', () => {
     // 6. Go to Beans tab and delete the bean
     const beansTabBtn = screen.getByRole('button', { name: /Granos/ });
     fireEvent.click(beansTabBtn);
+
+    // Open contextual menu
+    const menuBtn = screen.getAllByTitle('Más opciones')[0];
+    fireEvent.click(menuBtn);
 
     const deleteBtn = screen.getByTitle('Eliminar grano');
     fireEvent.click(deleteBtn);
@@ -300,6 +316,10 @@ describe('Coffee Beans Management Tests', () => {
 
     const beansTabBtn = screen.getByRole('button', { name: /Granos/ });
     fireEvent.click(beansTabBtn);
+
+    // Open contextual menu
+    const menuBtn = screen.getAllByTitle('Más opciones')[0];
+    fireEvent.click(menuBtn);
 
     const shareBtn = screen.getByTitle('Compartir grano');
     fireEvent.click(shareBtn);

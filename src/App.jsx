@@ -78,7 +78,6 @@ export default function App() {
     handleNewRecipeClick,
     handleDeleteRecipe,
     handleConfirmDeleteRecipe,
-    handleExportJson,
     confirmImportRecipe,
     handleAddStepToForm,
     handleOpenStepEditor,
@@ -86,8 +85,7 @@ export default function App() {
     handleSelectSummary,
     handleShareRecipe,
     handleShareFromSummary,
-    handleDeleteFromSummary,
-    handleEditFromSummary
+    handleDeleteFromSummary
   } = recipesState;
 
   const {
@@ -276,10 +274,6 @@ export default function App() {
   const onDeleteFromSummary = useCallback((recipe, e) => {
     handleDeleteFromSummary(recipe, e, safeBack, navigateTo);
   }, [handleDeleteFromSummary, safeBack, navigateTo]);
-
-  const onEditFromSummary = useCallback((recipe) => {
-    handleEditFromSummary(recipe, safeBack, navigateTo);
-  }, [handleEditFromSummary, safeBack, navigateTo]);
 
   const onCloseSummary = useCallback(() => {
     closeSummary(safeBack);
@@ -524,7 +518,7 @@ export default function App() {
                 onStartTimerImmediate={handleStartTimerImmediate}
                 onEditRecipe={onEditRecipe}
                 onShareRecipe={onShareRecipe}
-                onExportJson={handleExportJson}
+                onDuplicateRecipe={onDuplicateRecipe}
                 onDeleteRecipe={onDeleteRecipe}
                 onToggleFavorite={handleToggleFavorite}
               />
@@ -571,8 +565,6 @@ export default function App() {
           onClose={onCloseSummary}
           onShare={onShareFromSummary}
           onDelete={onDeleteFromSummary}
-          onEdit={onEditFromSummary}
-          onDuplicate={onDuplicateRecipe}
           onStartTimer={handleStartTimerFromSummary}
           formatSecondsToMinutes={formatSecondsToMinutes}
           onToggleFavorite={handleToggleFavorite}

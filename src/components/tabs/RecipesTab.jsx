@@ -1,5 +1,5 @@
 import { getMethodIcon } from '../../utils/coffeeUtils';
-import { ChevronRightIcon, ChevronDownIcon, ClipboardIcon, PencilIcon, TrashIcon } from '../icons/SvgIcons';
+import { ChevronRightIcon, ChevronDownIcon, PencilIcon, TrashIcon, ShareIcon, DocumentDuplicateIcon } from '../icons/SvgIcons';
 
 export default function RecipesTab({
   groupedRecipes,
@@ -13,7 +13,7 @@ export default function RecipesTab({
   onStartTimerImmediate,
   onEditRecipe,
   onShareRecipe,
-  onExportJson,
+  onDuplicateRecipe,
   onDeleteRecipe,
   onToggleFavorite
 }) {
@@ -74,7 +74,7 @@ export default function RecipesTab({
                         onClick={() => onSelectSummary(recipe)}
                         className={`p-3 bg-slate-50 dark:bg-slate-800/30 hover:bg-amber-50/20 dark:hover:bg-amber-900/10 border ${
                           recipe.is_favorite ? 'border-amber-300/80 dark:border-amber-600/60 bg-amber-50/40 dark:bg-amber-950/20' : 'border-slate-200 dark:border-slate-800'
-                        } hover:border-amber-200 dark:hover:border-amber-800/30 rounded-xl cursor-pointer transition flex justify-between items-center group`}
+                        } hover:border-amber-200 dark:hover:border-amber-800/30 rounded-xl cursor-pointer transition flex justify-between items-center group relative`}
                       >
                         <div className="space-y-1 min-w-0 flex-1 pr-2">
                           <div className="flex items-center gap-1.5">
@@ -101,7 +101,7 @@ export default function RecipesTab({
                           </p>
                         </div>
 
-                        <div className="flex gap-1.5 transition items-center opacity-85 group-hover:opacity-100 shrink-0">
+                        <div className="flex gap-1 transition items-center opacity-85 group-hover:opacity-100 shrink-0">
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
@@ -115,40 +115,49 @@ export default function RecipesTab({
                             </svg>
                           </button>
 
-                          {/* Elementos ocultos para compatibilidad con tests automatizados */}
-                          <div className="hidden" aria-hidden="true">
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                onSelectSummary(recipe);
-                              }}
-                              title="Ver Resumen"
-                            >
-                              <ClipboardIcon className="w-3.5 h-3.5" />
-                            </button>
+                          <div className="relative" onClick={(e) => e.stopPropagation()}>
                             <button
                               data-menu-trigger={recipe.id}
                               onClick={(e) => {
                                 e.stopPropagation();
                                 setMenuOpenRecipeId(menuOpenRecipeId === recipe.id ? null : recipe.id);
                               }}
+                              className="p-1.5 text-slate-400 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 rounded-lg hover:bg-slate-200/60 dark:hover:bg-slate-700/60 transition cursor-pointer font-bold text-xs"
                               title="Más opciones"
+                              aria-label="Más opciones"
                             >
                               •••
                             </button>
                             {menuOpenRecipeId === recipe.id && (
-                              <div data-menu-content={recipe.id}>
-                                <button onClick={(e) => { e.stopPropagation(); onEditRecipe(recipe); setMenuOpenRecipeId(null); }}>
-                                  <PencilIcon className="w-3.5 h-3.5 inline mr-1" /> Editar
+                              <div
+                                data-menu-content={recipe.id}
+                                className="absolute right-0 top-full mt-1 w-36 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl z-50 py-1 text-xs animate-fade-in"
+                              >
+                                <button
+                                  onClick={(e) => { e.stopPropagation(); onEditRecipe(recipe); setMenuOpenRecipeId(null); }}
+                                  className="w-full text-left px-3 py-2 hover:bg-slate-100 dark:hover:bg-slate-700/70 text-slate-700 dark:text-slate-200 flex items-center gap-2 cursor-pointer"
+                                >
+                                  <PencilIcon className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" /> Editar
                                 </button>
-                                <button onClick={(e) => { e.stopPropagation(); onShareRecipe(recipe); setMenuOpenRecipeId(null); }}>
-                                  🔗 Compartir
+                                <button
+                                  onClick={(e) => { e.stopPropagation(); onShareRecipe(recipe); setMenuOpenRecipeId(null); }}
+                                  className="w-full text-left px-3 py-2 hover:bg-slate-100 dark:hover:bg-slate-700/70 text-slate-700 dark:text-slate-200 flex items-center gap-2 cursor-pointer"
+                                >
+                                  <ShareIcon className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" /> Compartir
                                 </button>
-                                <button onClick={(e) => { e.stopPropagation(); onExportJson(recipe); setMenuOpenRecipeId(null); }}>
-                                  📥 Exportar
-                                </button>
-                                <button onClick={(e) => { e.stopPropagation(); onDeleteRecipe(recipe, e); setMenuOpenRecipeId(null); }}>
-                                  <TrashIcon className="w-3.5 h-3.5 inline mr-1" /> Eliminar
+                                {onDuplicateRecipe && (
+                                  <button
+                                    onClick={(e) => { e.stopPropagation(); onDuplicateRecipe(recipe); setMenuOpenRecipeId(null); }}
+                                    className="w-full text-left px-3 py-2 hover:bg-slate-100 dark:hover:bg-slate-700/70 text-slate-700 dark:text-slate-200 flex items-center gap-2 cursor-pointer"
+                                  >
+                                    <DocumentDuplicateIcon className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" /> Duplicar
+                                  </button>
+                                )}
+                                <button
+                                  onClick={(e) => { e.stopPropagation(); onDeleteRecipe(recipe, e); setMenuOpenRecipeId(null); }}
+                                  className="w-full text-left px-3 py-2 hover:bg-red-50 dark:hover:bg-red-950/30 text-red-600 dark:text-red-400 flex items-center gap-2 border-t border-slate-100 dark:border-slate-700/60 cursor-pointer"
+                                >
+                                  <TrashIcon className="w-3.5 h-3.5 text-red-500" /> Eliminar
                                 </button>
                               </div>
                             )}

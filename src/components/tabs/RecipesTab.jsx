@@ -49,9 +49,7 @@ export default function RecipesTab({
             return (
               <div 
                 key={method} 
-                className={`space-y-2 ${
-                  groupedRecipes[method].some((r) => r.id === menuOpenRecipeId) ? 'relative z-30' : ''
-                }`}
+                className="space-y-2"
               >
                 <h3
                   onClick={() => toggleMethodCollapse(method)}
@@ -74,7 +72,7 @@ export default function RecipesTab({
                         onClick={() => onSelectSummary(recipe)}
                         className={`p-3 bg-slate-50 dark:bg-slate-800/30 hover:bg-amber-50/20 dark:hover:bg-amber-900/10 border ${
                           recipe.is_favorite ? 'border-amber-300/80 dark:border-amber-600/60 bg-amber-50/40 dark:bg-amber-950/20' : 'border-slate-200 dark:border-slate-800'
-                        } hover:border-amber-200 dark:hover:border-amber-800/30 rounded-xl cursor-pointer transition flex justify-between items-center group relative`}
+                        } hover:border-amber-200 dark:hover:border-amber-800/30 rounded-xl cursor-pointer transition flex justify-between items-center group relative ${recipe.id === menuOpenRecipeId ? 'z-30' : ''}`}
                       >
                         <div className="space-y-1 min-w-0 flex-1 pr-2">
                           <div className="flex items-center gap-1.5">
@@ -101,21 +99,21 @@ export default function RecipesTab({
                           </p>
                         </div>
 
-                        <div className="flex gap-1 transition items-center opacity-85 group-hover:opacity-100 shrink-0">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              onStartTimerImmediate(recipe);
-                            }}
-                            className="p-2 bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/20 dark:hover:bg-amber-950/40 text-amber-800 dark:text-amber-500 rounded-xl transition cursor-pointer flex items-center justify-center border border-amber-200/10 dark:border-amber-900/10"
-                            title="Iniciar preparación inmediatamente (auto-start)"
-                          >
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
-                              <path fillRule="evenodd" d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z" clipRule="evenodd" />
-                            </svg>
-                          </button>
+                        <div className="relative shrink-0">
+                          <div className="flex gap-1 transition items-center opacity-85 group-hover:opacity-100">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onStartTimerImmediate(recipe);
+                              }}
+                              className="p-2 bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/20 dark:hover:bg-amber-950/40 text-amber-800 dark:text-amber-500 rounded-xl transition cursor-pointer flex items-center justify-center border border-amber-200/10 dark:border-amber-900/10"
+                              title="Iniciar preparación inmediatamente (auto-start)"
+                            >
+                              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
+                                <path fillRule="evenodd" d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z" clipRule="evenodd" />
+                              </svg>
+                            </button>
 
-                          <div className="relative" onClick={(e) => e.stopPropagation()}>
                             <button
                               data-menu-trigger={recipe.id}
                               onClick={(e) => {
@@ -128,40 +126,41 @@ export default function RecipesTab({
                             >
                               •••
                             </button>
-                            {menuOpenRecipeId === recipe.id && (
-                              <div
-                                data-menu-content={recipe.id}
-                                className="absolute right-0 top-full mt-1 w-36 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl z-50 py-1 text-xs animate-fade-in"
-                              >
-                                <button
-                                  onClick={(e) => { e.stopPropagation(); onEditRecipe(recipe); setMenuOpenRecipeId(null); }}
-                                  className="w-full text-left px-3 py-2 hover:bg-slate-100 dark:hover:bg-slate-700/70 text-slate-700 dark:text-slate-200 flex items-center gap-2 cursor-pointer"
-                                >
-                                  <PencilIcon className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" /> Editar
-                                </button>
-                                <button
-                                  onClick={(e) => { e.stopPropagation(); onShareRecipe(recipe); setMenuOpenRecipeId(null); }}
-                                  className="w-full text-left px-3 py-2 hover:bg-slate-100 dark:hover:bg-slate-700/70 text-slate-700 dark:text-slate-200 flex items-center gap-2 cursor-pointer"
-                                >
-                                  <ShareIcon className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" /> Compartir
-                                </button>
-                                {onDuplicateRecipe && (
-                                  <button
-                                    onClick={(e) => { e.stopPropagation(); onDuplicateRecipe(recipe); setMenuOpenRecipeId(null); }}
-                                    className="w-full text-left px-3 py-2 hover:bg-slate-100 dark:hover:bg-slate-700/70 text-slate-700 dark:text-slate-200 flex items-center gap-2 cursor-pointer"
-                                  >
-                                    <DocumentDuplicateIcon className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" /> Duplicar
-                                  </button>
-                                )}
-                                <button
-                                  onClick={(e) => { e.stopPropagation(); onDeleteRecipe(recipe, e); setMenuOpenRecipeId(null); }}
-                                  className="w-full text-left px-3 py-2 hover:bg-red-50 dark:hover:bg-red-950/30 text-red-600 dark:text-red-400 flex items-center gap-2 border-t border-slate-100 dark:border-slate-700/60 cursor-pointer"
-                                >
-                                  <TrashIcon className="w-3.5 h-3.5 text-red-500" /> Eliminar
-                                </button>
-                              </div>
-                            )}
                           </div>
+                          {menuOpenRecipeId === recipe.id && (
+                            <div
+                              data-menu-content={recipe.id}
+                              onClick={(e) => e.stopPropagation()}
+                              className="absolute right-0 top-full mt-1 w-36 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl z-50 py-1 text-xs animate-fade-in"
+                            >
+                              <button
+                                onClick={(e) => { e.stopPropagation(); onEditRecipe(recipe); setMenuOpenRecipeId(null); }}
+                                className="w-full text-left px-3 py-2 hover:bg-slate-100 dark:hover:bg-slate-700/70 text-slate-700 dark:text-slate-200 flex items-center gap-2 cursor-pointer"
+                              >
+                                <PencilIcon className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" /> Editar
+                              </button>
+                              <button
+                                onClick={(e) => { e.stopPropagation(); onShareRecipe(recipe); setMenuOpenRecipeId(null); }}
+                                className="w-full text-left px-3 py-2 hover:bg-slate-100 dark:hover:bg-slate-700/70 text-slate-700 dark:text-slate-200 flex items-center gap-2 cursor-pointer"
+                              >
+                                <ShareIcon className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" /> Compartir
+                              </button>
+                              {onDuplicateRecipe && (
+                                <button
+                                  onClick={(e) => { e.stopPropagation(); onDuplicateRecipe(recipe); setMenuOpenRecipeId(null); }}
+                                  className="w-full text-left px-3 py-2 hover:bg-slate-100 dark:hover:bg-slate-700/70 text-slate-700 dark:text-slate-200 flex items-center gap-2 cursor-pointer"
+                                >
+                                  <DocumentDuplicateIcon className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" /> Duplicar
+                                </button>
+                              )}
+                              <button
+                                onClick={(e) => { e.stopPropagation(); onDeleteRecipe(recipe, e); setMenuOpenRecipeId(null); }}
+                                className="w-full text-left px-3 py-2 hover:bg-red-50 dark:hover:bg-red-950/30 text-red-600 dark:text-red-400 flex items-center gap-2 border-t border-slate-100 dark:border-slate-700/60 cursor-pointer"
+                              >
+                                <TrashIcon className="w-3.5 h-3.5 text-red-500" /> Eliminar
+                              </button>
+                            </div>
+                          )}
                         </div>
                       </div>
                     ))}

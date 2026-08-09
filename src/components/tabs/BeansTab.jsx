@@ -68,7 +68,7 @@ export default function BeansTab({
             <div key={bean.id} className={`p-4 bg-slate-50 dark:bg-slate-800/30 border border-slate-200 dark:border-slate-800 rounded-2xl space-y-2 text-left relative group ${menuOpenBeanId === bean.id ? 'z-30' : ''}`}>
               <div className="flex justify-between items-start">
                 <div className="pr-2 min-w-0 flex-1">
-                  <h3 className="font-bold text-slate-900 dark:text-white text-base leading-tight truncate">{bean.name}</h3>
+                  <h3 className="font-bold text-slate-900 dark:text-white text-base leading-tight whitespace-normal break-words">{bean.name}</h3>
                   {bean.roaster && (
                     <p className="text-xs text-slate-500 dark:text-slate-400 font-medium truncate">{bean.roaster}</p>
                   )}

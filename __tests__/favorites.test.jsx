@@ -84,7 +84,6 @@ describe('Favorite Recipes Tests', () => {
         onClose={vi.fn()}
         onShare={vi.fn()}
         onDelete={vi.fn()}
-        onEdit={vi.fn()}
         onStartTimer={vi.fn()}
         formatSecondsToMinutes={(s) => `${s}s`}
         onToggleFavorite={onToggleFavorite}

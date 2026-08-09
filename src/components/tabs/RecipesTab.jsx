@@ -115,7 +115,7 @@ export default function RecipesTab({
                             </svg>
                           </button>
 
-                          <div className="relative">
+                          <div className="relative" onClick={(e) => e.stopPropagation()}>
                             <button
                               data-menu-trigger={recipe.id}
                               onClick={(e) => {

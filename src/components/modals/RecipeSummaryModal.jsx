@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { getIngredientLabel, getGrindLabel, calculateRatio, formatSecondsToMinutes as formatTime } from '../../utils/coffeeUtils';
-import { MapPinIcon, GearIcon, MountainIcon, ClockIcon, HomeIcon, UserIcon, FireIcon, PlantIcon, CalendarIcon, TrophyIcon } from '../icons/SvgIcons';
+import { MapPinIcon, GearIcon, MountainIcon, ClockIcon, HomeIcon, UserIcon, FireIcon, PlantIcon, CalendarIcon, TrophyIcon, CoffeeBeanIcon } from '../icons/SvgIcons';
 
 export default function RecipeSummaryModal({
   summaryRecipe,
@@ -161,7 +161,7 @@ export default function RecipeSummaryModal({
                   >
                     <div className="space-y-0.5">
                       <div className="font-extrabold text-[10px] text-amber-800 dark:text-amber-500 uppercase tracking-wider flex items-center gap-1">
-                        <span>🫘</span> Grano de Café
+                        <CoffeeBeanIcon className="w-3.5 h-3.5 inline text-amber-800 dark:text-amber-500" /> Grano de Café
                       </div>
                       <div className="font-bold text-slate-800 dark:text-slate-200">
                         {bean.name} {bean.roaster && <span className="text-[11px] font-normal text-slate-500 dark:text-slate-400 inline-block ml-1">({bean.roaster})</span>}

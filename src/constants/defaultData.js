@@ -127,3 +127,14 @@ export const DEFAULT_TASTING_NOTES = [
   'Frutos rojos', 'Cítrico', 'Chocolate', 'Cacao', 'Caramelo', 
   'Panela', 'Miel', 'Vainilla', 'Floral', 'Frutos secos', 'Especias', 'Herbal'
 ];
+
+export const STEP_INSTRUCTION_SUGGESTIONS = [
+  { label: '🌀 En círculos', text: 'Verter en círculos concéntricos desde el centro hacia afuera' },
+  { label: '💧 Al centro', text: 'Verter agua lentamente en el centro' },
+  { label: '🥄 Remover (swirl)', text: 'Remover suavemente con movimientos circulares (swirl)' },
+  { label: '⏳ Dejar drenar', text: 'Dejar drenar todo el flujo de agua' },
+  { label: '⬇️ Presionar émbolo', text: 'Presionar el émbolo con ritmo constante' },
+  { label: '⏱️ Dejar en infusión', text: 'Dejar reposar en infusión' },
+  { label: '☕ Servir', text: 'Servir inmediatamente y disfrutar' }
+];
+

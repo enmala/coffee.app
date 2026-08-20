@@ -127,3 +127,14 @@ export const DEFAULT_TASTING_NOTES = [
   'Frutos rojos', 'Cítrico', 'Chocolate', 'Cacao', 'Caramelo', 
   'Panela', 'Miel', 'Vainilla', 'Floral', 'Frutos secos', 'Especias', 'Herbal'
 ];
+
+export const STEP_INSTRUCTION_SUGGESTIONS = [
+  { id: 'circles', label: 'En círculos', text: 'Verter en círculos' },
+  { id: 'center', label: 'Al centro', text: 'Verter al centro' },
+  { id: 'swirl', label: 'Remover', text: 'Remover suavemente' },
+  { id: 'drain', label: 'Dejar drenar', text: 'Dejar drenar' },
+  { id: 'press', label: 'Presionar', text: 'Presionar émbolo' },
+  { id: 'infusion', label: 'Infusión', text: 'Dejar en infusión' },
+  { id: 'serve', label: 'Servir', text: 'Servir' }
+];
+

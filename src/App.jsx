@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { TrashIcon, WarningTriangleIcon, CloseIcon } from './components/icons/SvgIcons';
+import { TrashIcon, WarningTriangleIcon } from './components/icons/SvgIcons';
 import TimerComponent from './components/TimerComponent';
 import ShareModal from './components/ShareModal';
 import ShareBeanModal from './components/ShareBeanModal';
@@ -10,6 +10,7 @@ import AboutModal from './components/modals/AboutModal';
 import SettingsModal from './components/modals/SettingsModal';
 import RecipeSummaryModal from './components/modals/RecipeSummaryModal';
 import RecipeFormModal from './components/modals/RecipeFormModal';
+import StepFormModal from './components/modals/StepFormModal';
 import BeanFormModal from './components/modals/BeanFormModal';
 import RecipesTab from './components/tabs/RecipesTab';
 import BeansTab from './components/tabs/BeansTab';
@@ -573,102 +574,16 @@ export default function App() {
           onImport={(r) => handleLibraryImportRecipe(r)}
         />
 
-        {isStepFormOpen && (
-          <div className="fixed inset-0 z-50 flex items-end justify-center md:items-center p-0 md:p-4">
-            {/* Backdrop Blur Overlay */}
-            <div
-              className="fixed inset-0 bg-slate-950/40 backdrop-blur-sm transition-opacity"
-              onClick={onCloseStepEditor}
-            />
-
-            {/* Bottom Sheet Modal Container */}
-            <div className="relative w-full bg-white dark:bg-slate-900 rounded-t-3xl md:rounded-2xl shadow-2xl p-5 border-t md:border border-slate-200 dark:border-slate-800 z-10 max-w-md transform transition-transform animate-slide-up space-y-4 text-left">
-              {/* Drag handle bar / Indicator (mobile only) */}
-              <div className="mx-auto w-12 h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full md:hidden mb-2" />
-
-              <div className="flex justify-between items-center">
-                <span className="text-xs font-bold text-amber-900 dark:text-amber-400 flex items-center gap-1">
-                  <span>⚡</span> {editingStepIndex !== null ? `Editando Paso ${editingStepIndex + 1}` : 'Agregar Paso de Preparación'}
-                </span>
-                <button
-                  type="button"
-                  onClick={onCloseStepEditor}
-                  className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-sm font-semibold p-1"
-                >
-                  <CloseIcon className="w-4 h-4" />
-                </button>
-              </div>
-
-              <div className="space-y-2">
-                <div>
-                  <input
-                    type="text"
-                    placeholder="Título del paso"
-                    value={stepInput.title}
-                    onChange={(e) => {
-                      setStepInput({ ...stepInput, title: e.target.value });
-                      if (e.target.value.trim()) setStepTitleError(false);
-                    }}
-                    className={`w-full p-2 border rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:outline-none focus:ring-2 focus:ring-amber-500 transition ${stepTitleError ? 'border-red-500 focus:ring-red-500' : 'border-slate-200 dark:border-slate-700'}`}
-                  />
-                  {stepTitleError && (
-                    <p className="text-[10px] text-red-500 font-bold mt-1 pl-1">
-                      El título del paso es obligatorio.
-                    </p>
-                  )}
-                </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <div>
-                    <label className="block text-[9px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-0.5 pl-1">Agua a verter (g)</label>
-                    <input
-                      type="number"
-                      placeholder="Agua (g)"
-                      value={stepInput.water_g || ''}
-                      onChange={(e) => setStepInput({ ...stepInput, water_g: parseFloat(e.target.value) || 0 })}
-                      className="w-full p-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:outline-none focus:ring-2 focus:ring-amber-500"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[9px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-0.5 pl-1">Duración (segundos)</label>
-                    <input
-                      type="number"
-                      placeholder="Tiempo (s)"
-                      value={stepInput.duration_s || ''}
-                      onChange={(e) => setStepInput({ ...stepInput, duration_s: parseInt(e.target.value) || 0 })}
-                      className="w-full p-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:outline-none focus:ring-2 focus:ring-amber-500"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <input
-                    type="text"
-                    placeholder="Instrucción corta"
-                    value={stepInput.instruction}
-                    onChange={(e) => setStepInput({ ...stepInput, instruction: e.target.value })}
-                    className="w-full p-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:outline-none focus:ring-2 focus:ring-amber-500"
-                  />
-                </div>
-              </div>
-
-              <div className="flex gap-2.5 pt-2">
-                <button
-                  type="button"
-                  onClick={onCloseStepEditor}
-                  className="flex-1 py-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl font-bold text-xs transition cursor-pointer text-center"
-                >
-                  Cancelar edición
-                </button>
-                <button
-                  type="button"
-                  onClick={onAddStepToForm}
-                  className={`flex-[1.5] py-2 text-white rounded-xl text-xs font-bold cursor-pointer transition shadow-sm ${editingStepIndex !== null ? 'bg-emerald-700 hover:bg-emerald-800 dark:bg-emerald-600 dark:hover:bg-emerald-700' : 'bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-800'}`}
-                >
-                  {editingStepIndex !== null ? '✓ Guardar Cambios en Paso' : '+ Agregar Paso a la lista'}
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+        <StepFormModal
+          isOpen={isStepFormOpen}
+          editingStepIndex={editingStepIndex}
+          stepInput={stepInput}
+          setStepInput={setStepInput}
+          stepTitleError={stepTitleError}
+          setStepTitleError={setStepTitleError}
+          onClose={onCloseStepEditor}
+          onSave={onAddStepToForm}
+        />
         <SettingsModal
           isOpen={isSettingsOpen}
           onClose={closeSettings}

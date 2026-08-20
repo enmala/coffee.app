@@ -129,12 +129,12 @@ export const DEFAULT_TASTING_NOTES = [
 ];
 
 export const STEP_INSTRUCTION_SUGGESTIONS = [
-  { label: '🌀 En círculos', text: 'Verter en círculos concéntricos desde el centro hacia afuera' },
-  { label: '💧 Al centro', text: 'Verter agua lentamente en el centro' },
-  { label: '🥄 Remover (swirl)', text: 'Remover suavemente con movimientos circulares (swirl)' },
-  { label: '⏳ Dejar drenar', text: 'Dejar drenar todo el flujo de agua' },
-  { label: '⬇️ Presionar émbolo', text: 'Presionar el émbolo con ritmo constante' },
-  { label: '⏱️ Dejar en infusión', text: 'Dejar reposar en infusión' },
-  { label: '☕ Servir', text: 'Servir inmediatamente y disfrutar' }
+  { label: '🌀 En círculos', text: 'Verter en círculos' },
+  { label: '💧 Al centro', text: 'Verter al centro' },
+  { label: '🥄 Remover', text: 'Remover suavemente' },
+  { label: '⏳ Dejar drenar', text: 'Dejar drenar' },
+  { label: '⬇️ Presionar', text: 'Presionar émbolo' },
+  { label: '⏱️ Infusión', text: 'Dejar en infusión' },
+  { label: '☕ Servir', text: 'Servir' }
 ];
 

@@ -1,4 +1,4 @@
-import { CloseIcon } from '../icons/SvgIcons';
+import { CloseIcon, ArrowPathIcon, ArrowDownIcon, FunnelIcon, CupIcon, WaterDropIcon, ClockIcon } from '../icons/SvgIcons';
 import { STEP_INSTRUCTION_SUGGESTIONS } from '../../constants/defaultData';
 
 export default function StepFormModal({
@@ -19,9 +19,28 @@ export default function StepFormModal({
       if (!current) {
         return { ...prev, instruction: suggestionText };
       }
-      const separator = /[.!?]$/.test(current) ? ' ' : '. ';
-      return { ...prev, instruction: `${current}${separator}${suggestionText}` };
+      return { ...prev, instruction: `${current} ${suggestionText}` };
     });
+  };
+
+  const renderSuggestionIcon = (id) => {
+    switch (id) {
+      case 'circles':
+      case 'swirl':
+        return <ArrowPathIcon className="w-3 h-3 text-amber-700 dark:text-amber-400 shrink-0" />;
+      case 'center':
+        return <WaterDropIcon className="w-3 h-3 text-blue-500 shrink-0" />;
+      case 'drain':
+        return <FunnelIcon className="w-3 h-3 text-slate-500 dark:text-slate-400 shrink-0" />;
+      case 'press':
+        return <ArrowDownIcon className="w-3 h-3 text-amber-700 dark:text-amber-400 shrink-0" />;
+      case 'infusion':
+        return <ClockIcon className="w-3 h-3 text-amber-600 dark:text-amber-400 shrink-0" />;
+      case 'serve':
+        return <CupIcon className="w-3 h-3 text-amber-800 dark:text-amber-400 shrink-0" />;
+      default:
+        return null;
+    }
   };
 
   return (
@@ -139,10 +158,11 @@ export default function StepFormModal({
                     key={idx}
                     type="button"
                     onClick={() => handleSelectSuggestion(sug.text)}
-                    className="shrink-0 text-[11px] font-medium py-1 px-2.5 bg-slate-100 dark:bg-slate-800 hover:bg-amber-100/70 dark:hover:bg-amber-950/40 text-slate-700 dark:text-slate-300 hover:text-amber-900 dark:hover:text-amber-400 rounded-full border border-slate-200/80 dark:border-slate-700/80 transition cursor-pointer active:scale-95"
+                    className="shrink-0 inline-flex items-center gap-1.5 text-[11px] font-medium py-1 px-2.5 bg-slate-100 dark:bg-slate-800 hover:bg-amber-100/70 dark:hover:bg-amber-950/40 text-slate-700 dark:text-slate-300 hover:text-amber-900 dark:hover:text-amber-400 rounded-full border border-slate-200/80 dark:border-slate-700/80 transition cursor-pointer active:scale-95"
                     title={`Insertar: "${sug.text}"`}
                   >
-                    {sug.label}
+                    {renderSuggestionIcon(sug.id)}
+                    <span>{sug.label}</span>
                   </button>
                 ))}
               </div>

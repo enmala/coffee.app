@@ -179,7 +179,7 @@ describe('StepFormModal Component Tests', () => {
     });
   });
 
-  test('inserts quick suggestion chip text when instruction is empty', () => {
+  test('inserts quick suggestion chip text when instruction is empty and renders svg icon', () => {
     let currentInput = { ...defaultStepInput };
     const mockSetStepInput = vi.fn((updater) => {
       currentInput = typeof updater === 'function' ? updater(currentInput) : updater;
@@ -200,14 +200,15 @@ describe('StepFormModal Component Tests', () => {
 
     const firstSuggestion = STEP_INSTRUCTION_SUGGESTIONS[0];
     const suggestionChip = screen.getByTitle(`Insertar: "${firstSuggestion.text}"`);
+    expect(suggestionChip.querySelector('svg')).toBeInTheDocument();
     fireEvent.click(suggestionChip);
 
     expect(mockSetStepInput).toHaveBeenCalled();
     expect(currentInput.instruction).toBe(firstSuggestion.text);
   });
 
-  test('appends quick suggestion chip text when instruction already has content', () => {
-    let currentInput = { ...defaultStepInput, instruction: 'Comenzar vertido.' };
+  test('appends quick suggestion chip text smoothly with space when instruction already has content', () => {
+    let currentInput = { ...defaultStepInput, instruction: 'Comenzar vertido' };
     const mockSetStepInput = vi.fn((updater) => {
       currentInput = typeof updater === 'function' ? updater(currentInput) : updater;
     });
@@ -230,7 +231,7 @@ describe('StepFormModal Component Tests', () => {
     fireEvent.click(suggestionChip);
 
     expect(mockSetStepInput).toHaveBeenCalled();
-    expect(currentInput.instruction).toBe(`Comenzar vertido. ${suggestion.text}`);
+    expect(currentInput.instruction).toBe(`Comenzar vertido ${suggestion.text}`);
   });
 
   test('triggers onClose when clicking close button, cancel button or backdrop', () => {

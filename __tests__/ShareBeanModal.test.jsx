@@ -1,6 +1,14 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, act } from '@testing-library/react';
+import { render, screen, fireEvent, act, waitFor } from '@testing-library/react';
 import ShareBeanModal from '../src/components/ShareBeanModal';
+
+// Helper: waits for a ShareBeanModal action button to become enabled
+// (generating === false && no error) before returning the element.
+const waitForShareButton = async (text) => {
+  const btn = screen.getByText(text);
+  await waitFor(() => expect(btn).not.toBeDisabled());
+  return btn;
+};
 
 vi.mock('qrcode', () => ({
   default: {
@@ -64,7 +72,7 @@ describe('ShareBeanModal Component Tests', () => {
       render(<ShareBeanModal bean={mockBean} onClose={mockOnClose} />);
     });
 
-    const copyBtn = screen.getByText('Copiar Enlace');
+    const copyBtn = await waitForShareButton('Copiar Enlace');
     await act(async () => {
       fireEvent.click(copyBtn);
     });
@@ -116,7 +124,7 @@ describe('ShareBeanModal Component Tests', () => {
       render(<ShareBeanModal bean={mockBean} onClose={mockOnClose} />);
     });
 
-    const shareBtn = screen.getByText('Compartir en Móvil');
+    const shareBtn = await waitForShareButton('Compartir en Móvil');
     expect(shareBtn).toBeInTheDocument();
 
     fireEvent.click(shareBtn);
@@ -137,7 +145,7 @@ describe('ShareBeanModal Component Tests', () => {
       render(<ShareBeanModal bean={mockBean} onClose={mockOnClose} onAlert={mockOnAlert} />);
     });
 
-    const copyBtn = screen.getByText('Copiar Enlace');
+    const copyBtn = await waitForShareButton('Copiar Enlace');
     await act(async () => {
       fireEvent.click(copyBtn);
     });
@@ -159,7 +167,7 @@ describe('ShareBeanModal Component Tests', () => {
       render(<ShareBeanModal bean={mockBean} onClose={mockOnClose} />);
     });
 
-    const copyBtn = screen.getByText('Copiar Enlace');
+    const copyBtn = await waitForShareButton('Copiar Enlace');
     await act(async () => {
       fireEvent.click(copyBtn);
     });
@@ -195,7 +203,7 @@ describe('ShareBeanModal Component Tests', () => {
       render(<ShareBeanModal bean={mockBean} onClose={mockOnClose} />);
     });
 
-    const shareBtn = screen.getByText('Compartir en Móvil');
+    const shareBtn = await waitForShareButton('Compartir en Móvil');
     await act(async () => {
       fireEvent.click(shareBtn);
     });

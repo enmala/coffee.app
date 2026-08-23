@@ -58,6 +58,15 @@ describe('coffeeUtils', () => {
       const { container } = render(getMethodIcon('Desconocido'));
       expect(container.querySelector('svg')).toBeInTheDocument();
     });
+
+    test('renders fallback icon when method is undefined, null or empty', () => {
+      const { container: c1 } = render(getMethodIcon(undefined));
+      expect(c1.querySelector('svg')).toBeInTheDocument();
+      const { container: c2 } = render(getMethodIcon(null));
+      expect(c2.querySelector('svg')).toBeInTheDocument();
+      const { container: c3 } = render(getMethodIcon(''));
+      expect(c3.querySelector('svg')).toBeInTheDocument();
+    });
   });
 
   describe('Helper formatting functions', () => {
@@ -107,6 +116,52 @@ describe('coffeeUtils', () => {
       expect(mockSpeak).toHaveBeenCalled();
 
       window.speechSynthesis = originalSpeechSynthesis;
+      globalThis.SpeechSynthesisUtterance = originalUtterance;
+    });
+
+    test('speakText returns early when speechSynthesis is unavailable', () => {
+      const originalSynth = window.speechSynthesis;
+      window.speechSynthesis = undefined;
+
+      // Should not throw and should return undefined
+      expect(speakText('test')).toBeUndefined();
+
+      window.speechSynthesis = originalSynth;
+    });
+
+    test('speakText returns early when SpeechSynthesisUtterance is undefined', () => {
+      const originalSynth = window.speechSynthesis;
+      const originalUtterance = globalThis.SpeechSynthesisUtterance;
+
+      window.speechSynthesis = { speak: vi.fn(), cancel: vi.fn() };
+      globalThis.SpeechSynthesisUtterance = undefined;
+
+      expect(speakText('test')).toBeUndefined();
+
+      window.speechSynthesis = originalSynth;
+      globalThis.SpeechSynthesisUtterance = originalUtterance;
+    });
+
+    test('speakText catches and warns when speechSynthesis.speak throws', () => {
+      const originalSynth = window.speechSynthesis;
+      const originalUtterance = globalThis.SpeechSynthesisUtterance;
+
+      window.speechSynthesis = {
+        speak: vi.fn().mockImplementation(() => {
+          throw new Error('speech error');
+        }),
+        cancel: vi.fn()
+      };
+      globalThis.SpeechSynthesisUtterance = class MockUtterance {
+        constructor(text) { this.text = text; }
+      };
+
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      speakText('test');
+      expect(warnSpy).toHaveBeenCalledWith('La narración por voz falló:', expect.any(Error));
+      warnSpy.mockRestore();
+
+      window.speechSynthesis = originalSynth;
       globalThis.SpeechSynthesisUtterance = originalUtterance;
     });
   });
@@ -189,6 +244,23 @@ describe('coffeeUtils', () => {
       expect(mockCtx.resume).toHaveBeenCalled();
       vi.runAllTimers();
       vi.useRealTimers();
+    });
+
+    test('catches and warns when AudioContext constructor throws', () => {
+      window.AudioContext = vi.fn().mockImplementation(function () {
+        throw new Error('AudioContext creation failed');
+      });
+      window.webkitAudioContext = undefined;
+
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+      playBeep();
+      expect(warnSpy).toHaveBeenCalledWith(
+        'La reproducción de audio falló o fue bloqueada por el navegador:',
+        expect.any(Error)
+      );
+
+      warnSpy.mockRestore();
     });
   });
 
@@ -393,6 +465,25 @@ describe('coffeeUtils', () => {
       expect(decompressed.name).toBe('Fallback Recipe Test');
 
       globalThis.CompressionStream = originalCS;
+    });
+
+    test('should apply default values for missing fields in decompressRecipe', async () => {
+      // Recipe with only name and steps (missing method, coffee_g, grind_size, water_temp_c, step fields)
+      const rawRecipe = { n: 'Minimal Recipe', s: [{ w: 50 }] };
+      const rawBase64 = 'r1_' + btoa(JSON.stringify(rawRecipe));
+      const decompressed = await decompressRecipe(rawBase64);
+
+      expect(decompressed.name).toBe('Minimal Recipe');
+      expect(decompressed.method).toBe('V60');
+      expect(decompressed.coffee_g).toBe(0);
+      expect(decompressed.grind_size).toBe('');
+      expect(decompressed.water_temp_c).toBe(0);
+      expect(decompressed.category).toBeUndefined();
+      expect(decompressed.steps[0].title).toBe('Paso 1');
+      expect(decompressed.steps[0].water_g).toBe(50);
+      expect(decompressed.steps[0].duration_s).toBe(0);
+      expect(decompressed.steps[0].instruction).toBe('');
+      expect(decompressed.steps[0].step_number).toBe(1);
     });
   });
 

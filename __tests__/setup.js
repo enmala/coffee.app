@@ -77,3 +77,19 @@ Object.defineProperty(window, 'matchMedia', {
 // Mock URL createObjectURL / revokeObjectURL for exports
 window.URL.createObjectURL = vi.fn().mockReturnValue('mock-url');
 window.URL.revokeObjectURL = vi.fn();
+
+// Polyfill Blob.prototype.stream for jsdom (not provided by jsdom but available in browsers).
+// This allows the native CompressionStream/DecompressionStream code paths in coffeeUtils.jsx
+// to execute without falling back to the uncompressed base64 path.
+if (typeof Blob.prototype.stream !== 'function') {
+  Blob.prototype.stream = function () {
+    const blob = this;
+    return new ReadableStream({
+      async start(controller) {
+        const buffer = await blob.arrayBuffer();
+        controller.enqueue(new Uint8Array(buffer));
+        controller.close();
+      },
+    });
+  };
+}

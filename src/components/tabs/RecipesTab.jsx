@@ -79,7 +79,7 @@ export default function RecipesTab({
           </button>
           <button
             onClick={() => setRecipeFilterMode('all')}
-            className={`px-2 md:px-3 py-1 rounded-full text-xs font-semibold transition cursor-pointer flex items-center gap-1.5 ${
+            className={`px-2 md:px-3 py-1 rounded-full text-xs font-semibold transition cursor-pointer hidden sm:flex items-center gap-1.5 ${
               recipeFilterMode === 'all'
                 ? 'bg-amber-800 text-white dark:bg-amber-700'
                 : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'

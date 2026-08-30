@@ -1,5 +1,5 @@
 import { getGrindLabel, getRecipeCategory, calculateRatio } from '../../utils/coffeeUtils';
-import { ClockIcon, WaterDropIcon, ChevronUpIcon, ChevronDownIcon, CloseIcon } from '../icons/SvgIcons';
+import { ClockIcon, WaterDropIcon, ChevronUpIcon, ChevronDownIcon, CloseIcon, ArchiveIcon } from '../icons/SvgIcons';
 
 export default function RecipeFormModal({
   editingRecipeId,
@@ -18,6 +18,7 @@ export default function RecipeFormModal({
 }) {
   const grindLabel = getGrindLabel(newRecipe);
   const computedRatio = calculateRatio(newRecipe.coffee_g, totalStepsWater);
+  const isEditingArchived = editingRecipeId && newRecipe.is_archived;
 
   return (
     <div>
@@ -25,6 +26,11 @@ export default function RecipeFormModal({
         <h2 className="text-lg font-bold text-slate-900 dark:text-white">
           {editingRecipeId ? 'Editar Receta' : 'Nueva Receta'}
         </h2>
+        {isEditingArchived && (
+          <span className="inline-flex items-center gap-1 text-[10px] bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-300 dark:border-slate-600 px-2 py-0.5 rounded font-medium">
+            <ArchiveIcon className="w-3 h-3" /> Editando receta archivada
+          </span>
+        )}
       </div>
 
       <form onSubmit={handleSaveRecipe} className="space-y-4">

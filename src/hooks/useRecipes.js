@@ -9,6 +9,8 @@ const EMPTY_RECIPE = {
   grind_size: '',
   water_temp_c: 90,
   bean_id: '',
+  is_favorite: false,
+  is_archived: false,
   steps: []
 };
 
@@ -21,7 +23,11 @@ const EMPTY_STEP_INPUT = {
 
 export function useRecipes() {
   const [recipes, setRecipes] = useState(() => {
-    return safeGetItem('coffee_recipes_v1', DEFAULT_RECIPES, Array.isArray);
+    return safeGetItem('coffee_recipes_v1', DEFAULT_RECIPES, Array.isArray).map((r) => ({
+      ...r,
+      is_favorite: Boolean(r.is_favorite),
+      is_archived: Boolean(r.is_archived)
+    }));
   });
 
   const [collapsedMethods, setCollapsedMethods] = useState(() => {
@@ -44,6 +50,14 @@ export function useRecipes() {
   const [stepTitleError, setStepTitleError] = useState(false);
   const [isStepFormOpen, setIsStepFormOpen] = useState(false);
 
+  const [recipeFilterMode, setRecipeFilterMode] = useState(() => {
+    return safeGetItem('coffee_recipe_filter_mode_v1', 'active', (v) =>
+      ['active', 'archived', 'all'].includes(v)
+    );
+  });
+
+  const [undoArchiveToast, setUndoArchiveToast] = useState(null);
+
   useEffect(() => {
     safeSetItem('coffee_recipes_v1', recipes);
   }, [recipes]);
@@ -51,6 +65,21 @@ export function useRecipes() {
   useEffect(() => {
     safeSetItem('collapsed_methods_v1', collapsedMethods);
   }, [collapsedMethods]);
+
+  useEffect(() => {
+    safeSetItem('coffee_recipe_filter_mode_v1', recipeFilterMode);
+  }, [recipeFilterMode]);
+
+  // Auto-dismiss del undo toast después de 3 segundos
+  useEffect(() => {
+    if (!undoArchiveToast) return;
+
+    const timer = setTimeout(() => {
+      setUndoArchiveToast(null);
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, [undoArchiveToast]);
 
   useEffect(() => {
     if (menuOpenRecipeId === null) return;
@@ -214,6 +243,7 @@ export function useRecipes() {
     } else {
       const created = {
         is_favorite: false,
+        is_archived: false,
         ...recipeData,
         id: `custom-${crypto.randomUUID()}`
       };
@@ -244,6 +274,47 @@ export function useRecipes() {
     }
   }, [summaryRecipe]);
 
+  const handleArchiveRecipe = useCallback((recipeId, recipeName) => {
+    setRecipes((prevRecipes) => {
+      const updated = prevRecipes.map((r) =>
+        r.id === recipeId ? { ...r, is_archived: true } : r
+      );
+      safeSetItem('coffee_recipes_v1', updated);
+      return updated;
+    });
+
+    if (summaryRecipe && summaryRecipe.id === recipeId) {
+      setSummaryRecipe((prev) => (prev ? { ...prev, is_archived: true } : null));
+    }
+
+    // Mostrar undo toast con nombre de la receta
+    setUndoArchiveToast({ recipeId, recipeName });
+  }, [summaryRecipe]);
+
+  const handleUnarchiveRecipe = useCallback((recipeId) => {
+    setRecipes((prevRecipes) => {
+      const updated = prevRecipes.map((r) =>
+        r.id === recipeId ? { ...r, is_archived: false } : r
+      );
+      safeSetItem('coffee_recipes_v1', updated);
+      return updated;
+    });
+
+    if (summaryRecipe && summaryRecipe.id === recipeId) {
+      setSummaryRecipe((prev) => (prev ? { ...prev, is_archived: false } : null));
+    }
+
+    // Si el undo toast apunta a esta receta, limpiarlo
+    setUndoArchiveToast((prev) => (prev && prev.recipeId === recipeId ? null : prev));
+  }, [summaryRecipe]);
+
+  const handleUndoArchive = useCallback(() => {
+    if (undoArchiveToast) {
+      handleUnarchiveRecipe(undoArchiveToast.recipeId);
+      setUndoArchiveToast(null);
+    }
+  }, [undoArchiveToast, handleUnarchiveRecipe]);
+
   const handleEditRecipe = useCallback((recipe, navigateTo) => {
     setNewRecipe({
       name: recipe.name,
@@ -253,7 +324,8 @@ export function useRecipes() {
       water_temp_c: recipe.water_temp_c,
       bean_id: recipe.bean_id || '',
       steps: [...recipe.steps],
-      is_favorite: Boolean(recipe.is_favorite)
+      is_favorite: Boolean(recipe.is_favorite),
+      is_archived: Boolean(recipe.is_archived)
     });
     setEditingRecipeId(recipe.id);
     setDuplicatingFromRecipe(null);
@@ -280,7 +352,8 @@ export function useRecipes() {
       water_temp_c: recipe.water_temp_c,
       bean_id: recipe.bean_id || '',
       steps: recipe.steps ? recipe.steps.map((s) => ({ ...s })) : [],
-      is_favorite: false
+      is_favorite: false,
+      is_archived: false
     });
     setEditingRecipeId(null);
     setSummaryRecipe(null);
@@ -459,7 +532,14 @@ export function useRecipes() {
   }, [handleEditRecipe, closeSummary]);
 
   const groupedRecipes = useMemo(() => {
-    const groups = recipes.reduce((acc, recipe) => {
+    // Aplicar filtro de visibilidad de archivado
+    const visibleRecipes = recipeFilterMode === 'archived'
+      ? recipes.filter((r) => r.is_archived)
+      : recipeFilterMode === 'all'
+      ? recipes
+      : recipes.filter((r) => !r.is_archived);
+
+    const groups = visibleRecipes.reduce((acc, recipe) => {
       const method = recipe.method || 'Otros';
       if (!acc[method]) {
         acc[method] = [];
@@ -476,7 +556,11 @@ export function useRecipes() {
     });
 
     return groups;
-  }, [recipes]);
+  }, [recipes, recipeFilterMode]);
+
+  const activeCount = useMemo(() => recipes.filter((r) => !r.is_archived).length, [recipes]);
+  const archivedCount = useMemo(() => recipes.filter((r) => r.is_archived).length, [recipes]);
+  const totalCount = useMemo(() => recipes.length, [recipes]);
 
   const totalStepsTime = useMemo(
     () => newRecipe.steps.reduce((sum, s) => sum + (Number(s.duration_s) || 0), 0),
@@ -533,6 +617,16 @@ export function useRecipes() {
     handleCancelForm,
     handleSaveRecipe,
     handleToggleFavorite,
+    handleArchiveRecipe,
+    handleUnarchiveRecipe,
+    handleUndoArchive,
+    recipeFilterMode,
+    setRecipeFilterMode,
+    undoArchiveToast,
+    setUndoArchiveToast,
+    activeCount,
+    archivedCount,
+    totalCount,
     handleEditRecipe,
     handleDuplicateRecipe,
     handleNewRecipeClick,

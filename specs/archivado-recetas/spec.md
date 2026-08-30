@@ -72,8 +72,12 @@ Ubicada en la parte superior de `RecipesTab.jsx`, justo debajo del encabezado *"
 > **Nota de implementación:** Los iconos `📦` (Archivo), `📭` (vacío) y `☕` (sin recetas) deben implementarse como **componentes SVG reutilizables** (`ArchiveIcon`, `ArchiveRestoreIcon`, `InboxEmptyIcon`) en `src/components/icons/SvgIcons.jsx`, siguiendo el patrón existente de `TrashIcon`, `ShareIcon`, etc. Consistente con la migración de emojis a SVG documentada en el BACKLOG.
 2. **Contadores Dinámicos:**
    * Cada chip muestra el recuento en tiempo real: `Activas (N)`, `Archivadas (N)`, `Todas (N)`.
-   * Si `Archivadas` tiene 0 elementos, el chip se mantiene visible para permitir descubrir la función.
+   * **Los chips son siempre visibles** (regardless de `archivedCount`), permitiendo navegar entre vistas incluso cuando no hay recetas archivadas. El chip "Archivadas" muestra `0` cuando no hay recetas archivadas.
 3. **Estado Inicial:** `filterMode = 'active'` (Activas) de forma predeterminada al cargar la vista.
+4. **Responsividad Móvil:**
+   * El contenedor de chips usa `flex-wrap` para adaptarse a pantallas estrechas.
+   * El chip **"Todas"** se oculta en móvil mediante `hidden sm:flex` (solo visible en `sm:` ≥ 640px / tablet / landscape), manteniendo "Activas" y "Archivadas" en una sola línea.
+   * Padding compacto en móvil: `px-2 md:px-3 py-1` en los chips y `px-1 md:px-1.5` en los contadores.
 
 ---
 
@@ -90,9 +94,10 @@ Ubicada en la parte superior de `RecipesTab.jsx`, justo debajo del encabezado *"
 
 #### B. Tarjeta Archivada (en Vistas *"Archivadas"* o *"Todas"*)
 * **Visual:**
-  * Tratamiento atenuado (`opacity-80 dark:opacity-85`) y borde punteado grisáceo (`border-2 border-dashed border-slate-300 dark:border-slate-600`) para diferenciar de las activas sin perder legibilidad.
-  * **Badge identificador:** Chip pequeño en la esquina superior izquierda de la tarjeta:
-    `[📦 Archivada]` (`text-[10px] bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-1.5 py-0.5 rounded font-medium`).
+  * Tratamiento atenuado (`opacity-75`) y borde punteado grisáceo (`border-2 border-dashed border-slate-300 dark:border-slate-600`) para diferenciar de las activas sin perder legibilidad.
+  * **Badge identificador:** Chip pequeño en la esquina superior derecha de la tarjeta (`absolute top-2 right-2 z-10`):
+    `[📦 Archivada]` (`text-[9px] bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-1.5 py-0.25 rounded font-medium`).
+  * El contenedor de botones de acción (timer + •••) recibe `mt-6` condicional cuando la receta está archivada, empujando los botones por debajo del badge para evitar superposición.
   * Botón de inicio rápido `[▶]` funcional con tono neutro.
 * **Menú `•••`:**
   * ✏️ Editar
@@ -116,7 +121,7 @@ Ubicada en la parte superior de `RecipesTab.jsx`, justo debajo del encabezado *"
   2. Se actualizan los contadores de los chips con animación suave (`transition-transform` + `scale-105` por 150ms) para reforzar el feedback visual del cambio.
   3. Se muestra una notificación flotante (toast) inferior:
      > 📦 **"V60 Hoffman 4:6" archivada.** &nbsp;&nbsp; `[Deshacer]`
-  4. Si el usuario presiona **Deshacer** (en una ventana de 4 segundos), se restaura el estado anterior inmediatamente sin recargar.
+  4. Si el usuario presiona **Deshacer** (en una ventana de **3 segundos**), se restaura el estado anterior inmediatamente sin recargar. La notificación se cierra automáticamente tras 3 segundos si el usuario no interactúa.
 
 ---
 
@@ -188,4 +193,11 @@ Escenario: Receta importada desde JSON preserva estado de archivado
   Cuando importa el archivo .json nuevamente
   Entonces la receta importada mantiene is_archived = true
   Y no aparece en la vista "Activas" hasta que se desarchive
+
+Escenario: Los chips de filtro permanecen visibles al desarchivar todas las recetas
+  Dado que el usuario tiene recetas archivadas y está en la vista "Archivadas"
+  Cuando desarchiva todas las recetas archivadas
+  Entonces los chips "Activas", "Archivadas" y "Todas" permanecen visibles
+  Y el chip "Archivadas" muestra contador 0
+  Y puede navegar a "Activas" o "Todas" sin recargar la página
 ```

@@ -506,7 +506,7 @@ describe('Sistema de Archivado de Recetas', () => {
       expect(restoredRecipe.is_archived).toBe(false);
     });
 
-    test('13. El undo toast se auto-cierra después de 4 segundos', async () => {
+    test('13. El undo toast se auto-cierra después de 3 segundos', async () => {
       vi.useFakeTimers();
       render(<App />);
 
@@ -518,7 +518,7 @@ describe('Sistema de Archivado de Recetas', () => {
 
       // Avanzar 4 segundos (el toast se cierra automáticamente)
       act(() => {
-        vi.advanceTimersByTime(4000);
+        vi.advanceTimersByTime(3000);
       });
 
       expect(screen.queryByText('Receta archivada')).not.toBeInTheDocument();

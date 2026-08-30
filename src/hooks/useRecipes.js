@@ -70,13 +70,13 @@ export function useRecipes() {
     safeSetItem('coffee_recipe_filter_mode_v1', recipeFilterMode);
   }, [recipeFilterMode]);
 
-  // Auto-dismiss del undo toast después de 4 segundos
+  // Auto-dismiss del undo toast después de 3 segundos
   useEffect(() => {
     if (!undoArchiveToast) return;
 
     const timer = setTimeout(() => {
       setUndoArchiveToast(null);
-    }, 4000);
+    }, 3000);
 
     return () => clearTimeout(timer);
   }, [undoArchiveToast]);

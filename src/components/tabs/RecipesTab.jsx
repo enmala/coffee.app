@@ -153,6 +153,11 @@ export default function RecipesTab({
                           : ''
                         } hover:border-amber-200 dark:hover:border-amber-800/30 rounded-xl cursor-pointer transition flex justify-between items-center group relative ${recipe.id === menuOpenRecipeId ? 'z-30' : ''}`}
                       >
+                        {recipe.is_archived && (
+                          <span className="absolute top-2 right-2 text-[9px] bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-1.5 py-0.25 rounded font-medium z-10">
+                            📦 Archivada
+                          </span>
+                        )}
                         <div className="space-y-1 min-w-0 flex-1 pr-2">
                           <div className="flex items-center gap-1.5">
                             <button
@@ -178,12 +183,7 @@ export default function RecipesTab({
                           </p>
                         </div>
 
-                        <div className="relative shrink-0">
-                          {recipe.is_archived && (
-                            <span className="absolute -top-2 right-0 text-[9px] bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-1.5 py-0.25 rounded font-medium">
-                              📦 Archivada
-                            </span>
-                          )}
+                        <div className={`relative shrink-0 ${recipe.is_archived ? 'mt-6' : ''}`}>
                           <div className="flex gap-1 transition items-center opacity-85 group-hover:opacity-100">
                             <button
                               onClick={(e) => {

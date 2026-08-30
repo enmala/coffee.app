@@ -97,9 +97,9 @@ describe('Sistema de Archivado de Recetas', () => {
         />
       );
 
-      // Sin recetas archivadas → no chips visibles
-      expect(screen.queryByText('Archivadas')).not.toBeInTheDocument();
-      expect(screen.queryByText('Todas')).not.toBeInTheDocument();
+      // Sin recetas archivadas → los chips siguen visibles (siempre navegables)
+      expect(screen.getByText('Archivadas')).toBeInTheDocument();
+      expect(screen.getByText('Todas')).toBeInTheDocument();
 
       // Rerender con recetas archivadas → chips aparecen
       const groupedWithArchived = {
@@ -604,8 +604,8 @@ describe('Sistema de Archivado de Recetas', () => {
       // La receta debe aparecer (no está archivada)
       expect(screen.getByText('Receta Legacy')).toBeInTheDocument();
 
-      // Los chips de archivado NO deben aparecer (0 archivadas)
-      expect(screen.queryByText('Archivadas')).not.toBeInTheDocument();
+      // El chip "Archivadas" debe estar presente (siempre visible) pero con contador 0
+      expect(screen.getByText('Archivadas')).toBeInTheDocument();
 
       // Verificar que is_archived se normalizó a false en localStorage
       const saved = JSON.parse(localStorage.getItem('coffee_recipes_v1'));
@@ -643,6 +643,66 @@ describe('Sistema de Archivado de Recetas', () => {
       // Verificar: de vuelta a 1 archivada
       saved = JSON.parse(localStorage.getItem('coffee_recipes_v1'));
       expect(saved.filter((r) => r.is_archived).length).toBe(1);
+    });
+
+    test('20. Los chips permanecen visibles al desarchivar todas las recetas', () => {
+      render(<App />);
+
+      // Ver todo para acceder a todas las recetas
+      fireEvent.click(screen.getByTitle('Ver todas las recetas'));
+
+      // Cambiar a "Archivadas" → ver solo la receta archivada
+      fireEvent.click(screen.getByTitle('Ver recetas archivadas'));
+      expect(screen.getByText('Aeropress Archivada')).toBeInTheDocument();
+
+      // Los chips deben estar visibles
+      expect(screen.getByTitle('Ver recetas activas')).toBeInTheDocument();
+      expect(screen.getByTitle('Ver recetas archivadas')).toBeInTheDocument();
+      expect(screen.getByTitle('Ver todas las recetas')).toBeInTheDocument();
+
+      // Desarchivar la única receta archivada
+      const menuBtns = screen.getAllByTitle('Más opciones');
+      fireEvent.click(menuBtns[0]);
+      fireEvent.click(screen.getByText('Desarchivar'));
+
+      // Ahora archivedCount = 0, pero los chips siguen visibles
+      expect(screen.getByTitle('Ver recetas activas')).toBeInTheDocument();
+      expect(screen.getByTitle('Ver recetas archivadas')).toBeInTheDocument();
+
+      // El chip "Archivadas" debe mostrar contador 0
+      const archivadasChip = screen.getByTitle('Ver recetas archivadas');
+      expect(archivadasChip).toHaveTextContent('0');
+
+      // Cambiar a "Activas" para verificar que funciona
+      fireEvent.click(screen.getByTitle('Ver recetas activas'));
+      expect(screen.getByText('V60 Activa')).toBeInTheDocument();
+
+      // "Aeropress Archivada" fue desarchivada → ahora es activa → aparece en "Activas"
+      expect(screen.getByText('Aeropress Archivada')).toBeInTheDocument();
+    });
+
+    test('21. Los chips son navegables cuando solo hay recetas archivadas', () => {
+      // Setup: solo recetas archivadas
+      const onlyArchived = [
+        { ...BASE_RECIPES[1], is_archived: true },
+        { ...BASE_RECIPES[0], is_archived: true, id: 'active-1-archived', name: 'V60 Archivada' },
+      ];
+      localStorage.setItem('coffee_recipes_v1', JSON.stringify(onlyArchived));
+
+      render(<App />);
+
+      // Por defecto en "Activas" → lista vacía, pero chips visibles
+      expect(screen.queryByText('V60 Archivada')).not.toBeInTheDocument();
+      expect(screen.getByText('Archivadas')).toBeInTheDocument();
+
+      // Navegar a "Archivadas" desde el chip
+      fireEvent.click(screen.getByTitle('Ver recetas archivadas'));
+      expect(screen.getByText('V60 Archivada')).toBeInTheDocument();
+      expect(screen.getByText('Aeropress Archivada')).toBeInTheDocument();
+
+      // Navegar a "Todas" desde el chip
+      fireEvent.click(screen.getByTitle('Ver todas las recetas'));
+      expect(screen.getByText('V60 Archivada')).toBeInTheDocument();
     });
   });
 

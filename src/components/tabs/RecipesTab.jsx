@@ -47,12 +47,11 @@ export default function RecipesTab({
         </div>
       </div>
 
-      {/* Chips de filtro de archivado (solo visibles cuando hay recetas archivadas) */}
-      {archivedCount > 0 && (
-        <div className="flex gap-1.5 pb-1">
-          <button
+      {/* Chips de filtro de archivado — siempre visibles para permitir navegación entre vistas */}
+      <div className="flex flex-wrap gap-1.5 pb-1">
+        <button
             onClick={() => setRecipeFilterMode('active')}
-            className={`px-3 py-1.5 rounded-full text-xs font-semibold transition cursor-pointer flex items-center gap-1.5 ${
+            className={`px-2 md:px-3 py-1 rounded-full text-xs font-semibold transition cursor-pointer flex items-center gap-1.5 ${
               recipeFilterMode === 'active'
                 ? 'bg-amber-800 text-white dark:bg-amber-700'
                 : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
@@ -62,11 +61,11 @@ export default function RecipesTab({
           >
             <span className="w-3.5 h-3.5 flex items-center justify-center">☕</span>
             <span>Activas</span>
-            {activeCount > 0 && <span className="bg-white/20 dark:bg-slate-950/30 px-1.5 py-0.25 rounded-full text-[10px] font-bold">{activeCount}</span>}
+            {activeCount > 0 && <span className="bg-white/20 dark:bg-slate-950/30 px-1 py-0.25 rounded-full text-[10px] font-bold">{activeCount}</span>}
           </button>
           <button
             onClick={() => setRecipeFilterMode('archived')}
-            className={`px-3 py-1.5 rounded-full text-xs font-semibold transition cursor-pointer flex items-center gap-1.5 ${
+            className={`px-2 md:px-3 py-1 rounded-full text-xs font-semibold transition cursor-pointer flex items-center gap-1.5 ${
               recipeFilterMode === 'archived'
                 ? 'bg-amber-800 text-white dark:bg-amber-700'
                 : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
@@ -76,11 +75,11 @@ export default function RecipesTab({
           >
             <ArchiveIcon className="w-3.5 h-3.5" />
             <span>Archivadas</span>
-            <span className="bg-white/20 dark:bg-slate-950/30 px-1.5 py-0.25 rounded-full text-[10px] font-bold">{archivedCount}</span>
+            <span className="bg-white/20 dark:bg-slate-950/30 px-1 py-0.25 rounded-full text-[10px] font-bold">{archivedCount}</span>
           </button>
           <button
             onClick={() => setRecipeFilterMode('all')}
-            className={`px-3 py-1.5 rounded-full text-xs font-semibold transition cursor-pointer flex items-center gap-1.5 ${
+            className={`px-2 md:px-3 py-1 rounded-full text-xs font-semibold transition cursor-pointer flex items-center gap-1.5 ${
               recipeFilterMode === 'all'
                 ? 'bg-amber-800 text-white dark:bg-amber-700'
                 : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
@@ -90,10 +89,9 @@ export default function RecipesTab({
           >
             <span className="w-3.5 h-3.5 flex items-center justify-center">🌐</span>
             <span>Todas</span>
-            <span className="bg-white/20 dark:bg-slate-950/30 px-1.5 py-0.25 rounded-full text-[10px] font-bold">{totalCount}</span>
+            <span className="bg-white/20 dark:bg-slate-950/30 px-1 py-0.25 rounded-full text-[10px] font-bold">{totalCount}</span>
           </button>
         </div>
-      )}
 
       <div className="space-y-5">
         {Object.keys(groupedRecipes).length === 0 ? (

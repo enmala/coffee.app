@@ -240,3 +240,32 @@ export function CupIcon({ className = "w-4 h-4", ...props }) {
   );
 }
 
+export function ArchiveIcon({ className = "w-4 h-4", ...props }) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className} {...props}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M3 6.75A1.5 1.5 0 014.5 5.25h15A1.5 1.5 0 0121 6.75v10.5a1.5 1.5 0 01-1.5 1.5h-15A1.5 1.5 0 013 17.25V6.75z" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M3 10.5h18" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 7.5V11.5L10.5 9.5M12 11.5L13.5 9.5" />
+    </svg>
+  );
+}
+
+export function ArchiveRestoreIcon({ className = "w-4 h-4", ...props }) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className} {...props}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M3 6.75A1.5 1.5 0 014.5 5.25h15A1.5 1.5 0 0121 6.75v10.5a1.5 1.5 0 01-1.5 1.5h-15A1.5 1.5 0 013 17.25V6.75z" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M3 10.5h18" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 11.5V7.5L10.5 9.5M12 7.5L13.5 9.5" />
+    </svg>
+  );
+}
+
+export function InboxEmptyIcon({ className = "w-4 h-4", ...props }) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className} {...props}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M3 7.5A1.5 1.5 0 014.5 6h15A1.5 1.5 0 0121 7.5v9a1.5 1.5 0 01-1.5 1.5H4.5A1.5 1.5 0 013 16.5v-9z" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 6V4.5a1.5 1.5 0 011.5-1.5h6a1.5 1.5 0 011.5 1.5V6" />
+    </svg>
+  );
+}
+

@@ -29,6 +29,8 @@ work
 coverage
 .agents/
 *.keystore
+.poolside/
+.kilo/
 
 # Android / Bubblewrap TWA generated files
 /app/

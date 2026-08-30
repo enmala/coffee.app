@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { TrashIcon, WarningTriangleIcon } from './components/icons/SvgIcons';
+import { TrashIcon, WarningTriangleIcon, ArchiveIcon } from './components/icons/SvgIcons';
 import TimerComponent from './components/TimerComponent';
 import ShareModal from './components/ShareModal';
 import ShareBeanModal from './components/ShareBeanModal';
@@ -74,6 +74,15 @@ export default function App() {
     handleCancelForm,
     handleSaveRecipe,
     handleToggleFavorite,
+    handleArchiveRecipe,
+    handleUnarchiveRecipe,
+    handleUndoArchive,
+    recipeFilterMode,
+    setRecipeFilterMode,
+    undoArchiveToast,
+    activeCount,
+    archivedCount,
+    totalCount,
     handleEditRecipe,
     handleDuplicateRecipe,
     handleNewRecipeClick,
@@ -522,6 +531,13 @@ export default function App() {
                 onDuplicateRecipe={onDuplicateRecipe}
                 onDeleteRecipe={onDeleteRecipe}
                 onToggleFavorite={handleToggleFavorite}
+                recipeFilterMode={recipeFilterMode}
+                setRecipeFilterMode={setRecipeFilterMode}
+                activeCount={activeCount}
+                archivedCount={archivedCount}
+                totalCount={totalCount}
+                onArchiveRecipe={handleArchiveRecipe}
+                onUnarchiveRecipe={handleUnarchiveRecipe}
               />
             )}
 
@@ -569,6 +585,8 @@ export default function App() {
           onStartTimer={handleStartTimerFromSummary}
           formatSecondsToMinutes={formatSecondsToMinutes}
           onToggleFavorite={handleToggleFavorite}
+          onArchiveRecipe={handleArchiveRecipe}
+          onUnarchiveRecipe={handleUnarchiveRecipe}
           isLibraryPreview={isLibraryOpen}
           isImported={summaryRecipe ? recipeLibraryState.isRecipeImported(summaryRecipe) : false}
           onImport={(r) => handleLibraryImportRecipe(r)}
@@ -665,6 +683,23 @@ export default function App() {
                 className="w-full py-2.5 bg-emerald-700 hover:bg-emerald-800 dark:bg-emerald-600 dark:hover:bg-emerald-700 text-white rounded-xl font-bold text-sm transition shadow-sm cursor-pointer"
               >
                 Entendido
+              </button>
+            </div>
+          </div>
+        )}
+
+        {undoArchiveToast && (
+          <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 animate-fade-in">
+            <div className="bg-slate-800 dark:bg-slate-900 text-white rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 px-4 py-3 flex items-center gap-3 text-xs max-w-sm">
+              <ArchiveIcon className="w-4 h-4 text-slate-300" />
+              <span>
+                <strong className="font-semibold">Receta archivada</strong> — {undoArchiveToast.recipeName}
+              </span>
+              <button
+                onClick={handleUndoArchive}
+                className="px-2 py-0.5 bg-amber-800 hover:bg-amber-900 text-white text-[10px] font-bold rounded transition cursor-pointer"
+              >
+                Deshacer
               </button>
             </div>
           </div>

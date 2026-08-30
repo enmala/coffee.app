@@ -1,5 +1,5 @@
 import { getMethodIcon } from '../../utils/coffeeUtils';
-import { ChevronRightIcon, ChevronDownIcon, PencilIcon, TrashIcon, ShareIcon, DocumentDuplicateIcon } from '../icons/SvgIcons';
+import { ChevronRightIcon, ChevronDownIcon, PencilIcon, TrashIcon, ShareIcon, DocumentDuplicateIcon, ArchiveIcon, ArchiveRestoreIcon, InboxEmptyIcon } from '../icons/SvgIcons';
 
 export default function RecipesTab({
   groupedRecipes,
@@ -15,7 +15,14 @@ export default function RecipesTab({
   onShareRecipe,
   onDuplicateRecipe,
   onDeleteRecipe,
-  onToggleFavorite
+  onToggleFavorite,
+  recipeFilterMode,
+  setRecipeFilterMode,
+  activeCount = 0,
+  archivedCount = 0,
+  totalCount = 0,
+  onArchiveRecipe,
+  onUnarchiveRecipe
 }) {
   return (
     <div className="space-y-6">
@@ -40,9 +47,80 @@ export default function RecipesTab({
         </div>
       </div>
 
+      {/* Chips de filtro de archivado (solo visibles cuando hay recetas archivadas) */}
+      {archivedCount > 0 && (
+        <div className="flex gap-1.5 pb-1">
+          <button
+            onClick={() => setRecipeFilterMode('active')}
+            className={`px-3 py-1.5 rounded-full text-xs font-semibold transition cursor-pointer flex items-center gap-1.5 ${
+              recipeFilterMode === 'active'
+                ? 'bg-amber-800 text-white dark:bg-amber-700'
+                : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+            }`}
+            title="Ver recetas activas"
+            aria-label="Ver recetas activas"
+          >
+            <span className="w-3.5 h-3.5 flex items-center justify-center">☕</span>
+            <span>Activas</span>
+            {activeCount > 0 && <span className="bg-white/20 dark:bg-slate-950/30 px-1.5 py-0.25 rounded-full text-[10px] font-bold">{activeCount}</span>}
+          </button>
+          <button
+            onClick={() => setRecipeFilterMode('archived')}
+            className={`px-3 py-1.5 rounded-full text-xs font-semibold transition cursor-pointer flex items-center gap-1.5 ${
+              recipeFilterMode === 'archived'
+                ? 'bg-amber-800 text-white dark:bg-amber-700'
+                : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+            }`}
+            title="Ver recetas archivadas"
+            aria-label="Ver recetas archivadas"
+          >
+            <ArchiveIcon className="w-3.5 h-3.5" />
+            <span>Archivadas</span>
+            <span className="bg-white/20 dark:bg-slate-950/30 px-1.5 py-0.25 rounded-full text-[10px] font-bold">{archivedCount}</span>
+          </button>
+          <button
+            onClick={() => setRecipeFilterMode('all')}
+            className={`px-3 py-1.5 rounded-full text-xs font-semibold transition cursor-pointer flex items-center gap-1.5 ${
+              recipeFilterMode === 'all'
+                ? 'bg-amber-800 text-white dark:bg-amber-700'
+                : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+            }`}
+            title="Ver todas las recetas"
+            aria-label="Ver todas las recetas"
+          >
+            <span className="w-3.5 h-3.5 flex items-center justify-center">🌐</span>
+            <span>Todas</span>
+            <span className="bg-white/20 dark:bg-slate-950/30 px-1.5 py-0.25 rounded-full text-[10px] font-bold">{totalCount}</span>
+          </button>
+        </div>
+      )}
+
       <div className="space-y-5">
         {Object.keys(groupedRecipes).length === 0 ? (
-          <p className="text-sm text-slate-500 dark:text-slate-300 text-center py-8">No tienes recetas guardadas.</p>
+          <div className="text-center py-8 space-y-3">
+            <div className="flex justify-center">
+              {recipeFilterMode === 'active' && archivedCount > 0
+                ? <InboxEmptyIcon className="w-10 h-10 text-slate-300 dark:text-slate-500" />
+                : <ArchiveIcon className="w-10 h-10 text-slate-300 dark:text-slate-500" />
+              }
+            </div>
+            <p className="text-sm text-slate-500 dark:text-slate-300">
+              {recipeFilterMode === 'active' && archivedCount > 0
+                ? 'No tienes recetas activas. Todas están archivadas.'
+                : recipeFilterMode === 'archived'
+                ? 'No tienes recetas archivadas todavía.'
+                : 'No tienes recetas guardadas.'
+              }
+            </p>
+            {recipeFilterMode === 'active' && archivedCount > 0 && (
+              <button
+                onClick={() => setRecipeFilterMode('archived')}
+                className="px-3 py-1.5 bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-800 text-white text-xs font-bold rounded-lg transition cursor-pointer"
+              >
+                Ver Archivadas
+              </button>
+            )}
+          </div>
         ) : (
           Object.keys(groupedRecipes).map((method) => {
             const isCollapsed = !!collapsedMethods[method];
@@ -72,8 +150,16 @@ export default function RecipesTab({
                         onClick={() => onSelectSummary(recipe)}
                         className={`p-3 bg-slate-50 dark:bg-slate-800/30 hover:bg-amber-50/20 dark:hover:bg-amber-900/10 border ${
                           recipe.is_favorite ? 'border-amber-300/80 dark:border-amber-600/60 bg-amber-50/40 dark:bg-amber-950/20' : 'border-slate-200 dark:border-slate-800'
+                        } ${recipe.is_archived
+                          ? 'opacity-75 border-2 border-dashed border-slate-300 dark:border-slate-600'
+                          : ''
                         } hover:border-amber-200 dark:hover:border-amber-800/30 rounded-xl cursor-pointer transition flex justify-between items-center group relative ${recipe.id === menuOpenRecipeId ? 'z-30' : ''}`}
                       >
+                        {recipe.is_archived && (
+                          <span className="absolute top-2 left-2 text-[9px] bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-1.5 py-0.25 rounded font-medium">
+                            📦 Archivada
+                          </span>
+                        )}
                         <div className="space-y-1 min-w-0 flex-1 pr-2">
                           <div className="flex items-center gap-1.5">
                             <button
@@ -151,6 +237,21 @@ export default function RecipesTab({
                                   className="w-full text-left px-3 py-2 hover:bg-slate-100 dark:hover:bg-slate-700/70 text-slate-700 dark:text-slate-200 flex items-center gap-2 cursor-pointer"
                                 >
                                   <DocumentDuplicateIcon className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" /> Duplicar
+                                </button>
+                              )}
+                              {recipe.is_archived ? (
+                                <button
+                                  onClick={(e) => { e.stopPropagation(); if (onUnarchiveRecipe) onUnarchiveRecipe(recipe.id); setMenuOpenRecipeId(null); }}
+                                  className="w-full text-left px-3 py-2 hover:bg-slate-100 dark:hover:bg-slate-700/70 text-slate-700 dark:text-slate-200 flex items-center gap-2 cursor-pointer"
+                                >
+                                  <ArchiveRestoreIcon className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" /> Desarchivar
+                                </button>
+                              ) : (
+                                <button
+                                  onClick={(e) => { e.stopPropagation(); if (onArchiveRecipe) onArchiveRecipe(recipe.id, recipe.name); setMenuOpenRecipeId(null); }}
+                                  className="w-full text-left px-3 py-2 hover:bg-slate-100 dark:hover:bg-slate-700/70 text-slate-700 dark:text-slate-200 flex items-center gap-2 cursor-pointer"
+                                >
+                                  <ArchiveIcon className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" /> Archivar
                                 </button>
                               )}
                               <button

@@ -230,7 +230,7 @@ describe('App Component', () => {
   test('imports a recipe from JSON file', async () => {
     render(<App />);
     fireEvent.click(screen.getByTitle('Configuración'));
-    const importInput = screen.getByText('Importar').querySelector('input');
+    const importInput = screen.getByTitle('Importar desde archivo JSON').querySelector('input');
     
     const file = new File(['{}'], 'recipe.json', { type: 'application/json' });
     fireEvent.change(importInput, { target: { files: [file] } });
@@ -490,7 +490,7 @@ describe('App Component', () => {
   test('JSON import edge cases: missing files, invalid structure, duplicate name', async () => {
     render(<App />);
     fireEvent.click(screen.getByTitle('Configuración'));
-    const importInput = screen.getByText('Importar').querySelector('input');
+    const importInput = screen.getByTitle('Importar desde archivo JSON').querySelector('input');
 
     // 1. Missing files
     fireEvent.change(importInput, { target: { files: [] } });
@@ -746,7 +746,7 @@ describe('App Component', () => {
     
     render(<App />);
     fireEvent.click(screen.getByTitle('Configuración'));
-    const importInput = screen.getByText('Importar').querySelector('input');
+    const importInput = screen.getByTitle('Importar desde archivo JSON').querySelector('input');
 
     class MultiDuplicateFileReaderMock {
       readAsText() {
@@ -887,7 +887,7 @@ describe('App Component', () => {
     // 1. JSON import invalid file contents error scenario (triggers catch in handleImportJson)
     render(<App />);
     fireEvent.click(screen.getByTitle('Configuración'));
-    const importInput = screen.getByText('Importar').querySelector('input');
+    const importInput = screen.getByTitle('Importar desde archivo JSON').querySelector('input');
     class InvalidJsonFileReaderMock {
       readAsText() {
         setTimeout(() => {

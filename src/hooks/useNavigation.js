@@ -205,56 +205,106 @@ export function useNavigation({ recipesSync, beansSync, historySync, recipes, se
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const processUnifiedImportJson = useCallback((data, source = 'file') => {
+    try {
+      let imported = data;
+      if (typeof data === 'string') {
+        imported = JSON.parse(data);
+      }
+
+      if (!imported || typeof imported !== 'object' || Array.isArray(imported)) {
+        showAlert(
+          source === 'clipboard'
+            ? "El contenido del portapapeles no tiene un formato estructurado válido."
+            : "El archivo JSON no tiene un formato estructurado válido.",
+          "error"
+        );
+        return false;
+      }
+
+      if (!imported.name || typeof imported.name !== 'string' || !imported.name.trim()) {
+        showAlert(
+          source === 'clipboard'
+            ? "El JSON del portapapeles debe tener un nombre válido ('name')."
+            : "El archivo JSON debe tener un nombre válido ('name').",
+          "error"
+        );
+        return false;
+      }
+
+      // Detección: ¿Es una Receta?
+      if ('steps' in imported && Array.isArray(imported.steps)) {
+        if (imported.steps.length === 0) {
+          showAlert("La receta debe contener al menos un paso para ser válida.", "error");
+          return false;
+        }
+        setIsSettingsOpen(false);
+        if (setRecipeToImport) setRecipeToImport(imported);
+        navigateTo('import');
+        return true;
+      }
+
+      // Detección: ¿Es un Grano de café?
+      const beanKeys = ['roaster', 'origin', 'process', 'variety', 'roast_level', 'tasting_notes', 'notes', 'sca_score', 'altitude'];
+      const hasBeanAttributes = Object.keys(imported).some(key => beanKeys.includes(key));
+
+      if (hasBeanAttributes || !('steps' in imported)) {
+        setIsSettingsOpen(false);
+        if (setBeanToImport) setBeanToImport(imported);
+        navigateTo('import-bean');
+        return true;
+      }
+
+      showAlert(
+        source === 'clipboard'
+          ? "El contenido del portapapeles no corresponde a una receta ni a un grano de café válido."
+          : "El archivo JSON no corresponde a una receta ni a un grano de café válido.",
+        "error"
+      );
+      return false;
+    } catch (err) {
+      console.error(`Error al procesar JSON unificado (${source}):`, err);
+      showAlert(
+        source === 'clipboard'
+          ? "El contenido del portapapeles no es un JSON válido."
+          : "Ocurrió un error al leer el archivo JSON.",
+        "error"
+      );
+      return false;
+    }
+  }, [navigateTo, showAlert, setRecipeToImport, setBeanToImport]);
+
   const handleUnifiedImportJson = useCallback((e) => {
-    const file = e.target.files[0];
+    const file = e.target.files?.[0];
     if (!file) return;
 
     const reader = new FileReader();
     reader.onload = (event) => {
-      try {
-        const imported = JSON.parse(event.target.result);
-        if (!imported || typeof imported !== 'object' || Array.isArray(imported)) {
-          showAlert("El archivo JSON no tiene un formato estructurado válido.", "error");
-          return;
-        }
-
-        if (!imported.name || typeof imported.name !== 'string' || !imported.name.trim()) {
-          showAlert("El archivo JSON debe tener un nombre válido ('name').", "error");
-          return;
-        }
-
-        // Detección: ¿Es una Receta?
-        if ('steps' in imported && Array.isArray(imported.steps)) {
-          if (imported.steps.length === 0) {
-            showAlert("La receta debe contener al menos un paso para ser válida.", "error");
-            return;
-          }
-          setIsSettingsOpen(false);
-          if (setRecipeToImport) setRecipeToImport(imported);
-          navigateTo('import');
-          return;
-        }
-
-        // Detección: ¿Es un Grano de café?
-        const beanKeys = ['roaster', 'origin', 'process', 'variety', 'roast_level', 'tasting_notes', 'notes', 'sca_score', 'altitude'];
-        const hasBeanAttributes = Object.keys(imported).some(key => beanKeys.includes(key));
-        
-        if (hasBeanAttributes || !('steps' in imported)) {
-          setIsSettingsOpen(false);
-          if (setBeanToImport) setBeanToImport(imported);
-          navigateTo('import-bean');
-          return;
-        }
-
-        showAlert("El archivo JSON no corresponde a una receta ni a un grano de café válido.", "error");
-      } catch (err) {
-        console.error("Error al leer el archivo JSON unificado:", err);
-        showAlert("Ocurrió un error al leer el archivo JSON.", "error");
-      }
+      processUnifiedImportJson(event.target.result, 'file');
     };
     reader.readAsText(file);
     e.target.value = '';
-  }, [navigateTo, showAlert, setRecipeToImport, setBeanToImport]);
+  }, [processUnifiedImportJson]);
+
+  const handleImportFromClipboard = useCallback(async () => {
+    if (!navigator.clipboard || !navigator.clipboard.readText) {
+      showAlert("Tu navegador no soporta la lectura automática del portapapeles.", "error");
+      return;
+    }
+
+    try {
+      const text = await navigator.clipboard.readText();
+      if (!text || !text.trim()) {
+        showAlert("El portapapeles está vacío o no contiene texto.", "warning");
+        return;
+      }
+      processUnifiedImportJson(text.trim(), 'clipboard');
+    } catch (err) {
+      console.error("Error al leer el portapapeles:", err);
+      showAlert("No se pudo acceder al portapapeles. Asegúrate de haber otorgado los permisos necesarios.", "error");
+    }
+  }, [showAlert, processUnifiedImportJson]);
+
 
   const handleStartTimerImmediate = useCallback((recipe) => {
     setActiveRecipe(recipe);
@@ -325,6 +375,7 @@ export function useNavigation({ recipesSync, beansSync, historySync, recipes, se
     closeAbout,
     closeLibrary,
     handleUnifiedImportJson,
+    handleImportFromClipboard,
     handleStartTimerImmediate,
     handleStartTimerFromSummary,
     handleOpenAboutFromSettings,

@@ -1,4 +1,4 @@
-import { GearIcon, SunIcon, MoonIcon } from '../icons/SvgIcons';
+import { GearIcon, SunIcon, MoonIcon, ClipboardIcon, DocumentTextIcon } from '../icons/SvgIcons';
 
 export default function SettingsModal({
   isOpen,
@@ -14,6 +14,7 @@ export default function SettingsModal({
   vibrationType,
   setVibrationType,
   onUnifiedImportJson,
+  onImportFromClipboard,
   onOpenAbout
 }) {
   if (!isOpen) return null;
@@ -128,20 +129,35 @@ export default function SettingsModal({
           </div>
 
           {/* Importar Datos */}
-          <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-800/60">
+          <div className="flex flex-col gap-2.5 p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-800/60">
             <div className="text-left">
               <span className="text-sm font-bold text-slate-800 dark:text-slate-200 block">Importar Datos</span>
-              <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Carga receta o grano desde archivo .json</span>
+              <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Carga receta o grano desde archivo .json o portapapeles</span>
             </div>
-            <label className="px-3 py-1.5 bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-800 text-white text-xs font-bold rounded-lg cursor-pointer transition flex items-center justify-center shadow-sm select-none">
-              Importar
-              <input
-                type="file"
-                accept=".json"
-                onChange={onUnifiedImportJson}
-                className="hidden"
-              />
-            </label>
+            <div className="flex items-center gap-2 pt-1">
+              <label
+                className="flex-1 py-1.5 px-2.5 bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-800 text-white text-xs font-bold rounded-lg cursor-pointer transition flex items-center justify-center gap-1.5 shadow-sm select-none"
+                title="Importar desde archivo JSON"
+              >
+                <DocumentTextIcon className="w-3.5 h-3.5 shrink-0" />
+                <span>Archivo</span>
+                <input
+                  type="file"
+                  accept=".json"
+                  onChange={onUnifiedImportJson}
+                  className="hidden"
+                />
+              </label>
+              <button
+                type="button"
+                onClick={onImportFromClipboard}
+                className="flex-1 py-1.5 px-2.5 bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-800 text-white text-xs font-bold rounded-lg cursor-pointer transition flex items-center justify-center gap-1.5 shadow-sm select-none"
+                title="Importar desde el portapapeles"
+              >
+                <ClipboardIcon className="w-3.5 h-3.5 shrink-0" />
+                <span>Portapapeles</span>
+              </button>
+            </div>
           </div>
 
           {/* About link */}

@@ -412,7 +412,7 @@ describe('Coffee Beans Management Tests', () => {
     // Open settings modal to access unified import button
     fireEvent.click(screen.getByTitle('Configuración'));
 
-    const importLabel = screen.getByText('Importar');
+    const importLabel = screen.getByTitle('Importar desde archivo JSON');
     expect(importLabel).toBeInTheDocument();
 
     const fileInput = importLabel.querySelector('input[type="file"]');
@@ -465,7 +465,7 @@ describe('Coffee Beans Management Tests', () => {
     // Open settings modal to access unified import button
     fireEvent.click(screen.getByTitle('Configuración'));
 
-    const importLabel = screen.getByText('Importar');
+    const importLabel = screen.getByTitle('Importar desde archivo JSON');
     const fileInput = importLabel.querySelector('input[type="file"]');
 
     const dummyFile = new File(['{}'], 'invalid.json', { type: 'application/json' });

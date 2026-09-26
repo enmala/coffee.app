@@ -14,7 +14,9 @@ import {
   compressBean,
   decompressBean,
   getVibrationPattern,
-  triggerVibration
+  triggerVibration,
+  scaleRecipe,
+  getGrindAdjustmentSuggestion
 } from '../src/utils/coffeeUtils';
 
 describe('coffeeUtils', () => {
@@ -515,4 +517,140 @@ describe('coffeeUtils', () => {
       vi.unstubAllGlobals();
     });
   });
+
+  describe('scaleRecipe', () => {
+    const baseRecipe = {
+      id: 'v60-test',
+      name: 'V60 Test',
+      method: 'V60',
+      coffee_g: 15,
+      water_temp_c: 92,
+      steps: [
+        { step_number: 1, title: 'Bloom', water_g: 45, duration_s: 45 },
+        { step_number: 2, title: 'Vertido 1', water_g: 105, duration_s: 30 },
+        { step_number: 3, title: 'Remover', water_g: 0, duration_s: 15 },
+        { step_number: 4, title: 'Vertido 2', water_g: 100, duration_s: 45 }
+      ]
+    };
+
+    test('returns original recipe when input is invalid or coffee_g is zero/negative', () => {
+      expect(scaleRecipe(null, 20)).toBeNull();
+      expect(scaleRecipe(baseRecipe, 0)).toEqual(baseRecipe);
+      expect(scaleRecipe(baseRecipe, -5)).toEqual(baseRecipe);
+      expect(scaleRecipe({ ...baseRecipe, coffee_g: 0 }, 20)).toEqual({ ...baseRecipe, coffee_g: 0 });
+      expect(scaleRecipe({ name: 'Sin pasos' }, 20)).toEqual({ name: 'Sin pasos' });
+    });
+
+    test('returns original recipe unmodified when target dose is equal to original', () => {
+      const result = scaleRecipe(baseRecipe, 15);
+      expect(result).toBe(baseRecipe);
+      expect(result.coffee_g).toBe(15);
+      expect(result.steps[0].water_g).toBe(45);
+      expect(result.steps[1].water_g).toBe(105);
+      expect(result.steps[2].water_g).toBe(0);
+      expect(result.steps[3].water_g).toBe(100);
+    });
+
+    test('scales recipe up proportionally (e.g. 15g to 30g - double)', () => {
+      const result = scaleRecipe(baseRecipe, 30);
+      expect(result.is_scaled).toBe(true);
+      expect(result.original_coffee_g).toBe(15);
+      expect(result.coffee_g).toBe(30);
+      expect(result.steps[0].water_g).toBe(90);
+      expect(result.steps[1].water_g).toBe(210);
+      expect(result.steps[2].water_g).toBe(0); // 0g preserved
+      expect(result.steps[3].water_g).toBe(200);
+
+      const totalWater = result.steps.reduce((acc, s) => acc + s.water_g, 0);
+      expect(totalWater).toBe(500); // 250 * 2
+    });
+
+    test('scales recipe down proportionally (e.g. 15g to 10g)', () => {
+      const result = scaleRecipe(baseRecipe, 10);
+      expect(result.is_scaled).toBe(true);
+      expect(result.coffee_g).toBe(10);
+      // scale = 10 / 15 = 2/3
+      // 45 * 2/3 = 30
+      // 105 * 2/3 = 70
+      // 0 * 2/3 = 0
+      // 100 * 2/3 = 66.666 -> rounded to 67
+      // Total: 250 * 2/3 = 166.666 -> 167. 30 + 70 + 0 + 67 = 167
+      expect(result.steps[0].water_g).toBe(30);
+      expect(result.steps[1].water_g).toBe(70);
+      expect(result.steps[2].water_g).toBe(0);
+      expect(result.steps[3].water_g).toBe(67);
+
+      const totalWater = result.steps.reduce((acc, s) => acc + s.water_g, 0);
+      expect(totalWater).toBe(167);
+    });
+
+    test('compensates rounding discrepancy on the last water step', () => {
+      // Recipe with steps that would round down independently and lose 1g
+      const oddRecipe = {
+        id: 'odd-recipe',
+        name: 'Odd Recipe',
+        coffee_g: 15,
+        steps: [
+          { step_number: 1, title: 'Step 1', water_g: 83 },
+          { step_number: 2, title: 'Step 2', water_g: 83 },
+          { step_number: 3, title: 'Step 3', water_g: 84 },
+          { step_number: 4, title: 'Rest', water_g: 0 }
+        ]
+      };
+      // Total water = 250
+      // Target: 18g. Scale = 18 / 15 = 1.2
+      // newTotal = round(250 * 1.2) = 300
+      // Step 1: round(83 * 1.2) = round(99.6) = 100
+      // Step 2: round(83 * 1.2) = round(99.6) = 100
+      // Step 3: round(84 * 1.2) = round(100.8) = 101
+      // Sum = 301. Diff = 300 - 301 = -1
+      // Step 3 should adjust from 101 to 100!
+      const result = scaleRecipe(oddRecipe, 18);
+      const sum = result.steps.reduce((acc, s) => acc + s.water_g, 0);
+      expect(sum).toBe(300);
+      expect(result.steps[3].water_g).toBe(0); // Rest step still 0
+    });
+  });
+
+  describe('getGrindAdjustmentSuggestion', () => {
+    test('returns null for invalid or non-positive inputs', () => {
+      expect(getGrindAdjustmentSuggestion(null, 15)).toBeNull();
+      expect(getGrindAdjustmentSuggestion(15, null)).toBeNull();
+      expect(getGrindAdjustmentSuggestion(0, 15)).toBeNull();
+      expect(getGrindAdjustmentSuggestion(15, -1)).toBeNull();
+    });
+
+    test('returns null when variation is within +/- 15% tolerance', () => {
+      expect(getGrindAdjustmentSuggestion(15, 15)).toBeNull();
+      expect(getGrindAdjustmentSuggestion(15, 16)).toBeNull(); // +6.7%
+      expect(getGrindAdjustmentSuggestion(15, 17)).toBeNull(); // +13.3%
+      expect(getGrindAdjustmentSuggestion(15, 14)).toBeNull(); // -6.7%
+      expect(getGrindAdjustmentSuggestion(15, 13)).toBeNull(); // -13.3%
+    });
+
+    test('returns info suggestion for moderate increase (+15% to +35%)', () => {
+      const suggestion = getGrindAdjustmentSuggestion(15, 18); // +20%
+      expect(suggestion).not.toBeNull();
+      expect(suggestion.type).toBe('info');
+      expect(suggestion.deltaPercent).toBe(20);
+      expect(suggestion.message).toContain('1–2 clics más grueso');
+    });
+
+    test('returns warning suggestion for significant increase (> +35%)', () => {
+      const suggestion = getGrindAdjustmentSuggestion(15, 30); // +100%
+      expect(suggestion).not.toBeNull();
+      expect(suggestion.type).toBe('warning');
+      expect(suggestion.deltaPercent).toBe(100);
+      expect(suggestion.message).toContain('claramente más grueso');
+    });
+
+    test('returns info suggestion for dose decrease (-15% or lower)', () => {
+      const suggestion = getGrindAdjustmentSuggestion(20, 15); // -25%
+      expect(suggestion).not.toBeNull();
+      expect(suggestion.type).toBe('info');
+      expect(suggestion.deltaPercent).toBe(-25);
+      expect(suggestion.message).toContain('más fino');
+    });
+  });
 });
+

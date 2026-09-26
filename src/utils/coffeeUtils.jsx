@@ -103,6 +103,116 @@ export const calculateRatio = (coffeeG, totalWaterG) => {
   return `1:${formatted}`;
 };
 
+/**
+ * Escala una receta proporcionalmente a partir de una nueva dosis de café/insumo.
+ * Mantiene intacto el ratio original y la duración/temperatura de los pasos.
+ * Realiza un ajuste de redondeo para que la suma del agua de los pasos coincida exactamente
+ * con el agua total calculada.
+ */
+export const scaleRecipe = (recipe, targetCoffeeG) => {
+  if (!recipe || !recipe.steps || !Array.isArray(recipe.steps)) {
+    return recipe;
+  }
+
+  const origCoffee = Number(recipe.coffee_g);
+  const targetCoffee = Number(targetCoffeeG);
+
+  if (!origCoffee || origCoffee <= 0 || !targetCoffee || targetCoffee <= 0) {
+    return { ...recipe };
+  }
+
+  // Si la dosis es idéntica, retornar receta original sin alterar
+  if (origCoffee === targetCoffee) {
+    return recipe;
+  }
+
+  const scale = targetCoffee / origCoffee;
+  const origTotalWater = recipe.steps.reduce((acc, s) => acc + (Number(s.water_g) || 0), 0);
+  const newTotalWater = Math.round(origTotalWater * scale);
+
+  // Escalar cada paso
+  const scaledSteps = recipe.steps.map(step => {
+    const stepWater = Number(step.water_g) || 0;
+    return {
+      ...step,
+      water_g: stepWater > 0 ? Math.round(stepWater * scale) : 0
+    };
+  });
+
+  // Compensar discrepancia por redondeo en el último paso que tenga agua
+  const sumScaledStepsWater = scaledSteps.reduce((acc, s) => acc + (s.water_g || 0), 0);
+  const diff = newTotalWater - sumScaledStepsWater;
+
+  if (diff !== 0) {
+    for (let i = scaledSteps.length - 1; i >= 0; i--) {
+      if ((scaledSteps[i].water_g || 0) > 0) {
+        scaledSteps[i] = {
+          ...scaledSteps[i],
+          water_g: Math.max(0, scaledSteps[i].water_g + diff)
+        };
+        break;
+      }
+    }
+  }
+
+  return {
+    ...recipe,
+    coffee_g: targetCoffee,
+    is_scaled: true,
+    original_coffee_g: origCoffee,
+    steps: scaledSteps
+  };
+};
+
+/**
+ * Evalúa si la variación de dosis entre la receta original y la dosis elegida
+ * requiere un ajuste en la molienda del café (debido a la Ley de Darcy y la altura de la cama).
+ * Retorna null si la variación está dentro de la tolerancia (menor al 15%).
+ */
+export const getGrindAdjustmentSuggestion = (originalCoffeeG, targetCoffeeG) => {
+  const orig = Number(originalCoffeeG);
+  const target = Number(targetCoffeeG);
+
+  if (!orig || orig <= 0 || !target || target <= 0) {
+    return null;
+  }
+
+  const delta = (target - orig) / orig;
+  const deltaPercent = Math.round(delta * 100);
+
+  // Tolerancia habitual: +/- 15%
+  if (Math.abs(delta) < 0.15) {
+    return null;
+  }
+
+  if (delta > 0.35) {
+    return {
+      type: 'warning',
+      deltaPercent,
+      message: `Dosis significativamente mayor (+${deltaPercent}%): Muele claramente más grueso para permitir un drenaje fluido y evitar canalizaciones.`
+    };
+  }
+
+  if (delta >= 0.15) {
+    return {
+      type: 'info',
+      deltaPercent,
+      message: `Dosis mayor (+${deltaPercent}%): Considera usar 1–2 clics más grueso en tu molino para evitar sobreextracción.`
+    };
+  }
+
+  if (delta <= -0.15) {
+    return {
+      type: 'info',
+      deltaPercent,
+      message: `Dosis menor (${deltaPercent}%): Considera moler un poco más fino para generar resistencia y mantener cuerpo y balance.`
+    };
+  }
+
+  return null;
+};
+
+
 // Iconos SVG en formato de glifos minimalistas
 export const getMethodIcon = (method) => {
   const m = (method || '').toLowerCase();

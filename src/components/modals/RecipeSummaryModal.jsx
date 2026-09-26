@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { getIngredientLabel, getGrindLabel, calculateRatio, formatSecondsToMinutes as formatTime } from '../../utils/coffeeUtils';
-import { MapPinIcon, GearIcon, MountainIcon, ClockIcon, HomeIcon, UserIcon, FireIcon, PlantIcon, CalendarIcon, TrophyIcon, CoffeeBeanIcon, ArchiveIcon, ArchiveRestoreIcon } from '../icons/SvgIcons';
+import { useState, useMemo } from 'react';
+import { getIngredientLabel, getGrindLabel, calculateRatio, scaleRecipe, getGrindAdjustmentSuggestion, formatSecondsToMinutes as formatTime } from '../../utils/coffeeUtils';
+import { MapPinIcon, GearIcon, MountainIcon, ClockIcon, HomeIcon, UserIcon, FireIcon, PlantIcon, CalendarIcon, TrophyIcon, CoffeeBeanIcon, ArchiveIcon, ArchiveRestoreIcon, ArrowPathIcon, LightBulbIcon, WarningTriangleIcon } from '../icons/SvgIcons';
 
 export default function RecipeSummaryModal({
   summaryRecipe,
@@ -19,12 +19,82 @@ export default function RecipeSummaryModal({
 }) {
   const [isBeanExpanded, setIsBeanExpanded] = useState(false);
   const [isDetailsExpanded, setIsDetailsExpanded] = useState(false);
+  const [prevRecipeId, setPrevRecipeId] = useState(summaryRecipe?.id);
+  const [prevOriginalCoffeeG, setPrevOriginalCoffeeG] = useState(summaryRecipe?.coffee_g);
+  const [customCoffeeG, setCustomCoffeeG] = useState(summaryRecipe?.coffee_g || 0);
+
+  if (summaryRecipe && (summaryRecipe.id !== prevRecipeId || summaryRecipe.coffee_g !== prevOriginalCoffeeG)) {
+    setPrevRecipeId(summaryRecipe.id);
+    setPrevOriginalCoffeeG(summaryRecipe.coffee_g);
+    setCustomCoffeeG(summaryRecipe.coffee_g || 0);
+  }
+
+
+  const parsedCustomCoffee = parseFloat(customCoffeeG);
+  const isCoffeeValid = !isNaN(parsedCustomCoffee) && parsedCustomCoffee > 0;
+
+  const scaledRecipe = useMemo(() => {
+    if (!summaryRecipe || !isCoffeeValid) return summaryRecipe;
+    return scaleRecipe(summaryRecipe, parsedCustomCoffee);
+  }, [summaryRecipe, parsedCustomCoffee, isCoffeeValid]);
+
+  const grindSuggestion = useMemo(() => {
+    if (!summaryRecipe || !isCoffeeValid) return null;
+    return getGrindAdjustmentSuggestion(summaryRecipe.coffee_g, parsedCustomCoffee);
+  }, [summaryRecipe, parsedCustomCoffee, isCoffeeValid]);
 
   if (!summaryRecipe) return null;
 
-  const totalWaterG = (summaryRecipe.steps || []).reduce((acc, s) => acc + (s.water_g || 0), 0);
-  const estimatedSeconds = (summaryRecipe.steps || []).reduce((acc, s) => acc + (s.duration_s || 0), 0);
-  const computedRatio = calculateRatio(summaryRecipe.coffee_g, totalWaterG);
+  const displayRecipe = scaledRecipe || summaryRecipe;
+  const isDoseModified = isCoffeeValid && Number(parsedCustomCoffee) !== Number(summaryRecipe.coffee_g);
+  const totalWaterG = (displayRecipe.steps || []).reduce((acc, s) => acc + (s.water_g || 0), 0);
+  const originalTotalWaterG = (summaryRecipe.steps || []).reduce((acc, s) => acc + (s.water_g || 0), 0);
+  const estimatedSeconds = (displayRecipe.steps || []).reduce((acc, s) => acc + (s.duration_s || 0), 0);
+  const computedRatio = calculateRatio(displayRecipe.coffee_g, totalWaterG);
+
+  const handleDecrement = () => {
+    setCustomCoffeeG(prev => {
+      const num = parseFloat(prev);
+      if (isNaN(num)) return Math.max(5, (summaryRecipe?.coffee_g || 15) - 1);
+      return Math.max(5, Math.round(num - 1));
+    });
+  };
+
+  const handleIncrement = () => {
+    setCustomCoffeeG(prev => {
+      const num = parseFloat(prev);
+      if (isNaN(num)) return Math.min(100, (summaryRecipe?.coffee_g || 15) + 1);
+      return Math.min(100, Math.round(num + 1));
+    });
+  };
+
+  const handleCoffeeChange = (e) => {
+    const val = e.target.value;
+    if (val === '') {
+      setCustomCoffeeG('');
+      return;
+    }
+    const num = parseFloat(val);
+    setCustomCoffeeG(num);
+  };
+
+  const handleCoffeeBlur = () => {
+    const num = parseFloat(customCoffeeG);
+    if (isNaN(num) || num < 5) {
+      setCustomCoffeeG(5);
+    } else if (num > 100) {
+      setCustomCoffeeG(100);
+    } else {
+      setCustomCoffeeG(Math.round(num * 10) / 10);
+    }
+  };
+
+  const handleResetDose = () => {
+    if (summaryRecipe?.coffee_g) {
+      setCustomCoffeeG(summaryRecipe.coffee_g);
+    }
+  };
+
 
   return (
     <div className="fixed inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
@@ -97,25 +167,115 @@ export default function RecipeSummaryModal({
 
         {/* Cuerpo Scrollable Único */}
         <div className="p-5 py-4 overflow-y-auto flex-1 space-y-4">
-          {/* Parámetros Físicos Principales */}
-          <div className="bg-slate-50 dark:bg-slate-800/40 p-3 rounded-xl border border-slate-100 dark:border-slate-800/80 space-y-2 text-xs">
-            <div className="grid grid-cols-2 gap-2">
+          {/* Parámetros Físicos Principales con Calculadora Dinámica */}
+          <div className="bg-slate-50 dark:bg-slate-800/40 p-3 rounded-xl border border-slate-100 dark:border-slate-800/80 space-y-3 text-xs">
+            <div className="grid grid-cols-2 gap-3 items-center">
               <div>
-                <span className="text-slate-500 dark:text-slate-300 block font-semibold text-[10px] uppercase">{getIngredientLabel(summaryRecipe)}</span>
-                <span className="text-sm font-bold text-slate-800 dark:text-slate-200">{summaryRecipe.coffee_g}g</span>
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-slate-500 dark:text-slate-300 font-semibold text-[10px] uppercase">
+                    {getIngredientLabel(summaryRecipe)}
+                  </span>
+                  {isDoseModified && (
+                    <button
+                      type="button"
+                      onClick={handleResetDose}
+                      className="text-[10px] text-amber-800 dark:text-amber-400 hover:text-amber-950 dark:hover:text-amber-300 font-semibold flex items-center gap-0.5 cursor-pointer transition"
+                      title="Restablecer dosis original"
+                      aria-label="Restablecer dosis original"
+                    >
+                      <ArrowPathIcon className="w-2.5 h-2.5 inline" /> {summaryRecipe.coffee_g}g
+                    </button>
+                  )}
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={handleDecrement}
+                    disabled={Number(customCoffeeG) <= 5}
+                    className="w-7 h-7 flex items-center justify-center rounded-lg bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-200 font-bold hover:bg-slate-100 dark:hover:bg-slate-600 active:scale-95 disabled:opacity-40 disabled:pointer-events-none transition cursor-pointer select-none text-base"
+                    title="Disminuir dosis de café"
+                    aria-label="Disminuir dosis de café"
+                  >
+                    -
+                  </button>
+                  <div className="relative flex items-center w-16">
+                    <input
+                      type="number"
+                      min="5"
+                      max="100"
+                      step="any"
+                      value={customCoffeeG}
+                      onChange={handleCoffeeChange}
+                      onBlur={handleCoffeeBlur}
+                      aria-label="Dosis de café en gramos"
+                      className="w-full text-center text-sm font-bold bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-600 rounded-lg py-1 px-1 pr-3.5 focus:ring-2 focus:ring-amber-500 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    />
+                    <span className="text-[10px] font-bold text-slate-400 dark:text-slate-400 absolute right-1 pointer-events-none">g</span>
+                    <span className="sr-only">{customCoffeeG}g</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleIncrement}
+                    disabled={Number(customCoffeeG) >= 100}
+                    className="w-7 h-7 flex items-center justify-center rounded-lg bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-200 font-bold hover:bg-slate-100 dark:hover:bg-slate-600 active:scale-95 disabled:opacity-40 disabled:pointer-events-none transition cursor-pointer select-none text-base"
+                    title="Aumentar dosis de café"
+                    aria-label="Aumentar dosis de café"
+                  >
+                    +
+                  </button>
+                </div>
               </div>
+
               <div>
-                <span className="text-slate-500 dark:text-slate-300 block font-semibold text-[10px] uppercase">Temperatura</span>
-                <span className="text-sm font-bold text-slate-800 dark:text-slate-200">{summaryRecipe.water_temp_c}°C</span>
+                <span className="text-slate-500 dark:text-slate-300 block font-semibold text-[10px] uppercase mb-1">Temperatura</span>
+                <div className="py-1">
+                  <span className="text-sm font-bold text-slate-800 dark:text-slate-200">{summaryRecipe.water_temp_c}°C</span>
+                </div>
               </div>
             </div>
+
             <div className="pt-2 border-t border-slate-200/60 dark:border-slate-700/60 flex justify-between items-center">
-              <span className="text-slate-500 dark:text-slate-300 font-semibold text-[10px] uppercase">Proporción</span>
-              <span className="text-xs font-bold text-amber-800 dark:text-amber-400 bg-amber-100/60 dark:bg-amber-950/40 px-2.5 py-0.5 rounded border border-amber-200/40 dark:border-amber-900/30">
-                Ratio {computedRatio}
-              </span>
+              <div>
+                <span className="text-slate-500 dark:text-slate-300 font-semibold text-[10px] uppercase block">Proporción</span>
+                <span className="text-xs font-bold text-amber-800 dark:text-amber-400 bg-amber-100/60 dark:bg-amber-950/40 px-2.5 py-0.5 rounded border border-amber-200/40 dark:border-amber-900/30 inline-block mt-0.5">
+                  Ratio {computedRatio}
+                </span>
+              </div>
+              {isDoseModified && (
+                <div className="text-right">
+                  <span className="text-slate-500 dark:text-slate-300 font-semibold text-[10px] uppercase block">Agua Escalada</span>
+                  <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                    {totalWaterG}g <span className="font-normal text-slate-400 text-[10px]">(orig. {originalTotalWaterG}g)</span>
+                  </span>
+                </div>
+              )}
             </div>
           </div>
+
+          {/* Banner de sugerencia de ajuste de molienda */}
+          {grindSuggestion && (
+            <div className={`p-3 rounded-xl border flex items-start gap-2.5 text-xs animate-fade-in ${
+              grindSuggestion.type === 'warning'
+                ? 'bg-amber-50 dark:bg-amber-950/30 border-amber-300 dark:border-amber-800 text-amber-900 dark:text-amber-200'
+                : 'bg-sky-50 dark:bg-sky-950/30 border-sky-200 dark:border-sky-800 text-sky-900 dark:text-sky-200'
+            }`}>
+              <div className="shrink-0 mt-0.5">
+                {grindSuggestion.type === 'warning' ? (
+                  <WarningTriangleIcon className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                ) : (
+                  <LightBulbIcon className="w-4 h-4 text-sky-600 dark:text-sky-400" />
+                )}
+              </div>
+              <div className="space-y-0.5 leading-snug">
+                <span className="font-bold block text-[11px] uppercase tracking-wide">
+                  {grindSuggestion.type === 'warning' ? 'Ajuste importante de molienda' : 'Sugerencia de molienda'}
+                </span>
+                <p className="text-[11px]">
+                  {grindSuggestion.message}
+                </p>
+              </div>
+            </div>
+          )}
 
           {/* Acordeón "Detalles de Extracción" */}
           <div className="border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden bg-slate-50/50 dark:bg-slate-800/20">
@@ -263,7 +423,7 @@ export default function RecipeSummaryModal({
           <div className="space-y-2">
             <h4 className="text-xs font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider pl-1">Pasos</h4>
             <div className="space-y-2">
-              {(summaryRecipe.steps || []).map((step, idx) => (
+              {(displayRecipe.steps || []).map((step, idx) => (
                 <div key={idx} className="bg-slate-50 dark:bg-slate-800 p-2.5 rounded-lg border border-slate-100 dark:border-slate-800/80 space-y-1 text-xs">
                   <div className="flex justify-between font-bold text-slate-700 dark:text-slate-300">
                     <span>Paso {step.step_number}: {step.title}</span>
@@ -327,7 +487,7 @@ export default function RecipeSummaryModal({
                 </button>
               )}
               <button
-                onClick={() => onStartTimer && onStartTimer(summaryRecipe)}
+                onClick={() => onStartTimer && onStartTimer(displayRecipe)}
                 className="flex-1 py-2.5 bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-800 text-white rounded-xl font-bold text-xs md:text-sm transition shadow-sm cursor-pointer flex items-center justify-center gap-1.5"
               >
                 <ClockIcon className="w-4 h-4" /> Iniciar Timer

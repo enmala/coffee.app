@@ -50,7 +50,7 @@
 ### 2.3. Interfaz de Usuario y Vista de Resumen
 * **Archivo:** [`src/components/modals/RecipeSummaryModal.jsx`](file:///home/enmala/coffee.app/src/components/modals/RecipeSummaryModal.jsx)
 * **Acciones:**
-  * Añadir estado local `customCoffeeG` inicializado en `summaryRecipe.coffee_g` (y sincronizado con `useEffect` ante cambios de `summaryRecipe.id`).
+  * Añadir estado local `customCoffeeG` inicializado en `summaryRecipe.coffee_g` y sincronizado mediante el patrón canónico de **State-during-render** ante cambios de `summaryRecipe.id` o `summaryRecipe.coffee_g` (evitando renders en cascada y cumpliendo con la regla `react-hooks/set-state-in-effect` de React 19).
   * Integrar `useMemo` para computar `scaledRecipe` y la sugerencia de molienda en tiempo real.
   * Rediseñar la sección de Parámetros Físicos:
     * Stepper interactivo (`-` / `+`) con input numérico directo (rango 5g a 100g).

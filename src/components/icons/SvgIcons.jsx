@@ -277,3 +277,12 @@ export function DocumentTextIcon({ className = "w-4 h-4", ...props }) {
   );
 }
 
+export function LightBulbIcon({ className = "w-4 h-4", ...props }) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className} {...props}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 0 0 1.5-.189m-1.5.189a6.01 6.01 0 0 1-1.5-.189m3.75 7.439v-2.25a2.25 2.25 0 0 0-2.25-2.25h-3a2.25 2.25 0 0 0-2.25 2.25v2.25m3 0h-3m3 0a1.5 1.5 0 0 1-3 0M12 3a6 6 0 0 0-4.472 10.003 4.5 4.5 0 0 1 1.722 2.247h5.5a4.5 4.5 0 0 1 1.722-2.247A6 6 0 0 0 12 3Z" />
+    </svg>
+  );
+}
+
+

@@ -60,7 +60,11 @@ export function useNavigation({ recipesSync, beansSync, historySync, recipes, se
     }
 
     if (state.view === 'timer' && state.recipeId) {
-      setActiveRecipe((prev) => (prev && prev.id === state.recipeId ? prev : recipes.find((r) => r.id === state.recipeId) || prev || null));
+      if (state.customRecipe) {
+        setActiveRecipe(state.customRecipe);
+      } else {
+        setActiveRecipe((prev) => (prev && prev.id === state.recipeId ? prev : recipes.find((r) => r.id === state.recipeId) || prev || null));
+      }
     } else {
       setActiveRecipe(null);
     }
@@ -314,8 +318,9 @@ export function useNavigation({ recipesSync, beansSync, historySync, recipes, se
 
   const handleStartTimerFromSummary = useCallback((recipe) => {
     setAutoStartTimer(true);
+    setActiveRecipe(recipe);
     window.history.replaceState({ view: 'timer', recipeId: recipe.id }, '');
-    syncStateWithHistory({ view: 'timer', recipeId: recipe.id });
+    syncStateWithHistory({ view: 'timer', recipeId: recipe.id, customRecipe: recipe });
   }, [syncStateWithHistory]);
 
   const handleOpenAboutFromSettings = useCallback(() => {

@@ -56,6 +56,24 @@ describe('coffeeUtils', () => {
       expect(container.querySelector('svg')).toBeInTheDocument();
     });
 
+    test('renders correct icon for Kalita Wave', () => {
+      const { container: c1 } = render(getMethodIcon('Kalita Wave'));
+      expect(c1.querySelector('svg')).toBeInTheDocument();
+      const { container: c2 } = render(getMethodIcon('Kalita'));
+      expect(c2.querySelector('svg')).toBeInTheDocument();
+      const { container: c3 } = render(getMethodIcon('Wave 185'));
+      expect(c3.querySelector('svg')).toBeInTheDocument();
+    });
+
+    test('renders correct icon for Timemore B75', () => {
+      const { container: c1 } = render(getMethodIcon('Timemore B75'));
+      expect(c1.querySelector('svg')).toBeInTheDocument();
+      const { container: c2 } = render(getMethodIcon('Timemore'));
+      expect(c2.querySelector('svg')).toBeInTheDocument();
+      const { container: c3 } = render(getMethodIcon('B75'));
+      expect(c3.querySelector('svg')).toBeInTheDocument();
+    });
+
     test('renders fallback icon for unknown method', () => {
       const { container } = render(getMethodIcon('Desconocido'));
       expect(container.querySelector('svg')).toBeInTheDocument();

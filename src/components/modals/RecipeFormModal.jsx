@@ -60,9 +60,11 @@ export default function RecipeFormModal({
                 <option value="Aeropress">Aeropress</option>
                 <option value="Chemex">Chemex</option>
                 <option value="Hario Switch">Hario Switch</option>
+                <option value="Kalita Wave">Kalita Wave</option>
                 <option value="Moka">Moka</option>
                 <option value="Origami">Origami</option>
                 <option value="Prensa Francesa">Prensa Francesa</option>
+                <option value="Timemore B75">Timemore B75</option>
               </optgroup>
               <optgroup label="Métodos de Té">
                 <option value="Matcha">Matcha</option>

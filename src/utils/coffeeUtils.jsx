@@ -291,6 +291,38 @@ export const getMethodIcon = (method) => {
       </svg>
     );
   }
+  if (m.includes('kalita') || m.includes('wave')) {
+    return (
+      <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current text-amber-900/70 dark:text-amber-500/80" xmlns="http://www.w3.org/2000/svg">
+        <path d="M4 3.5h16l-3.2 8.5H7.2L4 3.5z" />
+        <path d="M7 5.5c.8-.7 1.6-.7 2.4 0s1.6.7 2.4 0 1.6-.7 2.4 0 1.6.7 2.4 0" fill="none" stroke="white" strokeWidth="1" strokeLinecap="round" opacity="0.7" />
+        <path d="M7.8 8.5c.7-.6 1.4-.6 2.1 0s1.4.6 2.1 0 1.4-.6 2.1 0 1.4.6 2.1 0" fill="none" stroke="white" strokeWidth="1" strokeLinecap="round" opacity="0.7" />
+        <rect x="4.5" y="12" width="15" height="1.5" rx="0.75" />
+        <path d="M17.5 5A2.5 2.5 0 0 1 20.5 7.5a2.5 2.5 0 0 1-2.5 2.5" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        <circle cx="9.5" cy="15" r="0.8" opacity="0.6" />
+        <circle cx="12" cy="15" r="0.8" opacity="0.6" />
+        <circle cx="14.5" cy="15" r="0.8" opacity="0.6" />
+        <path d="M8 17h8v2a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2v-2z" opacity="0.4" />
+      </svg>
+    );
+  }
+  if (m.includes('timemore') || m.includes('b75')) {
+    return (
+      <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current text-amber-900/70 dark:text-amber-500/80" xmlns="http://www.w3.org/2000/svg">
+        <path d="M4.5 3h15l-2.4 9.5H6.9L4.5 3z" />
+        <line x1="7.2" y1="3" x2="8.6" y2="12.5" stroke="white" strokeWidth="1" strokeLinecap="round" opacity="0.6" />
+        <line x1="9.6" y1="3" x2="10.3" y2="12.5" stroke="white" strokeWidth="1" strokeLinecap="round" opacity="0.6" />
+        <line x1="12" y1="3" x2="12" y2="12.5" stroke="white" strokeWidth="1.2" strokeLinecap="round" opacity="0.7" />
+        <line x1="14.4" y1="3" x2="13.7" y2="12.5" stroke="white" strokeWidth="1" strokeLinecap="round" opacity="0.6" />
+        <line x1="16.8" y1="3" x2="15.4" y2="12.5" stroke="white" strokeWidth="1" strokeLinecap="round" opacity="0.6" />
+        <rect x="4" y="12.5" width="16" height="1.8" rx="0.75" />
+        <rect x="18" y="12" width="2.5" height="2.8" rx="0.5" opacity="0.8" />
+        <path d="M8.5 15.5h7v3a2.5 2.5 0 0 1-2.5 2.5h-2a2.5 2.5 0 0 1-2.5-2.5v-3z" opacity="0.4" />
+        <path d="M12 15.5v3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" opacity="0.7" />
+        <circle cx="12" cy="20.2" r="0.75" opacity="0.8" />
+      </svg>
+    );
+  }
   if (m.includes('prensa') || m.includes('french')) {
     return (
       <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current text-amber-900/70 dark:text-amber-500/80" xmlns="http://www.w3.org/2000/svg">

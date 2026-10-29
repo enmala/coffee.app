@@ -136,4 +136,36 @@ describe('Tea Recipe Support & Untimed Steps', () => {
 
     expect(screen.queryByText('Grano de Café (Opcional)')).not.toBeInTheDocument();
   });
+
+  test('RecipeFormModal includes Kalita Wave and Timemore B75 in coffee method options', () => {
+    const dummyRecipe = {
+      name: '',
+      method: 'V60',
+      coffee_g: 15,
+      grind_size: 'Media',
+      water_temp_c: 90,
+      steps: []
+    };
+
+    render(
+      <RecipeFormModal
+        editingRecipeId={null}
+        newRecipe={dummyRecipe}
+        setNewRecipe={vi.fn()}
+        beans={[]}
+        editingStepIndex={null}
+        setEditingStepIndex={vi.fn()}
+        totalStepsTime={0}
+        totalStepsWater={0}
+        handleSaveRecipe={vi.fn()}
+        handleOpenStepEditor={vi.fn()}
+        handleCloseStepEditor={vi.fn()}
+        handleMoveStep={vi.fn()}
+        handleCancelForm={vi.fn()}
+      />
+    );
+
+    expect(screen.getByRole('option', { name: 'Kalita Wave' })).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: 'Timemore B75' })).toBeInTheDocument();
+  });
 });

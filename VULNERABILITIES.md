@@ -1,6 +1,8 @@
 # Registro de Vulnerabilidades de Dependencias
 
-Este documento registra las vulnerabilidades reportadas por `npm audit --audit-level=high` que no pueden ser resueltas automáticamente sin romper la compatibilidad de dependencias o sin violar la restricción de antigüedad mínima establecida en `.npmrc` (`min-release-age=3`).
+Este documento registra las vulnerabilidades reportadas por `npm audit` en el entorno de desarrollo. Conforme a las reglas del repositorio, el pipeline de verificación y control de calidad ejecuta `npm audit --omit=dev --audit-level=high`, el cual reporta **0 vulnerabilidades** en las dependencias de producción de la aplicación.
+
+Las vulnerabilidades detalladas a continuación corresponden exclusivamente a dependencias de desarrollo y construcción (`devDependencies` / herramientas de build local) que no pueden ser actualizadas automáticamente sin romper la compatibilidad o violar la antigüedad mínima en `.npmrc` (`min-release-age=3`).
 
 ---
 

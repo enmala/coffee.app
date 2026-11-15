@@ -1,5 +1,5 @@
 import { getMethodIcon, COFFEE_DESCRIPTORS } from '../../utils/coffeeUtils';
-import { PencilIcon, TrashIcon } from '../icons/SvgIcons';
+import { PencilIcon, TrashIcon, CoffeeBeanIcon } from '../icons/SvgIcons';
 
 export default function HistoryTab({
   history,
@@ -81,8 +81,9 @@ export default function HistoryTab({
                     </p>
 
                     {entry.bean_name && (
-                      <p className="text-[11px] text-amber-805 dark:text-amber-500 font-bold mt-0.5 flex items-center gap-1 select-none">
-                        🫘 {entry.bean_name}
+                      <p className="text-[11px] text-amber-800 dark:text-amber-400 font-bold mt-0.5 flex items-center gap-1 select-none">
+                        <CoffeeBeanIcon className="w-3.5 h-3.5 shrink-0" />
+                        <span>{entry.bean_name}</span>
                       </p>
                     )}
 
@@ -90,7 +91,7 @@ export default function HistoryTab({
                     {entry.descriptors && entry.descriptors.length > 0 && (
                       <div className="flex flex-wrap gap-1 mt-1.5">
                         {entry.descriptors.map((desc) => (
-                          <span key={desc} className="px-1.5 py-0.5 bg-amber-50 dark:bg-amber-950/20 text-amber-805 dark:text-amber-300 border border-amber-100 dark:border-amber-900/20 rounded-full text-[9px] font-bold font-sans">
+                          <span key={desc} className="px-1.5 py-0.5 bg-amber-50 dark:bg-amber-950/20 text-amber-800 dark:text-amber-300 border border-amber-100 dark:border-amber-900/20 rounded-full text-[9px] font-bold font-sans">
                             {desc}
                           </span>
                         ))}

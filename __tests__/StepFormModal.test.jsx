@@ -76,7 +76,7 @@ describe('StepFormModal Component Tests', () => {
     expect(screen.getByDisplayValue('50')).toBeInTheDocument();
     expect(screen.getByDisplayValue('45')).toBeInTheDocument();
     expect(screen.getByDisplayValue('Verter en círculos concéntricos')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /✓ Guardar Cambios en Paso/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Guardar Cambios en Paso/i })).toBeInTheDocument();
   });
 
   test('displays validation error message when stepTitleError is true', () => {

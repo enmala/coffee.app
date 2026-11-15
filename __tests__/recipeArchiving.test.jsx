@@ -240,7 +240,7 @@ describe('Sistema de Archivado de Recetas', () => {
         />
       );
 
-      expect(screen.getByText('📦 Archivada')).toBeInTheDocument();
+      expect(screen.getByText('Archivada')).toBeInTheDocument();
     });
 
     test('4. El menú contextual muestra "Archivar" o "Desarchivar" según el estado', () => {
@@ -453,7 +453,7 @@ describe('Sistema de Archivado de Recetas', () => {
 
       // La receta archivada ahora debe aparecer
       expect(screen.getByText('Aeropress Archivada')).toBeInTheDocument();
-      expect(screen.getByText('📦 Archivada')).toBeInTheDocument();
+      expect(screen.getByText('Archivada')).toBeInTheDocument();
     });
 
     test('11. Archivar desde el menú de la tarjeta funciona y muestra el toast', async () => {
@@ -542,7 +542,7 @@ describe('Sistema de Archivado de Recetas', () => {
       fireEvent.click(recipeCards[0]);
 
       // El modal de resumen debe mostrar el badge y botón de desarchivar
-      expect(screen.getByText('Archivada')).toBeInTheDocument();
+      expect(screen.getAllByText('Archivada').length).toBeGreaterThanOrEqual(1);
       const unarchiveBtn = screen.getByTitle('Desarchivar receta');
       fireEvent.click(unarchiveBtn);
 

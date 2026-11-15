@@ -1,5 +1,5 @@
 import { getGrindLabel, getRecipeCategory, calculateRatio } from '../../utils/coffeeUtils';
-import { ClockIcon, WaterDropIcon, ChevronUpIcon, ChevronDownIcon, CloseIcon, ArchiveIcon } from '../icons/SvgIcons';
+import { ClockIcon, WaterDropIcon, ChevronUpIcon, ChevronDownIcon, CloseIcon, ArchiveIcon, ScaleIcon } from '../icons/SvgIcons';
 
 export default function RecipeFormModal({
   editingRecipeId,
@@ -128,7 +128,7 @@ export default function RecipeFormModal({
               ))}
             </select>
             {beans.length === 0 && (
-              <p className="text-[10px] text-amber-805 dark:text-amber-500 mt-1 font-semibold">
+              <p className="text-[10px] text-amber-800 dark:text-amber-400 mt-1 font-semibold">
                 No tienes granos registrados. Puedes agregarlos en la pestaña "Granos".
               </p>
             )}
@@ -142,7 +142,7 @@ export default function RecipeFormModal({
             </h3>
             {newRecipe.steps.length > 0 && (
               <span className="text-xs font-semibold text-amber-900 dark:text-amber-400 bg-amber-100/60 dark:bg-amber-950/20 px-2 py-0.5 rounded-lg border border-amber-200/20 inline-flex items-center gap-1">
-                <ClockIcon className="w-3 h-3" /> {totalStepsTime}s • <WaterDropIcon className="w-3 h-3 text-blue-500" /> {totalStepsWater}g • ⚖️ Ratio {computedRatio}
+                <ClockIcon className="w-3 h-3" /> {totalStepsTime}s • <WaterDropIcon className="w-3 h-3 text-blue-500" /> {totalStepsWater}g • <ScaleIcon className="w-3 h-3" /> Ratio {computedRatio}
               </span>
             )}
           </div>

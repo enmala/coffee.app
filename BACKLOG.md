@@ -59,6 +59,7 @@ Los agentes de IA deben leer este archivo para saber qué implementar a continua
 ---
 
 ## ✅ Completado
+- [x] **Saneamiento de Deuda Técnica (Puntos 6, 7, 8 y 9):** (1) Identidad visual PWA/TWA alineada a la paleta ámbar/pizarra (`theme_color: #78350f`, `background_color: #020617` en `vite.config.js` y `twa-manifest.json`) e idioma HTML corregido a `lang="es"` con `<meta name="theme-color">` adaptativo claro/oscuro en `index.html`; (2) extracción del componente genérico y accesible `ConfirmModal.jsx` (variantes danger/warning, iconos SVG, `role="dialog"`, `aria-modal`, `aria-labelledby`/`aria-describedby` con IDs dinámicos vía `useId()`, cierre con `Escape`, soporte de `children`, gestión de foco al abrir/cerrar, focus trap y bloqueo de scroll del `body`) reemplazando los 4 modales inline duplicados en `App.jsx`, con suite de pruebas dedicada al 100% de cobertura; (3) incorporación de iconos SVG `BookOpenIcon`, `GlobeIcon`, `ScaleIcon`, `ArrowDownTrayIcon`, `BoltIcon`, `CheckIcon` y `ArrowLeftIcon`, y sustitución de emojis residuales en `RecipesTab`, `HistoryTab`, `RecipeFormModal`, `RecipeSummaryModal`, `ImportBeanConfirmationModal`, `RecipeLibraryTab`, `StepFormModal` y `App.jsx`, además de la corrección de clases Tailwind no estándar (`text-amber-805`, `border-emerald-250`, `text-slate-405`, `border-amber-250`); se preservan `★`/`☆` (rating) y `☕` (branding) como decisión de diseño documentada (`v1.18.2`).
 - [x] Optimización del workflow de revisión y auditoría de seguridad: exclusión de dependencias de desarrollo (`npm audit --omit=dev --audit-level=high`) en el pipeline de GitHub Actions (`verification.yml`) y en las normas de desarrollo de `AGENTS.md`; reubicación de `@tailwindcss/vite` a `devDependencies` en `package.json` garantizando 0 vulnerabilidades en las dependencias de producción (`v1.18.1`).
 - [x] Incorporación de los métodos de extracción Timemore B75 y Kalita Wave: soporte en el selector de métodos de recetas (`RecipeFormModal.jsx`), diseño e implementación de glifos SVG minimalistas específicos para cada método (`coffeeUtils.jsx`) con representaciones fieles (cono empinado de 75° con costillas estructurales para Timemore B75, silueta de fondo plano con ondas ruffles y asa de alambre para Kalita Wave) y tests unitarios en Vitest (`v1.18.0`).
 - [x] Calculadora dinámica de ratios y escalado de recetas: ajuste en tiempo real de la dosis de café (`coffee_g`) desde el modal de resumen de receta (`RecipeSummaryModal`) con controles stepper (`-` / `+`), input directo y botón de restablecimiento rápido. Escalado matemático proporcional del agua total y por etapas conservando el ratio original y la duración de pasos; algoritmo de corrección de discrepancias de redondeo en el último paso con agua (`scaleRecipe`). Sistema de advertencias y sugerencias baristas inteligentes de ajuste de molienda (`getGrindAdjustmentSuggestion`) ante variaciones significativas de dosis (Ley de Darcy) mediante banners animados con iconografía SVG (`LightBulbIcon`, `WarningTriangleIcon`). Preservación intacta del catálogo en `localStorage` con inyección de la receta escalada efímera al temporizador (`TimerComponent`) y registro automático de las cantidades reales preparadas en el historial (`useHistory`) (`v1.17.0`).
@@ -168,19 +169,19 @@ Los agentes de IA deben leer este archivo para saber qué implementar a continua
   - *Etiquetas:* [Prioridad: Baja] [Complejidad: Media]
   - *Descripción:* Los tamaños de fuente y espaciados están hardcodeados en cada componente. Considerar un archivo `src/utils/breakpoints.js` o variables CSS para facilitar ajustes de responsive.
 
-- [ ] **Corrección de identidad visual PWA / TWA (`theme_color`, manifest e idioma HTML)**
+- [x] **Corrección de identidad visual PWA / TWA (`theme_color`, manifest e idioma HTML)** (`v1.18.2`)
   - *Etiquetas:* [Prioridad: Alta] [Complejidad: Baja]
   - *Descripción:* Homogeneizar los valores de `theme_color` y `background_color` en `vite.config.js` y `twa-manifest.json` (actualmente en `#1e1b4b`, índigo oscuro genérico) para coincidir con la paleta real de la aplicación (ámbar y pizarra). Corregir el atributo `lang="en"` por `lang="es"` en `index.html` e insertar la etiqueta `<meta name="theme-color">` dinámica.
 
-- [ ] **Unificación y extracción de modales de confirmación (`ConfirmModal`)**
+- [x] **Unificación y extracción de modales de confirmación (`ConfirmModal`)** (`v1.18.2`)
   - *Etiquetas:* [Prioridad: Media] [Complejidad: Baja]
   - *Descripción:* En `App.jsx`, los modales de confirmación para eliminar receta, eliminar grano, eliminar registro del historial y limpiar historial comparten casi 140 líneas de estructura idéntica. Extraer un componente genérico y reutilizable `ConfirmModal.jsx` para simplificar `App.jsx` y evitar duplicación.
 
-- [ ] **Limpieza integral de emojis residuales y clases Tailwind no estándar**
+- [x] **Limpieza integral de emojis residuales y clases Tailwind no estándar** (`v1.18.2`)
   - *Etiquetas:* [Prioridad: Baja] [Complejidad: Baja]
   - *Descripción:* Sustituir los emojis restantes (`🫘`, `📖`, `📦`, `☕`, `🌐`, `📍`, `🏡`, etc.) por sus componentes SVG correspondientes de `SvgIcons.jsx` en `RecipesTab.jsx`, `HistoryTab.jsx` e `ImportBeanConfirmationModal.jsx`. Corregir las clases `text-amber-805` residuales en `RecipeFormModal.jsx` y `HistoryTab.jsx`.
 
-- [ ] **Aislamiento de la suite de pruebas en `vitest.config.js`**
+- [x] **Aislamiento de la suite de pruebas en `vitest.config.js`** (`v1.18.2`)
   - *Etiquetas:* [Prioridad: Baja] [Complejidad: Baja]
   - *Descripción:* Configurar la exclusión explícita (`exclude`) en `vitest.config.js` para directorios de trabajo o worktrees (`.kilo/**`, `work/**`, `dist/**`), previniendo la detección redundante de pruebas y acelerando el tiempo de ejecución en entornos multi-árbol o CI.
 

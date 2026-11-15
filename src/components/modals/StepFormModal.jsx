@@ -1,4 +1,4 @@
-import { CloseIcon, ArrowPathIcon, ArrowDownIcon, FunnelIcon, CupIcon, WaterDropIcon, ClockIcon } from '../icons/SvgIcons';
+import { CloseIcon, ArrowPathIcon, ArrowDownIcon, FunnelIcon, CupIcon, WaterDropIcon, ClockIcon, BoltIcon, CheckIcon } from '../icons/SvgIcons';
 import { STEP_INSTRUCTION_SUGGESTIONS } from '../../constants/defaultData';
 
 export default function StepFormModal({
@@ -59,7 +59,7 @@ export default function StepFormModal({
 
         <div className="flex justify-between items-center pb-1 border-b border-slate-100 dark:border-slate-800">
           <span className="text-xs font-bold text-amber-900 dark:text-amber-400 flex items-center gap-1.5">
-            <span>⚡</span> {editingStepIndex !== null ? `Editando Paso ${editingStepIndex + 1}` : 'Agregar Paso de Preparación'}
+            <BoltIcon className="w-4 h-4 shrink-0" /> {editingStepIndex !== null ? `Editando Paso ${editingStepIndex + 1}` : 'Agregar Paso de Preparación'}
           </span>
           <button
             type="button"
@@ -188,7 +188,13 @@ export default function StepFormModal({
                 : 'bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-800'
             }`}
           >
-            {editingStepIndex !== null ? '✓ Guardar Cambios en Paso' : '+ Agregar Paso a la lista'}
+            {editingStepIndex !== null ? (
+              <span className="inline-flex items-center justify-center gap-1.5">
+                <CheckIcon className="w-3.5 h-3.5" /> Guardar Cambios en Paso
+              </span>
+            ) : (
+              '+ Agregar Paso a la lista'
+            )}
           </button>
         </div>
       </div>

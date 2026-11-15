@@ -1,11 +1,12 @@
 import { useCallback } from 'react';
-import { TrashIcon, WarningTriangleIcon, ArchiveIcon } from './components/icons/SvgIcons';
+import { ArchiveIcon, ArrowLeftIcon } from './components/icons/SvgIcons';
 import TimerComponent from './components/TimerComponent';
 import ShareModal from './components/ShareModal';
 import ShareBeanModal from './components/ShareBeanModal';
 import ImportConfirmationModal from './components/ImportConfirmationModal';
 import ImportBeanConfirmationModal from './components/ImportBeanConfirmationModal';
 import NotificationModal from './components/NotificationModal';
+import ConfirmModal from './components/modals/ConfirmModal';
 import AboutModal from './components/modals/AboutModal';
 import SettingsModal from './components/modals/SettingsModal';
 import RecipeSummaryModal from './components/modals/RecipeSummaryModal';
@@ -442,7 +443,7 @@ export default function App() {
               onClick={closeTimer}
               className="mb-4 text-amber-800 dark:text-amber-500 hover:text-amber-950 dark:hover:text-amber-400 font-semibold text-sm flex items-center gap-1 cursor-pointer"
             >
-              ← Volver al listado
+              <ArrowLeftIcon className="w-4 h-4" /> Volver al listado
             </button>
             <TimerComponent
               recipe={activeRecipe}
@@ -721,148 +722,78 @@ export default function App() {
           handleRemoveTastingNote={handleRemoveTastingNote}
         />
 
-        {beanToDelete && (
-          <div className="fixed inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
-            <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-sm w-full p-6 shadow-xl border border-slate-100 dark:border-slate-800 space-y-4 text-center">
-              <div className="flex justify-center text-red-500 dark:text-red-400 my-1"><TrashIcon className="w-10 h-10" /></div>
-              {recipes.some((r) => r.bean_id === beanToDelete.id) ? (
-                <div>
-                  <h3 className="text-lg font-bold text-slate-900 dark:text-white">Eliminar Grano en Uso</h3>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
-                    El grano <strong className="text-slate-700 dark:text-slate-300">"{beanToDelete.name}"</strong> está vinculado a las siguientes recetas:
-                  </p>
-                  <ul className="text-xs text-amber-900 dark:text-amber-400 font-bold mt-2 max-h-24 overflow-y-auto space-y-1 bg-amber-50 dark:bg-amber-950/20 p-2 rounded-xl border border-amber-200/20 list-disc list-inside text-left">
-                    {recipes
-                      .filter((r) => r.bean_id === beanToDelete.id)
-                      .map((r) => (
-                        <li key={r.id} className="truncate">{r.name}</li>
-                      ))}
-                  </ul>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-3 leading-relaxed">
-                    Si procedes, el grano se eliminará permanentemente y las recetas quedarán sin grano vinculado.
-                  </p>
-                </div>
+        <ConfirmModal
+          isOpen={Boolean(beanToDelete)}
+          title={beanToDelete && recipes.some((r) => r.bean_id === beanToDelete.id) ? "Eliminar Grano en Uso" : "Eliminar Grano"}
+          message={
+            beanToDelete ? (
+              recipes.some((r) => r.bean_id === beanToDelete.id) ? (
+                <>
+                  El grano <strong className="text-slate-700 dark:text-slate-300">"{beanToDelete.name}"</strong> está vinculado a las siguientes recetas:
+                </>
               ) : (
-                <div>
-                  <h3 className="text-lg font-bold text-slate-900 dark:text-white">Eliminar Grano</h3>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
-                    ¿Estás seguro de que deseas eliminar el grano <strong className="text-slate-700 dark:text-slate-300">"{beanToDelete.name}"</strong>? Esta acción no se puede deshacer.
-                  </p>
-                </div>
-              )}
-
-              <div className="flex gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
-                <button
-                  type="button"
-                  onClick={onCloseDeleteBean}
-                  className="flex-1 py-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl font-bold text-xs transition cursor-pointer"
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="button"
-                  onClick={onConfirmDeleteBean}
-                  className="flex-1 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold text-xs transition shadow-sm cursor-pointer"
-                >
-                  Sí, Eliminar
-                </button>
-              </div>
+                <>
+                  ¿Estás seguro de que deseas eliminar el grano <strong className="text-slate-700 dark:text-slate-300">"{beanToDelete.name}"</strong>? Esta acción no se puede deshacer.
+                </>
+              )
+            ) : null
+          }
+          onConfirm={onConfirmDeleteBean}
+          onCancel={onCloseDeleteBean}
+        >
+          {beanToDelete && recipes.some((r) => r.bean_id === beanToDelete.id) && (
+            <div className="space-y-3">
+              <ul className="text-xs text-amber-900 dark:text-amber-400 font-bold max-h-24 overflow-y-auto space-y-1 bg-amber-50 dark:bg-amber-950/20 p-2 rounded-xl border border-amber-200/20 list-disc list-inside text-left">
+                {recipes
+                  .filter((r) => r.bean_id === beanToDelete.id)
+                  .map((r) => (
+                    <li key={r.id} className="truncate">{r.name}</li>
+                  ))}
+              </ul>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+                Si procedes, el grano se eliminará permanentemente y las recetas quedarán sin grano vinculado.
+              </p>
             </div>
-          </div>
-        )}
+          )}
+        </ConfirmModal>
 
-        {recipeToDelete && (
-          <div className="fixed inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
-            <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-sm w-full p-6 shadow-xl border border-slate-100 dark:border-slate-800 space-y-4 text-center">
-              <div className="flex justify-center text-red-500 dark:text-red-400 my-1"><TrashIcon className="w-10 h-10" /></div>
-              <div>
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white">Eliminar Receta</h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
-                  ¿Estás seguro de que deseas eliminar la receta <strong className="text-slate-700 dark:text-slate-300">"{recipeToDelete.name}"</strong>? Esta acción no se puede deshacer.
-                </p>
-              </div>
+        <ConfirmModal
+          isOpen={Boolean(recipeToDelete)}
+          title="Eliminar Receta"
+          message={
+            recipeToDelete && (
+              <>
+                ¿Estás seguro de que deseas eliminar la receta <strong className="text-slate-700 dark:text-slate-300">"{recipeToDelete.name}"</strong>? Esta acción no se puede deshacer.
+              </>
+            )
+          }
+          onConfirm={onConfirmDeleteRecipe}
+          onCancel={onCloseDeleteRecipe}
+        />
 
-              <div className="flex gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
-                <button
-                  type="button"
-                  onClick={onCloseDeleteRecipe}
-                  className="flex-1 py-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl font-bold text-xs transition cursor-pointer"
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="button"
-                  onClick={onConfirmDeleteRecipe}
-                  className="flex-1 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold text-xs transition shadow-sm cursor-pointer"
-                >
-                  Sí, Eliminar
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+        <ConfirmModal
+          isOpen={Boolean(historyEntryToDelete)}
+          title="Eliminar Registro"
+          message={
+            historyEntryToDelete && (
+              <>
+                ¿Estás seguro de que deseas eliminar la preparación de <strong className="text-slate-700 dark:text-slate-300">"{historyEntryToDelete.recipeName}"</strong> del historial? Esta acción no se puede deshacer.
+              </>
+            )
+          }
+          onConfirm={onConfirmDeleteHistoryEntry}
+          onCancel={onCloseDeleteHistoryEntry}
+        />
 
-        {historyEntryToDelete && (
-          <div className="fixed inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
-            <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-sm w-full p-6 shadow-xl border border-slate-100 dark:border-slate-800 space-y-4 text-center">
-              <div className="flex justify-center text-red-500 dark:text-red-400 my-1"><TrashIcon className="w-10 h-10" /></div>
-              <div>
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white">Eliminar Registro</h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
-                  ¿Estás seguro de que deseas eliminar la preparación de <strong className="text-slate-700 dark:text-slate-300">"{historyEntryToDelete.recipeName}"</strong> del historial? Esta acción no se puede deshacer.
-                </p>
-              </div>
-
-              <div className="flex gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
-                <button
-                  type="button"
-                  onClick={onCloseDeleteHistoryEntry}
-                  className="flex-1 py-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl font-bold text-xs transition cursor-pointer"
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="button"
-                  onClick={onConfirmDeleteHistoryEntry}
-                  className="flex-1 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold text-xs transition shadow-sm cursor-pointer"
-                >
-                  Sí, Eliminar
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {showClearHistoryConfirm && (
-          <div className="fixed inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
-            <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-sm w-full p-6 shadow-xl border border-slate-100 dark:border-slate-800 space-y-4 text-center">
-              <div className="flex justify-center text-amber-500 dark:text-amber-400 my-1"><WarningTriangleIcon className="w-10 h-10" /></div>
-              <div>
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white">Limpiar Historial</h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
-                  ¿Estás seguro de que deseas limpiar todo tu historial de preparaciones? Esta acción eliminará permanentemente todos los registros y no se puede deshacer.
-                </p>
-              </div>
-
-              <div className="flex gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
-                <button
-                  type="button"
-                  onClick={onCloseClearHistory}
-                  className="flex-1 py-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl font-bold text-xs transition cursor-pointer"
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="button"
-                  onClick={onConfirmClearHistory}
-                  className="flex-1 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold text-xs transition shadow-sm cursor-pointer"
-                >
-                  Sí, Limpiar Todo
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+        <ConfirmModal
+          isOpen={showClearHistoryConfirm}
+          icon="warning"
+          title="Limpiar Historial"
+          message="¿Estás seguro de que deseas limpiar todo tu historial de preparaciones? Esta acción eliminará permanentemente todos los registros y no se puede deshacer."
+          confirmText="Sí, Limpiar Todo"
+          onConfirm={onConfirmClearHistory}
+          onCancel={onCloseClearHistory}
+        />
 
         {customAlert && (
           <NotificationModal

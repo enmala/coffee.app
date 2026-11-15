@@ -1,4 +1,5 @@
 import { getMethodIcon, calculateRatio } from '../../utils/coffeeUtils';
+import { BookOpenIcon, GlobeIcon, BoltIcon, CheckIcon } from '../icons/SvgIcons';
 
 export default function RecipeLibraryTab({
   recipes = [],
@@ -34,7 +35,8 @@ export default function RecipeLibraryTab({
           </button>
           <div>
             <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              <span>📖 Biblioteca Pública</span>
+              <BookOpenIcon className="w-5 h-5 text-amber-800 dark:text-amber-400" />
+              <span>Biblioteca Pública</span>
             </h2>
             <p className="text-xs text-slate-500 dark:text-slate-400">
               Descubre e importa recetas de la comunidad a tu catálogo personal.
@@ -47,7 +49,7 @@ export default function RecipeLibraryTab({
       {isOffline && (
         <div className="p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200/60 dark:border-amber-900/40 rounded-xl flex items-center justify-between text-xs text-amber-900 dark:text-amber-300">
           <div className="flex items-center gap-2">
-            <span>⚡</span>
+            <BoltIcon className="w-4 h-4 shrink-0" />
             <span><strong>Modo offline:</strong> Mostrando el catálogo guardado en caché local.</span>
           </div>
           <button
@@ -89,7 +91,10 @@ export default function RecipeLibraryTab({
               }`}
             >
               {method === 'Todos' ? (
-                '🌐 Todos'
+                <>
+                  <GlobeIcon className="w-4 h-4" />
+                  <span>Todos</span>
+                </>
               ) : (
                 <>
                   <span className="w-4 h-4 flex items-center justify-center select-none">{getMethodIcon(method)}</span>
@@ -148,8 +153,8 @@ export default function RecipeLibraryTab({
                       </h3>
                     </div>
                     {imported && (
-                      <span className="px-2 py-0.5 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 border border-emerald-200/50 dark:border-emerald-900/40 rounded-full text-[10px] font-bold shrink-0">
-                        ✓ En tu catálogo
+                      <span className="px-2 py-0.5 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 border border-emerald-200/50 dark:border-emerald-900/40 rounded-full text-[10px] font-bold shrink-0 inline-flex items-center gap-1">
+                        <CheckIcon className="w-3 h-3" /> En tu catálogo
                       </span>
                     )}
                   </div>

@@ -4,13 +4,13 @@
   "name": "Barista Timer",
   "launcherName": "Barista Timer",
   "display": "standalone",
-  "themeColor": "#1E1B4B",
-  "themeColorDark": "#000000",
-  "navigationColor": "#1E1B4B",
-  "navigationColorDark": "#1E1B4B",
+  "themeColor": "#78350F",
+  "themeColorDark": "#020617",
+  "navigationColor": "#78350F",
+  "navigationColorDark": "#020617",
   "navigationDividerColor": "#000000",
   "navigationDividerColorDark": "#000000",
-  "backgroundColor": "#1E1B4B",
+  "backgroundColor": "#020617",
   "enableNotifications": false,
   "startUrl": "/?utm_source=twa",
   "iconUrl": "https://barista.bitslab.cl/pwa-512x512.png",
@@ -20,8 +20,8 @@
     "path": "./android.keystore",
     "alias": "android"
   },
-  "appVersionName": "1.18.1",
-  "appVersionCode": 62,
+  "appVersionName": "1.18.2",
+  "appVersionCode": 63,
   "shortcuts": [],
   "generatorApp": "bubblewrap-cli",
   "webManifestUrl": "https://barista.bitslab.cl/manifest.webmanifest",
@@ -39,5 +39,5 @@
   "additionalTrustedOrigins": [],
   "retainedBundles": [],
   "displayOverride": [],
-  "appVersion": "1.18.1"
+  "appVersion": "1.18.2"
 }

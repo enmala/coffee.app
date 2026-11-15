@@ -7,6 +7,14 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     setupFiles: './__tests__/setup.js',
+    include: ['__tests__/**/*.{test,spec}.?(c|m)[jt]s?(x)'],
+    exclude: [
+      '**/node_modules/**',
+      '**/dist/**',
+      '**/.kilo/**',
+      '**/work/**',
+      '**/.git/**'
+    ],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],

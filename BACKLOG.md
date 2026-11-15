@@ -28,6 +28,26 @@ Los agentes de IA deben leer este archivo para saber qué implementar a continua
   - *Etiquetas:* [Prioridad: Baja] [Complejidad: Alta]
   - *Descripción:* Como alternativa al almacenamiento puramente local (localStorage), permitir hacer un respaldo y sincronización automáticos de recetas e historial usando las cuentas personales del usuario en la nube sin necesidad de montar una infraestructura de backend compleja.
 
+- [ ] **Copia de seguridad y restauración completa en archivo local (Full JSON Backup)**
+  - *Etiquetas:* [Prioridad: Media] [Complejidad: Baja]
+  - *Descripción:* Como paso previo y complementario a la sincronización en la nube, incorporar en Configuración una opción para descargar con un solo clic una copia de seguridad consolidada (recetas, granos, historial y configuraciones de usuario en un único archivo JSON), junto con un asistente de restauración completa con validación de integridad para evitar pérdidas de datos al cambiar de dispositivo o limpiar el navegador.
+
+- [ ] **Tiempo total transcurrido (Elapsed Time) en el Temporizador**
+  - *Etiquetas:* [Prioridad: Media] [Complejidad: Baja]
+  - *Descripción:* Durante la ejecución del temporizador (`TimerComponent`), mostrar un cronómetro global del tiempo total acumulado transcurrido junto con el tiempo total estimado de la receta (ej: `01:45 / 03:30`), en paralelo a la cuenta regresiva del paso actual. Esto permite a los baristas contrastar el flujo de extracción con la báscula y controlar el tiempo de contacto total.
+
+- [ ] **Pre-avisos sonoros y hápticos en el Temporizador (Cuenta regresiva 3-2-1)**
+  - *Etiquetas:* [Prioridad: Media] [Complejidad: Baja]
+  - *Descripción:* Emitir avisos anticipados sutiles (pulsos hápticos o pitidos cortos a los 3, 2 y 1 segundos restantes de cada paso) para que el barista prepare el vertido antes de que el paso concluya. Además, diferenciar acústicamente el tono de finalización completa de la receta respecto al cambio de paso intermedio.
+
+- [ ] **Evaluación interactiva inmediata post-extracción (Quick Feedback Modal)**
+  - *Etiquetas:* [Prioridad: Alta] [Complejidad: Media]
+  - *Descripción:* Al finalizar el temporizador, en lugar de cerrar con un diálogo estático que guarda un registro en blanco (0 estrellas y sin notas), presentar un modal rápido de evaluación para capturar la puntuación en estrellas (1-5) y seleccionar descriptores de sabor en caliente. Servirá además como disparador directo del motor de recomendaciones y ajustes de receta (Coffee Compass).
+
+- [ ] **Indicador de frescura y ventana óptima de consumo del grano (Days Off Roast - DOR)**
+  - *Etiquetas:* [Prioridad: Media] [Complejidad: Baja]
+  - *Descripción:* En las fichas y tarjetas de granos (`BeansTab` y acordeón en `RecipeSummaryModal`), calcular dinámicamente los días transcurridos desde la fecha de tueste (`roast_date`). Mostrar insignias o badges contextuales: reposo/desgasificación (0 a 5 días), ventana óptima de consumo (6 a 30 días) y pérdida progresiva de frescura (>45 días), ayudando al usuario a elegir el grano en su punto cúspide de sabor.
+
 - [ ] **Mejoras de Interfaz**
   - *Etiquetas:* [Prioridad: Media] [Complejidad: Baja]
   - [ ] En los formularios de edición de recetas y granos agregar un indicador de cambios sin guardar.
@@ -147,5 +167,21 @@ Los agentes de IA deben leer este archivo para saber qué implementar a continua
 - [ ] **Centralizar configuración de tamaños y espaciados**
   - *Etiquetas:* [Prioridad: Baja] [Complejidad: Media]
   - *Descripción:* Los tamaños de fuente y espaciados están hardcodeados en cada componente. Considerar un archivo `src/utils/breakpoints.js` o variables CSS para facilitar ajustes de responsive.
+
+- [ ] **Corrección de identidad visual PWA / TWA (`theme_color`, manifest e idioma HTML)**
+  - *Etiquetas:* [Prioridad: Alta] [Complejidad: Baja]
+  - *Descripción:* Homogeneizar los valores de `theme_color` y `background_color` en `vite.config.js` y `twa-manifest.json` (actualmente en `#1e1b4b`, índigo oscuro genérico) para coincidir con la paleta real de la aplicación (ámbar y pizarra). Corregir el atributo `lang="en"` por `lang="es"` en `index.html` e insertar la etiqueta `<meta name="theme-color">` dinámica.
+
+- [ ] **Unificación y extracción de modales de confirmación (`ConfirmModal`)**
+  - *Etiquetas:* [Prioridad: Media] [Complejidad: Baja]
+  - *Descripción:* En `App.jsx`, los modales de confirmación para eliminar receta, eliminar grano, eliminar registro del historial y limpiar historial comparten casi 140 líneas de estructura idéntica. Extraer un componente genérico y reutilizable `ConfirmModal.jsx` para simplificar `App.jsx` y evitar duplicación.
+
+- [ ] **Limpieza integral de emojis residuales y clases Tailwind no estándar**
+  - *Etiquetas:* [Prioridad: Baja] [Complejidad: Baja]
+  - *Descripción:* Sustituir los emojis restantes (`🫘`, `📖`, `📦`, `☕`, `🌐`, `📍`, `🏡`, etc.) por sus componentes SVG correspondientes de `SvgIcons.jsx` en `RecipesTab.jsx`, `HistoryTab.jsx` e `ImportBeanConfirmationModal.jsx`. Corregir las clases `text-amber-805` residuales en `RecipeFormModal.jsx` y `HistoryTab.jsx`.
+
+- [ ] **Aislamiento de la suite de pruebas en `vitest.config.js`**
+  - *Etiquetas:* [Prioridad: Baja] [Complejidad: Baja]
+  - *Descripción:* Configurar la exclusión explícita (`exclude`) en `vitest.config.js` para directorios de trabajo o worktrees (`.kilo/**`, `work/**`, `dist/**`), previniendo la detección redundante de pruebas y acelerando el tiempo de ejecución en entornos multi-árbol o CI.
 
 

@@ -21,7 +21,7 @@
     "alias": "android"
   },
   "appVersionName": "1.18.2",
-  "appVersionCode": 63,
+  "appVersionCode": 64,
   "shortcuts": [],
   "generatorApp": "bubblewrap-cli",
   "webManifestUrl": "https://barista.bitslab.cl/manifest.webmanifest",

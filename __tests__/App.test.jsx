@@ -927,7 +927,7 @@ describe('App Component', () => {
 
     // Modify the step title and save it (covers save path)
     fireEvent.change(screen.getByPlaceholderText('Título del paso'), { target: { value: 'Step 1 Modificado' } });
-    fireEvent.click(screen.getByText('✓ Guardar Cambios en Paso'));
+    fireEvent.click(screen.getByText('Guardar Cambios en Paso'));
 
     // Select again and cancel (covers cancel path)
     fireEvent.click(screen.getByText('1. Step 1 Modificado'));

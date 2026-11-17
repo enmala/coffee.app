@@ -227,7 +227,7 @@ export default function BeanFormModal({
                     <button
                       type="button"
                       onClick={() => handleRemoveTastingNote(note)}
-                      className="text-slate-405 hover:text-red-500 font-extrabold focus:outline-none"
+                      className="text-slate-400 hover:text-red-500 font-extrabold focus:outline-none"
                     >
                       &times;
                     </button>

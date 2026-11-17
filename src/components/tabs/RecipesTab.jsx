@@ -1,5 +1,5 @@
 import { getMethodIcon } from '../../utils/coffeeUtils';
-import { ChevronRightIcon, ChevronDownIcon, PencilIcon, TrashIcon, ShareIcon, DocumentDuplicateIcon, ArchiveIcon, ArchiveRestoreIcon, InboxEmptyIcon } from '../icons/SvgIcons';
+import { ChevronRightIcon, ChevronDownIcon, PencilIcon, TrashIcon, ShareIcon, DocumentDuplicateIcon, ArchiveIcon, ArchiveRestoreIcon, InboxEmptyIcon, BookOpenIcon, GlobeIcon, CupIcon } from '../icons/SvgIcons';
 
 export default function RecipesTab({
   groupedRecipes,
@@ -33,9 +33,10 @@ export default function RecipesTab({
           {onOpenLibrary && (
             <button
               onClick={onOpenLibrary}
-              className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-bold rounded-lg transition cursor-pointer border border-slate-200 dark:border-slate-700"
+              className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-bold rounded-lg transition cursor-pointer border border-slate-200 dark:border-slate-700 flex items-center gap-1.5"
             >
-              📖 Biblioteca
+              <BookOpenIcon className="w-3.5 h-3.5" />
+              <span>Biblioteca</span>
             </button>
           )}
           <button
@@ -59,7 +60,7 @@ export default function RecipesTab({
             title="Ver recetas activas"
             aria-label="Ver recetas activas"
           >
-            <span className="w-3.5 h-3.5 flex items-center justify-center">☕</span>
+            <CupIcon className="w-3.5 h-3.5" />
             <span>Activas</span>
             {activeCount > 0 && <span className="bg-white/20 dark:bg-slate-950/30 px-1 py-0.25 rounded-full text-[10px] font-bold">{activeCount}</span>}
           </button>
@@ -87,7 +88,7 @@ export default function RecipesTab({
             title="Ver todas las recetas"
             aria-label="Ver todas las recetas"
           >
-            <span className="w-3.5 h-3.5 flex items-center justify-center">🌐</span>
+            <GlobeIcon className="w-3.5 h-3.5" />
             <span>Todas</span>
             <span className="bg-white/20 dark:bg-slate-950/30 px-1 py-0.25 rounded-full text-[10px] font-bold">{totalCount}</span>
           </button>
@@ -154,8 +155,8 @@ export default function RecipesTab({
                         } hover:border-amber-200 dark:hover:border-amber-800/30 rounded-xl cursor-pointer transition flex justify-between items-center group relative ${recipe.id === menuOpenRecipeId ? 'z-30' : ''}`}
                       >
                         {recipe.is_archived && (
-                          <span className="absolute top-2 right-2 text-[9px] bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-1.5 py-0.25 rounded font-medium z-10">
-                            📦 Archivada
+                          <span className="absolute top-2 right-2 text-[9px] bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-1.5 py-0.25 rounded font-medium z-10 inline-flex items-center gap-1">
+                            <ArchiveIcon className="w-3 h-3" /> Archivada
                           </span>
                         )}
                         <div className="space-y-1 min-w-0 flex-1 pr-2">

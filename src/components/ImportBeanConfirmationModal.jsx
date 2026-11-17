@@ -1,4 +1,4 @@
-import { MapPinIcon, GearIcon, MountainIcon } from './icons/SvgIcons';
+import { MapPinIcon, GearIcon, MountainIcon, HomeIcon, UserIcon, FireIcon, PlantIcon, CalendarIcon, TrophyIcon, CoffeeBeanIcon } from './icons/SvgIcons';
 
 export default function ImportBeanConfirmationModal({ bean, existingBeans = [], onConfirm, onCancel }) {
   if (!bean) return null;
@@ -30,8 +30,8 @@ export default function ImportBeanConfirmationModal({ bean, existingBeans = [], 
         {/* Contenido (Scrollable) */}
         <div className="flex-1 overflow-y-auto pr-1 space-y-4 text-left">
           <div className="p-4 bg-amber-50/50 dark:bg-amber-950/10 border border-amber-900/10 rounded-xl flex items-start gap-3">
-            <div className="p-2 bg-amber-100 dark:bg-amber-900/30 rounded-lg text-amber-900 dark:text-amber-400 text-2xl">
-              🫘
+            <div className="p-2 bg-amber-100 dark:bg-amber-900/30 rounded-lg text-amber-900 dark:text-amber-400">
+              <CoffeeBeanIcon className="w-6 h-6" />
             </div>
             <div>
               <h4 className="text-lg font-bold text-slate-900 dark:text-slate-100 leading-tight">
@@ -64,61 +64,61 @@ export default function ImportBeanConfirmationModal({ bean, existingBeans = [], 
               {bean.origin && (
                 <div className="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-800/80">
                   <span className="block text-[10px] text-slate-400 dark:text-slate-500 font-semibold uppercase">Origen</span>
-                  <span className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate block">📍 {bean.origin}</span>
+                  <span className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate flex items-center gap-1"><MapPinIcon className="w-3.5 h-3.5 text-slate-500 inline shrink-0" /> {bean.origin}</span>
                 </div>
               )}
               {bean.region && (
                 <div className="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-800/80">
                   <span className="block text-[10px] text-slate-400 dark:text-slate-500 font-semibold uppercase">Región</span>
-                  <span className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate flex items-center gap-1"><MapPinIcon className="w-3.5 h-3.5 text-slate-500 inline" /> {bean.region}</span>
+                  <span className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate flex items-center gap-1"><MapPinIcon className="w-3.5 h-3.5 text-slate-500 inline shrink-0" /> {bean.region}</span>
                 </div>
               )}
               {bean.farm && (
                 <div className="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-800/80">
                   <span className="block text-[10px] text-slate-400 dark:text-slate-500 font-semibold uppercase">Finca</span>
-                  <span className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate block">🏡 {bean.farm}</span>
+                  <span className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate flex items-center gap-1"><HomeIcon className="w-3.5 h-3.5 text-slate-500 inline shrink-0" /> {bean.farm}</span>
                 </div>
               )}
               {bean.producer && (
                 <div className="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-800/80">
                   <span className="block text-[10px] text-slate-400 dark:text-slate-500 font-semibold uppercase">Productor</span>
-                  <span className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate block">🧑‍🌾 {bean.producer}</span>
+                  <span className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate flex items-center gap-1"><UserIcon className="w-3.5 h-3.5 text-slate-500 inline shrink-0" /> {bean.producer}</span>
                 </div>
               )}
               {bean.process && (
                 <div className="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-800/80">
                   <span className="block text-[10px] text-slate-400 dark:text-slate-500 font-semibold uppercase">Proceso</span>
-                  <span className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate flex items-center gap-1"><GearIcon className="w-3.5 h-3.5 text-slate-500 inline" /> {bean.process}</span>
+                  <span className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate flex items-center gap-1"><GearIcon className="w-3.5 h-3.5 text-slate-500 inline shrink-0" /> {bean.process}</span>
                 </div>
               )}
               {bean.roast_level && (
                 <div className="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-800/80">
                   <span className="block text-[10px] text-slate-400 dark:text-slate-500 font-semibold uppercase">Tueste</span>
-                  <span className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate block">🔥 {bean.roast_level}</span>
+                  <span className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate flex items-center gap-1"><FireIcon className="w-3.5 h-3.5 text-slate-500 inline shrink-0" /> {bean.roast_level}</span>
                 </div>
               )}
               {bean.variety && (
                 <div className="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-800/80">
                   <span className="block text-[10px] text-slate-400 dark:text-slate-500 font-semibold uppercase">Variedad</span>
-                  <span className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate block">🌱 {bean.variety}</span>
+                  <span className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate flex items-center gap-1"><PlantIcon className="w-3.5 h-3.5 text-slate-500 inline shrink-0" /> {bean.variety}</span>
                 </div>
               )}
               {bean.altitude && (
                 <div className="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-800/80">
                   <span className="block text-[10px] text-slate-400 dark:text-slate-500 font-semibold uppercase">Altitud</span>
-                  <span className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate flex items-center gap-1"><MountainIcon className="w-3.5 h-3.5 text-slate-500 inline" /> {bean.altitude}</span>
+                  <span className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate flex items-center gap-1"><MountainIcon className="w-3.5 h-3.5 text-slate-500 inline shrink-0" /> {bean.altitude}</span>
                 </div>
               )}
               {bean.harvest_year && (
                 <div className="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-800/80">
                   <span className="block text-[10px] text-slate-400 dark:text-slate-500 font-semibold uppercase">Año Cosecha</span>
-                  <span className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate block">🌾 {bean.harvest_year}</span>
+                  <span className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate flex items-center gap-1"><CalendarIcon className="w-3.5 h-3.5 text-slate-500 inline shrink-0" /> {bean.harvest_year}</span>
                 </div>
               )}
               {bean.sca_score && (
                 <div className="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-800/80">
                   <span className="block text-[10px] text-slate-400 dark:text-slate-500 font-semibold uppercase">Puntaje SCA</span>
-                  <span className="text-sm font-bold text-emerald-600 dark:text-emerald-400 truncate block">🏆 {bean.sca_score}</span>
+                  <span className="text-sm font-bold text-emerald-600 dark:text-emerald-400 truncate flex items-center gap-1"><TrophyIcon className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 inline shrink-0" /> {bean.sca_score}</span>
                 </div>
               )}
             </div>
@@ -132,7 +132,7 @@ export default function ImportBeanConfirmationModal({ bean, existingBeans = [], 
               </h5>
               <div className="flex flex-wrap gap-1.5 p-3 bg-slate-50 dark:bg-slate-800/20 border border-slate-100 dark:border-slate-800/60 rounded-xl">
                 {bean.tasting_notes.map((note) => (
-                  <span key={note} className="px-3 py-1 bg-amber-50 dark:bg-amber-950/30 text-amber-900 dark:text-amber-300 border border-amber-250/20 rounded-full text-xs font-bold shadow-sm">
+                  <span key={note} className="px-3 py-1 bg-amber-50 dark:bg-amber-950/30 text-amber-900 dark:text-amber-300 border border-amber-200/20 rounded-full text-xs font-bold shadow-sm">
                     {note}
                   </span>
                 ))}

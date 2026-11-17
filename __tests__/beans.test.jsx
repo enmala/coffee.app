@@ -281,7 +281,7 @@ describe('Coffee Beans Management Tests', () => {
     fireEvent.click(historyTabBtn);
 
     expect(screen.getByText('V60 para Historial')).toBeInTheDocument();
-    expect(screen.getByText('🫘 Etiopía Sidamo')).toBeInTheDocument();
+    expect(screen.getByText('Etiopía Sidamo')).toBeInTheDocument();
 
     // 6. Go to Beans tab and delete the bean
     const beansTabBtn = screen.getByRole('button', { name: /Granos/ });
@@ -308,7 +308,7 @@ describe('Coffee Beans Management Tests', () => {
     // 7. Verify bean is deleted but History entry STILL has the bean name snapshot
     fireEvent.click(historyTabBtn);
     expect(screen.getByText('V60 para Historial')).toBeInTheDocument();
-    expect(screen.getByText('🫘 Etiopía Sidamo')).toBeInTheDocument();
+    expect(screen.getByText('Etiopía Sidamo')).toBeInTheDocument();
   });
 
   test('should open Share modal on clicking share button', async () => {
@@ -358,9 +358,9 @@ describe('Coffee Beans Management Tests', () => {
     expect(await screen.findByText('Importar Grano de Café')).toBeInTheDocument();
     expect(screen.getByText('Imported Geisha')).toBeInTheDocument();
     expect(screen.getByText('Tostador: Panama Farms')).toBeInTheDocument();
-    expect(screen.getByText('📍 Boquete')).toBeInTheDocument();
+    expect(screen.getByText('Boquete')).toBeInTheDocument();
     expect(screen.getByText(/Natural/)).toBeInTheDocument();
-    expect(screen.getByText('🏆 89.5')).toBeInTheDocument();
+    expect(screen.getByText('89.5')).toBeInTheDocument();
 
     const confirmBtn = screen.getByRole('button', { name: 'Guardar Grano' });
     fireEvent.click(confirmBtn);
@@ -424,7 +424,7 @@ describe('Coffee Beans Management Tests', () => {
     expect(await screen.findByText('Importar Grano de Café')).toBeInTheDocument();
     expect(screen.getByText('Grano JSON Importado')).toBeInTheDocument();
     expect(screen.getByText('Tostador: Tostaduría Local')).toBeInTheDocument();
-    expect(screen.getByText('📍 Ecuador')).toBeInTheDocument();
+    expect(screen.getByText('Ecuador')).toBeInTheDocument();
 
     const confirmBtn = screen.getByRole('button', { name: 'Guardar Grano' });
     fireEvent.click(confirmBtn);

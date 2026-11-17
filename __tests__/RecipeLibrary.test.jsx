@@ -51,11 +51,11 @@ describe('Recipe Library Integration Tests', () => {
     render(<App />);
 
     // Click on Biblioteca button in RecipesTab
-    const libraryBtn = screen.getByText('📖 Biblioteca');
+    const libraryBtn = screen.getByText('Biblioteca');
     fireEvent.click(libraryBtn);
 
     // Wait for catalog to load and display
-    expect(await screen.findByText('📖 Biblioteca Pública')).toBeInTheDocument();
+    expect(await screen.findByText('Biblioteca Pública')).toBeInTheDocument();
     expect(screen.getByText('Método 4:6 Kasuya')).toBeInTheDocument();
     expect(screen.getByText('Aeropress WAC Champion')).toBeInTheDocument();
     expect(screen.getByText('Por: Tetsu Kasuya')).toBeInTheDocument();
@@ -64,7 +64,7 @@ describe('Recipe Library Integration Tests', () => {
   test('filters public catalog by search query and method filter', async () => {
     render(<App />);
 
-    fireEvent.click(screen.getByText('📖 Biblioteca'));
+    fireEvent.click(screen.getByText('Biblioteca'));
     await screen.findByText('Método 4:6 Kasuya');
 
     // Search query filter
@@ -86,7 +86,7 @@ describe('Recipe Library Integration Tests', () => {
   test('imports a public recipe into user catalog and updates status badge', async () => {
     render(<App />);
 
-    fireEvent.click(screen.getByText('📖 Biblioteca'));
+    fireEvent.click(screen.getByText('Biblioteca'));
     await screen.findByText('Método 4:6 Kasuya');
 
     // Click + Importar on Aeropress recipe
@@ -97,8 +97,8 @@ describe('Recipe Library Integration Tests', () => {
     expect(await screen.findByText(/agregada a tu catálogo personal/i)).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: /aceptar/i }));
 
-    // Verify badge updates to "✓ En tu catálogo"
-    expect(screen.getByText('✓ En tu catálogo')).toBeInTheDocument();
+    // Verify badge updates to "En tu catálogo"
+    expect(screen.getByText('En tu catálogo')).toBeInTheDocument();
 
     // Go back to my recipes and verify imported recipe is listed
     fireEvent.click(screen.getByTitle('Volver a mis recetas'));
@@ -114,7 +114,7 @@ describe('Recipe Library Integration Tests', () => {
 
     render(<App />);
 
-    fireEvent.click(screen.getByText('📖 Biblioteca'));
+    fireEvent.click(screen.getByText('Biblioteca'));
 
     // Should render cached catalog and display offline notice
     expect(await screen.findByText(/Modo offline:/i)).toBeInTheDocument();
@@ -124,14 +124,14 @@ describe('Recipe Library Integration Tests', () => {
   test('previews library recipe in summary modal and imports directly from modal', async () => {
     render(<App />);
 
-    fireEvent.click(screen.getByText('📖 Biblioteca'));
+    fireEvent.click(screen.getByText('Biblioteca'));
     await screen.findByText('Método 4:6 Kasuya');
 
     // Click on recipe card title to open preview modal
     fireEvent.click(screen.getByText('Método 4:6 Kasuya'));
 
-    // Verify preview modal opens with "📥 Agregar a Mis Recetas" button
-    const modalImportBtn = screen.getByRole('button', { name: /📥 Agregar a Mis Recetas/i });
+    // Verify preview modal opens with "Agregar a Mis Recetas" button
+    const modalImportBtn = screen.getByRole('button', { name: /Agregar a Mis Recetas/i });
     expect(modalImportBtn).toBeInTheDocument();
 
     // Click import from modal

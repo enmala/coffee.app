@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { getIngredientLabel, getGrindLabel, calculateRatio, scaleRecipe, getGrindAdjustmentSuggestion, formatSecondsToMinutes as formatTime } from '../../utils/coffeeUtils';
-import { MapPinIcon, GearIcon, MountainIcon, ClockIcon, HomeIcon, UserIcon, FireIcon, PlantIcon, CalendarIcon, TrophyIcon, CoffeeBeanIcon, ArchiveIcon, ArchiveRestoreIcon, ArrowPathIcon, LightBulbIcon, WarningTriangleIcon } from '../icons/SvgIcons';
+import { MapPinIcon, GearIcon, MountainIcon, ClockIcon, HomeIcon, UserIcon, FireIcon, PlantIcon, CalendarIcon, TrophyIcon, CoffeeBeanIcon, ArchiveIcon, ArchiveRestoreIcon, ArrowPathIcon, LightBulbIcon, WarningTriangleIcon, ArrowDownTrayIcon, CheckIcon } from '../icons/SvgIcons';
 
 export default function RecipeSummaryModal({
   summaryRecipe,
@@ -393,7 +393,7 @@ export default function RecipeSummaryModal({
                           </span>
                         )}
                         {bean.sca_score && (
-                          <span className="bg-emerald-100/50 dark:bg-emerald-950/30 text-emerald-800 dark:text-emerald-400 text-[9px] px-1.5 py-0.5 rounded font-bold border border-emerald-250/10 flex items-center gap-1">
+                          <span className="bg-emerald-100/50 dark:bg-emerald-950/30 text-emerald-800 dark:text-emerald-400 text-[9px] px-1.5 py-0.5 rounded font-bold border border-emerald-200/10 flex items-center gap-1">
                             <TrophyIcon className="w-2.5 h-2.5 inline text-emerald-600 dark:text-emerald-400" /> SCA {bean.sca_score}
                           </span>
                         )}
@@ -445,14 +445,15 @@ export default function RecipeSummaryModal({
           {isLibraryPreview ? (
             isImported ? (
               <div className="flex-1 py-2.5 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900/40 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5">
-                ✓ En tu catálogo
+                <CheckIcon className="w-3.5 h-3.5" /> En tu catálogo
               </div>
             ) : (
               <button
                 onClick={() => onImport && onImport(summaryRecipe)}
                 className="flex-1 py-2.5 bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-800 text-white rounded-xl font-bold text-xs transition shadow-sm cursor-pointer flex items-center justify-center gap-1.5"
               >
-                📥 Agregar a Mis Recetas
+                <ArrowDownTrayIcon className="w-4 h-4" />
+                <span>Agregar a Mis Recetas</span>
               </button>
             )
           ) : (

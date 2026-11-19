@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { PencilIcon, TrashIcon, MapPinIcon, GearIcon, MountainIcon, ShareIcon, HomeIcon, UserIcon, FireIcon, PlantIcon, CalendarIcon, TrophyIcon } from '../icons/SvgIcons';
+import BeanFreshnessBadge from '../BeanFreshnessBadge';
 
 export default function BeansTab({
   beans,
@@ -190,8 +191,11 @@ export default function BeansTab({
               )}
 
               {bean.roast_date && (
-                <div className="text-[9px] text-slate-400 dark:text-slate-500 pt-1 text-right">
-                  Tostado el: {bean.roast_date}
+                <div className="flex flex-wrap justify-between items-center gap-1 pt-1">
+                  <span className="text-[9px] text-slate-400 dark:text-slate-500">
+                    Tostado el: {bean.roast_date}
+                  </span>
+                  <BeanFreshnessBadge roastDate={bean.roast_date} />
                 </div>
               )}
             </div>

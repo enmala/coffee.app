@@ -1,8 +1,12 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, test, expect, vi } from 'vitest';
+import { afterEach, describe, test, expect, vi } from 'vitest';
 import RecipeSummaryModal from '../src/components/modals/RecipeSummaryModal';
 
 describe('RecipeSummaryModal Component Tests', () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   const mockRecipe = {
     id: 'rec-1',
     name: 'V60 Specialty Pour Over',
@@ -30,6 +34,7 @@ describe('RecipeSummaryModal Component Tests', () => {
       producer: 'Familia Peterson',
       process: 'Natural',
       roast_level: 'Claro',
+      roast_date: '2026-07-15',
       variety: 'Geisha',
       altitude: '1800m',
       harvest_year: '2025',
@@ -73,6 +78,9 @@ describe('RecipeSummaryModal Component Tests', () => {
   });
 
   test('renders linked bean info and toggles expanded technical details', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date(2026, 6, 20, 12));
+
     render(
       <RecipeSummaryModal
         summaryRecipe={mockRecipe}
@@ -84,6 +92,7 @@ describe('RecipeSummaryModal Component Tests', () => {
     // Initial bean header should be visible
     expect(screen.getByText(/Geisha de Panamá/)).toBeInTheDocument();
     expect(screen.getByText(/(Specialty Roasters)/)).toBeInTheDocument();
+    expect(screen.getByText('Reposo y desgasificación · 5 días')).toBeInTheDocument();
 
     // Expanded bean details shouldn't be visible before clicking expand button
     expect(screen.queryByText(/Finca La Esmeralda/)).not.toBeInTheDocument();
@@ -99,6 +108,7 @@ describe('RecipeSummaryModal Component Tests', () => {
     expect(screen.getByText(/Familia Peterson/)).toBeInTheDocument();
     expect(screen.getByText(/Natural/)).toBeInTheDocument();
     expect(screen.getByText(/Tueste Claro/)).toBeInTheDocument();
+    expect(screen.getByText(/Tostado el: 2026-07-15/)).toBeInTheDocument();
     expect(screen.getAllByText(/Geisha/)[0]).toBeInTheDocument();
     expect(screen.getByText(/1800m/)).toBeInTheDocument();
     expect(screen.getByText(/2025/)).toBeInTheDocument();

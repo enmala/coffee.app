@@ -193,9 +193,9 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
     .reduce((sum, s) => sum + s.water_g, 0);
 
   return (
-    <div className="space-y-4 text-center">
+    <div className="space-y-3 sm:space-y-4 text-center">
       <div>
-        <h3 className="text-lg font-bold text-slate-900 dark:text-white">{recipe.name}</h3>
+        <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">{recipe.name}</h3>
         <span className="text-xs bg-slate-100 dark:bg-slate-800/90 text-slate-700 dark:text-slate-200 border border-slate-200/60 dark:border-slate-700/60 px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider shadow-xs">{recipe.method}</span>
         {beanName && (
           <div className="text-xs text-amber-800 dark:text-amber-300 font-bold mt-1 select-none flex items-center justify-center gap-1">
@@ -209,18 +209,18 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
         )}
       </div>
 
-      <div className="grid grid-cols-3 gap-2 bg-slate-50 dark:bg-slate-800/40 p-2 rounded-xl text-xs text-slate-600 dark:text-slate-300 border border-slate-100 dark:border-slate-800">
+      <div className="grid grid-cols-3 gap-1.5 sm:gap-2 bg-slate-50 dark:bg-slate-800/40 p-1.5 sm:p-2 rounded-xl text-xs text-slate-600 dark:text-slate-300 border border-slate-100 dark:border-slate-800">
         <div>
-          <span className="block text-slate-500 dark:text-slate-300 text-[10px] uppercase font-bold">{getIngredientLabel(recipe)}</span>
-          <span className="font-semibold text-sm">{recipe.coffee_g}g</span>
+          <span className="block text-slate-500 dark:text-slate-300 text-[9px] sm:text-[10px] uppercase font-bold">{getIngredientLabel(recipe)}</span>
+          <span className="font-semibold text-xs sm:text-sm">{recipe.coffee_g}g</span>
         </div>
         <div>
-          <span className="block text-slate-500 dark:text-slate-300 text-[10px] uppercase font-bold">{getGrindLabel(recipe)}</span>
-          <span className="font-semibold text-sm truncate block">{recipe.grind_size || 'N/D'}</span>
+          <span className="block text-slate-500 dark:text-slate-300 text-[9px] sm:text-[10px] uppercase font-bold">{getGrindLabel(recipe)}</span>
+          <span className="font-semibold text-xs sm:text-sm truncate block">{recipe.grind_size || 'N/D'}</span>
         </div>
         <div>
-          <span className="block text-slate-500 dark:text-slate-300 text-[10px] uppercase font-bold">Temp.</span>
-          <span className="font-semibold text-sm">{recipe.water_temp_c}°C</span>
+          <span className="block text-slate-500 dark:text-slate-300 text-[9px] sm:text-[10px] uppercase font-bold">Temp.</span>
+          <span className="font-semibold text-xs sm:text-sm">{recipe.water_temp_c}°C</span>
         </div>
       </div>
 
@@ -235,8 +235,11 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
       </div>
 
       {/* Progress circular SVG */}
-      <div className="relative flex justify-center items-center my-3 md:my-4">
-        <svg className="w-44 h-44 transform -rotate-90">
+      <div className="relative flex justify-center items-center my-1 sm:my-3 md:my-4">
+        <svg
+          className="w-36 h-36 sm:w-44 sm:h-44 transform -rotate-90"
+          viewBox="0 0 176 176"
+        >
           {/* Circle background */}
           <circle
             cx="88"
@@ -264,7 +267,7 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
           <span className="text-[10px] text-slate-500 dark:text-slate-300 uppercase font-bold tracking-widest max-w-[110px] truncate">
             {currentStep.title}
           </span>
-          <span className="text-3xl font-mono font-bold text-slate-900 dark:text-white select-none tracking-tight">
+          <span className="text-2xl sm:text-3xl font-mono font-bold text-slate-900 dark:text-white select-none tracking-tight">
             {currentStep.duration_s > 0 ? formatTime(timeLeft) : 'Manual'}
           </span>
           <span className="text-[10px] text-amber-800 dark:text-amber-300 font-bold bg-amber-50 dark:bg-amber-950/30 px-2 py-0.5 rounded-full uppercase">
@@ -274,28 +277,32 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
       </div>
 
       {/* Step instructions and pour guide */}
-      <div className="p-4 bg-slate-50 dark:bg-slate-800/30 border border-slate-200 dark:border-slate-800/80 rounded-xl space-y-3.5 text-center">
-        <p
-          className="text-sm text-slate-600 dark:text-slate-300 min-h-[40px] flex items-center justify-center italic font-medium px-2 leading-relaxed"
+      <div className="p-2.5 sm:p-4 bg-slate-50 dark:bg-slate-800/30 border border-slate-200 dark:border-slate-800/80 rounded-xl space-y-2.5 sm:space-y-3.5 text-center">
+        <div
+          className="max-h-20 sm:max-h-28 overflow-y-auto overscroll-contain touch-pan-y px-2 scrollbar-thin"
+          role="region"
+          aria-label="Instrucción del paso"
           aria-live="polite"
         >
-          {currentStep.instruction || 'No hay instrucciones para este paso.'}
-        </p>
+          <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 min-h-[36px] sm:min-h-[40px] flex items-center justify-center italic font-medium leading-relaxed whitespace-pre-wrap">
+            {currentStep.instruction || 'No hay instrucciones para este paso.'}
+          </p>
+        </div>
         
-        <div className="grid grid-cols-2 gap-3 pt-1">
-          <div className="bg-amber-50/50 dark:bg-amber-950/20 p-3 rounded-xl border border-amber-200/10 dark:border-amber-900/20 shadow-sm">
+        <div className="grid grid-cols-2 gap-2 sm:gap-3 pt-1">
+          <div className="bg-amber-50/50 dark:bg-amber-950/20 p-2 sm:p-3 rounded-xl border border-amber-200/10 dark:border-amber-900/20 shadow-sm">
             <span className="text-slate-500 dark:text-slate-300 block text-[10px] uppercase font-bold tracking-wider mb-1">Verter ahora</span>
-            <span className="font-extrabold text-amber-800 dark:text-amber-300 text-2xl">+{currentStep.water_g}g</span>
+            <span className="font-extrabold text-amber-800 dark:text-amber-300 text-xl sm:text-2xl">+{currentStep.water_g}g</span>
           </div>
-          <div className="bg-amber-50/50 dark:bg-amber-950/20 p-3 rounded-xl border border-amber-200/10 dark:border-amber-900/20 shadow-sm">
+          <div className="bg-amber-50/50 dark:bg-amber-950/20 p-2 sm:p-3 rounded-xl border border-amber-200/10 dark:border-amber-900/20 shadow-sm">
             <span className="text-slate-500 dark:text-slate-300 block text-[10px] uppercase font-bold tracking-wider mb-1">Agua acumulada</span>
-            <span className="font-extrabold text-amber-800 dark:text-amber-300 text-2xl">{cumulativeWater}g</span>
+            <span className="font-extrabold text-amber-800 dark:text-amber-300 text-xl sm:text-2xl">{cumulativeWater}g</span>
           </div>
         </div>
       </div>
 
-      <div className="space-y-3">
-        <div className="flex justify-center items-center gap-4">
+      <div className="sticky bottom-0 z-20 space-y-2 sm:space-y-3 pt-2 pb-1 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200/70 dark:border-slate-800/80">
+        <div className="flex justify-center items-center gap-2 sm:gap-4">
           <button 
             type="button"
             onClick={handleSkipPrev} 

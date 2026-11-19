@@ -44,13 +44,13 @@ Los agentes de IA deben leer este archivo para saber qué implementar a continua
   - *Etiquetas:* [Prioridad: Media] [Complejidad: Baja]
   - [ ] En los formularios de edición de recetas y granos agregar un indicador de cambios sin guardar.
   - [x] En la edición de recetas mostrar un resumen en tiempo real (pasos totales, agua acumulada, tiempo total)
-  - [ ] Mejorar la visualización del timer especialmente en pantallas muy pequeñas
   - [ ] Diferenciar tab de historial de los de recetas y granos
 
 
 ---
 
 ## ✅ Completado
+- [x] **Mejor visualización del temporizador en pantallas pequeñas (`v1.20.2`)**: instrucciones largas con desplazamiento interno, interfaz compacta y anillo responsive para móviles, y barra de acciones sticky que mantiene navegación, inicio/pausa y reinicio accesibles sin ampliar la pantalla.
 - [x] **Configuración reproducible de Vitest con almacenamiento local (`v1.20.0`)**: configuración de jsdom con origen `http://localhost` en `vitest.config.js` para habilitar `localStorage` en pruebas automatizadas con las versiones actuales de Node.js y jsdom.
 - [x] **Tiempo total transcurrido (Elapsed Time) en el Temporizador** (`v1.20.1`): cronómetro global acumulado basado en tiempo activo real (milisegundos), independiente de los pasos contados y pausado junto al temporizador; continúa durante pasos manuales, se conserva al navegar entre pasos y se reinicia al volver al inicio, mostrando el progreso junto al tiempo estimado (ej: `01:45 / 03:30`) con cobertura de ejecución, pausa, navegación y pasos manuales.
 - [x] **Indicador de frescura y ventana óptima de consumo del grano (Days Off Roast - DOR)** (`v1.19.0`): cálculo por días calendario desde `roast_date` con estados para reposo/desgasificación (0–5 días), ventana óptima (6–30 días), fuera de ventana óptima (31–45 días) y pérdida progresiva de frescura (>45 días). Insignias visibles en las tarjetas de granos y en el acordeón de grano de `RecipeSummaryModal`; se omite el indicador si la fecha es inválida o futura.

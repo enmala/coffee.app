@@ -52,6 +52,29 @@ describe('TimerComponent', () => {
     expect(screen.getByText('0:03')).toBeInTheDocument();
   });
 
+  test('keeps long instructions scrollable without pushing the action controls', () => {
+    const longInstructionRecipe = {
+      ...mockRecipe,
+      steps: [
+        {
+          ...mockRecipe.steps[0],
+          instruction: 'Vierte lentamente en círculos concéntricos. '.repeat(20)
+        }
+      ]
+    };
+
+    render(<TimerComponent recipe={longInstructionRecipe} onComplete={onCompleteMock} />);
+
+    expect(screen.getByRole('region', { name: 'Instrucción del paso' })).toHaveClass(
+      'max-h-20',
+      'overflow-y-auto'
+    );
+    expect(screen.getByRole('button', { name: 'Iniciar cronómetro' }).closest('.sticky')).toHaveClass(
+      'bottom-0',
+      'z-20'
+    );
+  });
+
   test('shows elapsed time alongside estimated recipe duration', () => {
     render(<TimerComponent recipe={mockRecipe} onComplete={onCompleteMock} />);
 
@@ -458,7 +481,8 @@ describe('TimerComponent', () => {
     render(<TimerComponent recipe={mockRecipe} onComplete={onCompleteMock} />);
     const svgEl = screen.getByText('Preinfusión').closest('div').parentElement.querySelector('svg');
     expect(svgEl).toBeInTheDocument();
-    expect(svgEl).toHaveClass('w-44');
+    expect(svgEl).toHaveClass('w-36', 'sm:w-44');
+    expect(svgEl).toHaveAttribute('viewBox', '0 0 176 176');
     const circles = svgEl.querySelectorAll('circle');
     expect(circles).toHaveLength(2);
   });

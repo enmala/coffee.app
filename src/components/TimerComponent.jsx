@@ -1,13 +1,48 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { playBeep, speakText, getIngredientLabel, getGrindLabel, getRecipeCategory, triggerVibration } from '../utils/coffeeUtils';
 
 export default function TimerComponent({ recipe, onComplete, soundEnabled = true, vibrationEnabled = true, vibrationType = 'normal', voiceGuidanceEnabled = false, beanName, autoStart = false }) {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [timeLeft, setTimeLeft] = useState(recipe.steps[0].duration_s);
+  const [elapsedTime, setElapsedTime] = useState(0);
   const [isRunning, setIsRunning] = useState(autoStart);
   const [showFinishedModal, setShowFinishedModal] = useState(false);
+  const elapsedBaseMsRef = useRef(0);
+  const elapsedStartedAtRef = useRef(null);
 
   const currentStep = recipe.steps[currentStepIndex];
+
+  const getElapsedMilliseconds = useCallback(() => {
+    if (elapsedStartedAtRef.current === null) {
+      return elapsedBaseMsRef.current;
+    }
+    return elapsedBaseMsRef.current + (Date.now() - elapsedStartedAtRef.current);
+  }, []);
+
+  const startElapsedTime = useCallback(() => {
+    if (elapsedStartedAtRef.current === null) {
+      elapsedStartedAtRef.current = Date.now();
+    }
+  }, []);
+
+  const stopElapsedTime = useCallback(() => {
+    if (elapsedStartedAtRef.current !== null) {
+      elapsedBaseMsRef.current = getElapsedMilliseconds();
+      elapsedStartedAtRef.current = null;
+    }
+    setElapsedTime(Math.floor(elapsedBaseMsRef.current / 1000));
+  }, [getElapsedMilliseconds]);
+
+  useEffect(() => {
+    if (!isRunning) return;
+
+    startElapsedTime();
+    const interval = setInterval(() => {
+      setElapsedTime(Math.floor(getElapsedMilliseconds() / 1000));
+    }, 250);
+
+    return () => clearInterval(interval);
+  }, [isRunning, getElapsedMilliseconds, startElapsedTime]);
 
   const getStepMessage = (step, index) => {
     const instructionText = step.instruction ? `${step.instruction}.` : '';
@@ -78,6 +113,7 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
             triggerVibration(vibrationEnabled, vibrationType, false);
             return recipe.steps[nextIndex].duration_s;
           } else {
+            stopElapsedTime();
             setIsRunning(false);
             triggerVibration(vibrationEnabled, vibrationType, true);
             if (voiceGuidanceEnabled) {
@@ -93,7 +129,7 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [isRunning, currentStepIndex, recipe.steps, soundEnabled, vibrationEnabled, vibrationType, voiceGuidanceEnabled, currentStep.duration_s, recipe]);
+  }, [isRunning, currentStepIndex, recipe.steps, soundEnabled, vibrationEnabled, vibrationType, voiceGuidanceEnabled, currentStep.duration_s, recipe, stopElapsedTime]);
 
   const handleCompleteManualStep = () => {
     if (soundEnabled) {
@@ -106,6 +142,7 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
       setTimeLeft(recipe.steps[nextIndex].duration_s);
       triggerVibration(vibrationEnabled, vibrationType, false);
     } else {
+      stopElapsedTime();
       setIsRunning(false);
       triggerVibration(vibrationEnabled, vibrationType, true);
       if (voiceGuidanceEnabled) {
@@ -116,6 +153,9 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
   };
 
   const handleReset = () => {
+    elapsedBaseMsRef.current = 0;
+    elapsedStartedAtRef.current = null;
+    setElapsedTime(0);
     setIsRunning(false);
     setCurrentStepIndex(0);
     setTimeLeft(recipe.steps[0].duration_s);
@@ -142,6 +182,11 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
     const secs = seconds % 60;
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
+
+  const totalDuration = recipe.steps.reduce(
+    (sum, step) => sum + (Number(step.duration_s) || 0),
+    0
+  );
 
   const cumulativeWater = recipe.steps
     .slice(0, currentStepIndex + 1)
@@ -177,6 +222,16 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
           <span className="block text-slate-500 dark:text-slate-300 text-[10px] uppercase font-bold">Temp.</span>
           <span className="font-semibold text-sm">{recipe.water_temp_c}°C</span>
         </div>
+      </div>
+
+      <div
+        className="flex items-center justify-center gap-2 text-xs font-semibold text-slate-600 dark:text-slate-300"
+        aria-label={`Tiempo transcurrido ${formatTime(elapsedTime)} de ${formatTime(totalDuration)}`}
+      >
+        <span className="uppercase text-[10px] tracking-wider">Tiempo transcurrido</span>
+        <span className="font-mono text-sm text-slate-900 dark:text-white">
+          {formatTime(elapsedTime)} / {formatTime(totalDuration)}
+        </span>
       </div>
 
       {/* Progress circular SVG */}
@@ -267,7 +322,15 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
           ) : (
             <button 
               type="button"
-              onClick={() => setIsRunning(!isRunning)}
+              onClick={() => {
+                if (isRunning) {
+                  stopElapsedTime();
+                  setIsRunning(false);
+                } else {
+                  startElapsedTime();
+                  setIsRunning(true);
+                }
+              }}
               className={`w-32 py-2.5 rounded-full text-white font-bold shadow-md transition transform active:scale-95 cursor-pointer text-sm ${
                 isRunning ? 'bg-red-600 hover:bg-red-700' : 'bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-800'
               } focus:outline-none focus:ring-2 focus:ring-amber-500 dark:focus:ring-amber-400 focus:ring-offset-2`}

@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { getIngredientLabel, getGrindLabel, calculateRatio, scaleRecipe, getGrindAdjustmentSuggestion, formatSecondsToMinutes as formatTime } from '../../utils/coffeeUtils';
 import { MapPinIcon, GearIcon, MountainIcon, ClockIcon, HomeIcon, UserIcon, FireIcon, PlantIcon, CalendarIcon, TrophyIcon, CoffeeBeanIcon, ArchiveIcon, ArchiveRestoreIcon, ArrowPathIcon, LightBulbIcon, WarningTriangleIcon, ArrowDownTrayIcon, CheckIcon } from '../icons/SvgIcons';
+import BeanFreshnessBadge from '../BeanFreshnessBadge';
 
 export default function RecipeSummaryModal({
   summaryRecipe,
@@ -334,6 +335,7 @@ export default function RecipeSummaryModal({
                       <div className="font-bold text-slate-800 dark:text-slate-200">
                         {bean.name} {bean.roaster && <span className="text-[11px] font-normal text-slate-500 dark:text-slate-400 inline-block ml-1">({bean.roaster})</span>}
                       </div>
+                      <BeanFreshnessBadge roastDate={bean.roast_date} />
                     </div>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -347,6 +349,11 @@ export default function RecipeSummaryModal({
                   {isBeanExpanded && (
                     <div className="px-3 pb-3 pt-1.5 border-t border-amber-200/10 dark:border-amber-900/10 space-y-2 text-[11px] animate-fade-in">
                       <div className="flex flex-wrap gap-1">
+                        {bean.roast_date && (
+                          <span className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[9px] px-1.5 py-0.5 rounded font-medium text-slate-600 dark:text-slate-300 flex items-center gap-1">
+                            <CalendarIcon className="w-2.5 h-2.5 inline" /> Tostado el: {bean.roast_date}
+                          </span>
+                        )}
                         {bean.origin && (
                           <span className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[9px] px-1.5 py-0.5 rounded font-medium text-slate-600 dark:text-slate-300 flex items-center gap-1">
                             <MapPinIcon className="w-2.5 h-2.5 inline" /> {bean.origin}

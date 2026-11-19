@@ -70,6 +70,49 @@ describe('TimerComponent', () => {
     expect(screen.getByText('0:02 / 0:08')).toBeInTheDocument();
   });
 
+  test('continues elapsed time when skipping a step while running', () => {
+    render(<TimerComponent recipe={mockRecipe} onComplete={onCompleteMock} />);
+
+    fireEvent.click(screen.getByText('Iniciar'));
+    act(() => {
+      vi.advanceTimersByTime(1000);
+    });
+
+    fireEvent.click(screen.getByTitle('Siguiente paso'));
+    act(() => {
+      vi.advanceTimersByTime(1000);
+    });
+
+    expect(screen.getByText('0:02 / 0:08')).toBeInTheDocument();
+  });
+
+  test('continues elapsed time through manual steps and stops on pause', () => {
+    const manualRecipe = {
+      ...mockRecipe,
+      steps: [
+        { step_number: 1, title: 'Enjuague manual', water_g: 30, duration_s: 0, instruction: 'Completa el enjuague.' },
+        { step_number: 2, title: 'Vertido', water_g: 70, duration_s: 3, instruction: 'Vierte el agua.' }
+      ]
+    };
+    render(<TimerComponent recipe={manualRecipe} onComplete={onCompleteMock} autoStart />);
+
+    act(() => {
+      vi.advanceTimersByTime(2000);
+    });
+    expect(screen.getByText('0:02 / 0:03')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText('Siguiente Paso'));
+    act(() => {
+      vi.advanceTimersByTime(500);
+    });
+
+    fireEvent.click(screen.getByText('Pausar'));
+    act(() => {
+      vi.advanceTimersByTime(2000);
+    });
+    expect(screen.getByText('0:02 / 0:03')).toBeInTheDocument();
+  });
+
   test('navigates steps with skip next and skip prev buttons', () => {
     render(<TimerComponent recipe={mockRecipe} onComplete={onCompleteMock} />);
     

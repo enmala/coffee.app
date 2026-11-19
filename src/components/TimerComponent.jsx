@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { playBeep, speakText, getIngredientLabel, getGrindLabel, getRecipeCategory, triggerVibration } from '../utils/coffeeUtils';
 
 export default function TimerComponent({ recipe, onComplete, soundEnabled = true, vibrationEnabled = true, vibrationType = 'normal', voiceGuidanceEnabled = false, beanName, autoStart = false }) {
@@ -7,8 +7,42 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
   const [elapsedTime, setElapsedTime] = useState(0);
   const [isRunning, setIsRunning] = useState(autoStart);
   const [showFinishedModal, setShowFinishedModal] = useState(false);
+  const elapsedBaseMsRef = useRef(0);
+  const elapsedStartedAtRef = useRef(null);
 
   const currentStep = recipe.steps[currentStepIndex];
+
+  const getElapsedMilliseconds = useCallback(() => {
+    if (elapsedStartedAtRef.current === null) {
+      return elapsedBaseMsRef.current;
+    }
+    return elapsedBaseMsRef.current + (Date.now() - elapsedStartedAtRef.current);
+  }, []);
+
+  const startElapsedTime = useCallback(() => {
+    if (elapsedStartedAtRef.current === null) {
+      elapsedStartedAtRef.current = Date.now();
+    }
+  }, []);
+
+  const stopElapsedTime = useCallback(() => {
+    if (elapsedStartedAtRef.current !== null) {
+      elapsedBaseMsRef.current = getElapsedMilliseconds();
+      elapsedStartedAtRef.current = null;
+    }
+    setElapsedTime(Math.floor(elapsedBaseMsRef.current / 1000));
+  }, [getElapsedMilliseconds]);
+
+  useEffect(() => {
+    if (!isRunning) return;
+
+    startElapsedTime();
+    const interval = setInterval(() => {
+      setElapsedTime(Math.floor(getElapsedMilliseconds() / 1000));
+    }, 250);
+
+    return () => clearInterval(interval);
+  }, [isRunning, getElapsedMilliseconds, startElapsedTime]);
 
   const getStepMessage = (step, index) => {
     const instructionText = step.instruction ? `${step.instruction}.` : '';
@@ -64,7 +98,6 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
 
     if (isRunning && currentStep.duration_s > 0) {
       interval = setInterval(() => {
-        setElapsedTime((prevElapsed) => prevElapsed + 1);
         setTimeLeft((prevTime) => {
           if (prevTime > 1) {
             return prevTime - 1;
@@ -80,6 +113,7 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
             triggerVibration(vibrationEnabled, vibrationType, false);
             return recipe.steps[nextIndex].duration_s;
           } else {
+            stopElapsedTime();
             setIsRunning(false);
             triggerVibration(vibrationEnabled, vibrationType, true);
             if (voiceGuidanceEnabled) {
@@ -95,7 +129,7 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [isRunning, currentStepIndex, recipe.steps, soundEnabled, vibrationEnabled, vibrationType, voiceGuidanceEnabled, currentStep.duration_s, recipe]);
+  }, [isRunning, currentStepIndex, recipe.steps, soundEnabled, vibrationEnabled, vibrationType, voiceGuidanceEnabled, currentStep.duration_s, recipe, stopElapsedTime]);
 
   const handleCompleteManualStep = () => {
     if (soundEnabled) {
@@ -108,6 +142,7 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
       setTimeLeft(recipe.steps[nextIndex].duration_s);
       triggerVibration(vibrationEnabled, vibrationType, false);
     } else {
+      stopElapsedTime();
       setIsRunning(false);
       triggerVibration(vibrationEnabled, vibrationType, true);
       if (voiceGuidanceEnabled) {
@@ -118,10 +153,12 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
   };
 
   const handleReset = () => {
+    elapsedBaseMsRef.current = 0;
+    elapsedStartedAtRef.current = null;
+    setElapsedTime(0);
     setIsRunning(false);
     setCurrentStepIndex(0);
     setTimeLeft(recipe.steps[0].duration_s);
-    setElapsedTime(0);
   };
 
   const handleSkipNext = () => {
@@ -285,7 +322,15 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
           ) : (
             <button 
               type="button"
-              onClick={() => setIsRunning(!isRunning)}
+              onClick={() => {
+                if (isRunning) {
+                  stopElapsedTime();
+                  setIsRunning(false);
+                } else {
+                  startElapsedTime();
+                  setIsRunning(true);
+                }
+              }}
               className={`w-32 py-2.5 rounded-full text-white font-bold shadow-md transition transform active:scale-95 cursor-pointer text-sm ${
                 isRunning ? 'bg-red-600 hover:bg-red-700' : 'bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-800'
               } focus:outline-none focus:ring-2 focus:ring-amber-500 dark:focus:ring-amber-400 focus:ring-offset-2`}

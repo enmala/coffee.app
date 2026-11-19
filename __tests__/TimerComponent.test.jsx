@@ -482,6 +482,7 @@ describe('TimerComponent', () => {
     const svgEl = screen.getByText('Preinfusión').closest('div').parentElement.querySelector('svg');
     expect(svgEl).toBeInTheDocument();
     expect(svgEl).toHaveClass('w-36', 'sm:w-44');
+    expect(svgEl).toHaveAttribute('viewBox', '0 0 176 176');
     const circles = svgEl.querySelectorAll('circle');
     expect(circles).toHaveLength(2);
   });

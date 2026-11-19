@@ -79,7 +79,7 @@ describe('RecipeSummaryModal Component Tests', () => {
 
   test('renders linked bean info and toggles expanded technical details', () => {
     vi.useFakeTimers();
-    vi.setSystemTime(new Date('2026-07-20T12:00:00Z'));
+    vi.setSystemTime(new Date(2026, 6, 20, 12));
 
     render(
       <RecipeSummaryModal

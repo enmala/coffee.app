@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { getBeanFreshness } from '../utils/beanFreshness';
 
 const STATUS_CLASSES = {
@@ -8,7 +9,38 @@ const STATUS_CLASSES = {
 };
 
 export default function BeanFreshnessBadge({ roastDate }) {
-  const freshness = getBeanFreshness(roastDate);
+  const [currentDate, setCurrentDate] = useState(() => new Date());
+
+  useEffect(() => {
+    let midnightTimeout;
+
+    const scheduleMidnightRefresh = () => {
+      const now = new Date();
+      const nextMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+      midnightTimeout = window.setTimeout(() => {
+        setCurrentDate(new Date());
+        scheduleMidnightRefresh();
+      }, Math.max(1, nextMidnight.getTime() - now.getTime()));
+    };
+
+    const refreshWhenVisible = () => {
+      if (document.visibilityState !== 'visible') return;
+
+      window.clearTimeout(midnightTimeout);
+      setCurrentDate(new Date());
+      scheduleMidnightRefresh();
+    };
+
+    scheduleMidnightRefresh();
+    document.addEventListener('visibilitychange', refreshWhenVisible);
+
+    return () => {
+      window.clearTimeout(midnightTimeout);
+      document.removeEventListener('visibilitychange', refreshWhenVisible);
+    };
+  }, []);
+
+  const freshness = getBeanFreshness(roastDate, currentDate);
   if (!freshness) return null;
 
   return (

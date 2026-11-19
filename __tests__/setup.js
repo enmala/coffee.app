@@ -1,5 +1,38 @@
 import { vi } from 'vitest';
 import '@testing-library/jest-dom';
+import { JSDOM } from 'jsdom';
+
+let jsdomStorageAvailable;
+try {
+  jsdomStorageAvailable = typeof window !== 'undefined' && Boolean(window.localStorage);
+} catch {
+  jsdomStorageAvailable = false;
+}
+
+if (!jsdomStorageAvailable && typeof window !== 'undefined') {
+  const storageWindow = new JSDOM('', { url: 'http://localhost' }).window;
+
+  Object.defineProperty(window, 'localStorage', {
+    configurable: true,
+    value: storageWindow.localStorage,
+  });
+  Object.defineProperty(window, 'sessionStorage', {
+    configurable: true,
+    value: storageWindow.sessionStorage,
+  });
+  Object.defineProperty(globalThis, 'localStorage', {
+    configurable: true,
+    value: storageWindow.localStorage,
+  });
+  Object.defineProperty(globalThis, 'sessionStorage', {
+    configurable: true,
+    value: storageWindow.sessionStorage,
+  });
+  Object.defineProperty(globalThis, 'Storage', {
+    configurable: true,
+    value: storageWindow.Storage,
+  });
+}
 
 // Mock window.AudioContext
 class AudioContextMock {

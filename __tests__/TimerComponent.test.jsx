@@ -52,6 +52,24 @@ describe('TimerComponent', () => {
     expect(screen.getByText('0:03')).toBeInTheDocument();
   });
 
+  test('shows elapsed time alongside estimated recipe duration', () => {
+    render(<TimerComponent recipe={mockRecipe} onComplete={onCompleteMock} />);
+
+    expect(screen.getByText('0:00 / 0:08')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText('Iniciar'));
+    act(() => {
+      vi.advanceTimersByTime(2000);
+    });
+    expect(screen.getByText('0:02 / 0:08')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText('Pausar'));
+    act(() => {
+      vi.advanceTimersByTime(3000);
+    });
+    expect(screen.getByText('0:02 / 0:08')).toBeInTheDocument();
+  });
+
   test('navigates steps with skip next and skip prev buttons', () => {
     render(<TimerComponent recipe={mockRecipe} onComplete={onCompleteMock} />);
     

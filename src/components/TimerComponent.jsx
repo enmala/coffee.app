@@ -4,6 +4,7 @@ import { playBeep, speakText, getIngredientLabel, getGrindLabel, getRecipeCatego
 export default function TimerComponent({ recipe, onComplete, soundEnabled = true, vibrationEnabled = true, vibrationType = 'normal', voiceGuidanceEnabled = false, beanName, autoStart = false }) {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [timeLeft, setTimeLeft] = useState(recipe.steps[0].duration_s);
+  const [elapsedTime, setElapsedTime] = useState(0);
   const [isRunning, setIsRunning] = useState(autoStart);
   const [showFinishedModal, setShowFinishedModal] = useState(false);
 
@@ -63,6 +64,7 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
 
     if (isRunning && currentStep.duration_s > 0) {
       interval = setInterval(() => {
+        setElapsedTime((prevElapsed) => prevElapsed + 1);
         setTimeLeft((prevTime) => {
           if (prevTime > 1) {
             return prevTime - 1;
@@ -119,6 +121,7 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
     setIsRunning(false);
     setCurrentStepIndex(0);
     setTimeLeft(recipe.steps[0].duration_s);
+    setElapsedTime(0);
   };
 
   const handleSkipNext = () => {
@@ -142,6 +145,11 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
     const secs = seconds % 60;
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
+
+  const totalDuration = recipe.steps.reduce(
+    (sum, step) => sum + (Number(step.duration_s) || 0),
+    0
+  );
 
   const cumulativeWater = recipe.steps
     .slice(0, currentStepIndex + 1)
@@ -177,6 +185,16 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
           <span className="block text-slate-500 dark:text-slate-300 text-[10px] uppercase font-bold">Temp.</span>
           <span className="font-semibold text-sm">{recipe.water_temp_c}°C</span>
         </div>
+      </div>
+
+      <div
+        className="flex items-center justify-center gap-2 text-xs font-semibold text-slate-600 dark:text-slate-300"
+        aria-label={`Tiempo transcurrido ${formatTime(elapsedTime)} de ${formatTime(totalDuration)}`}
+      >
+        <span className="uppercase text-[10px] tracking-wider">Tiempo transcurrido</span>
+        <span className="font-mono text-sm text-slate-900 dark:text-white">
+          {formatTime(elapsedTime)} / {formatTime(totalDuration)}
+        </span>
       </div>
 
       {/* Progress circular SVG */}

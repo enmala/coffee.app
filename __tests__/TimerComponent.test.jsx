@@ -75,6 +75,30 @@ describe('TimerComponent', () => {
     );
   });
 
+  test('shows the full step title below elapsed time and outside the timer ring', () => {
+    const longTitle = 'Preinfusión muy lenta con agitación circular inicial';
+    const longTitleRecipe = {
+      ...mockRecipe,
+      steps: [
+        {
+          ...mockRecipe.steps[0],
+          title: longTitle
+        }
+      ]
+    };
+
+    render(<TimerComponent recipe={longTitleRecipe} onComplete={onCompleteMock} />);
+
+    const title = screen.getByRole('heading', { name: longTitle, level: 4 });
+    const elapsedTime = screen.getByText('0:00 / 0:03');
+    const timerRing = screen.getByText('0:03').closest('.relative');
+
+    expect(title).toHaveClass('break-words');
+    expect(title).not.toHaveClass('truncate');
+    expect(elapsedTime.compareDocumentPosition(title) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(timerRing).not.toContainElement(title);
+  });
+
   test('shows elapsed time alongside estimated recipe duration', () => {
     render(<TimerComponent recipe={mockRecipe} onComplete={onCompleteMock} />);
 
@@ -479,7 +503,7 @@ describe('TimerComponent', () => {
 
   test('renders circular progress SVG ring', () => {
     render(<TimerComponent recipe={mockRecipe} onComplete={onCompleteMock} />);
-    const svgEl = screen.getByText('Preinfusión').closest('div').parentElement.querySelector('svg');
+    const svgEl = screen.getByText('0:03').closest('.relative').querySelector('svg');
     expect(svgEl).toBeInTheDocument();
     expect(svgEl).toHaveClass('w-36', 'sm:w-44');
     expect(svgEl).toHaveAttribute('viewBox', '0 0 176 176');

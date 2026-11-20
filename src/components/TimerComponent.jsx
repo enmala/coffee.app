@@ -234,6 +234,13 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
         </span>
       </div>
 
+      <h4
+        className="mx-auto max-w-xs px-3 text-sm sm:text-base font-bold leading-snug text-slate-900 dark:text-white break-words"
+        aria-live="polite"
+      >
+        {currentStep.title}
+      </h4>
+
       {/* Progress circular SVG */}
       <div className="relative flex justify-center items-center my-1 sm:my-3 md:my-4">
         <svg
@@ -263,10 +270,7 @@ export default function TimerComponent({ recipe, onComplete, soundEnabled = true
           />
         </svg>
         {/* Inner details */}
-        <div className="absolute flex flex-col items-center justify-center space-y-1">
-          <span className="text-[10px] text-slate-500 dark:text-slate-300 uppercase font-bold tracking-widest max-w-[110px] truncate">
-            {currentStep.title}
-          </span>
+        <div className="absolute flex flex-col items-center justify-center space-y-2">
           <span className="text-2xl sm:text-3xl font-mono font-bold text-slate-900 dark:text-white select-none tracking-tight">
             {currentStep.duration_s > 0 ? formatTime(timeLeft) : 'Manual'}
           </span>

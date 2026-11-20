@@ -50,6 +50,7 @@ Los agentes de IA deben leer este archivo para saber qué implementar a continua
 ---
 
 ## ✅ Completado
+- [x] **Títulos de pasos visibles en el temporizador (`v1.20.3`)**: traslado del título fuera del anillo y debajo del tiempo transcurrido, con ajuste multilínea para evitar truncamientos en nombres largos y mejora de su anuncio accesible.
 - [x] **Mejor visualización del temporizador en pantallas pequeñas (`v1.20.2`)**: instrucciones largas con desplazamiento interno, interfaz compacta y anillo responsive para móviles, y barra de acciones sticky que mantiene navegación, inicio/pausa y reinicio accesibles sin ampliar la pantalla.
 - [x] **Configuración reproducible de Vitest con almacenamiento local (`v1.20.0`)**: configuración de jsdom con origen `http://localhost` en `vitest.config.js` para habilitar `localStorage` en pruebas automatizadas con las versiones actuales de Node.js y jsdom.
 - [x] **Tiempo total transcurrido (Elapsed Time) en el Temporizador** (`v1.20.1`): cronómetro global acumulado basado en tiempo activo real (milisegundos), independiente de los pasos contados y pausado junto al temporizador; continúa durante pasos manuales, se conserva al navegar entre pasos y se reinicia al volver al inicio, mostrando el progreso junto al tiempo estimado (ej: `01:45 / 03:30`) con cobertura de ejecución, pausa, navegación y pasos manuales.

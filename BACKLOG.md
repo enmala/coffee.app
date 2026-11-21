@@ -50,6 +50,7 @@ Los agentes de IA deben leer este archivo para saber qué implementar a continua
 ---
 
 ## ✅ Completado
+- [x] **Rediseño compacto y accesible de Configuración (`v1.20.4`)**: cabecera e importación fijas, cuerpo desplazable independiente, preferencias agrupadas con switches, enlace redundante de “Acerca de” retirado, cierre accesible de 44 px, bloqueo de scroll, focus trap, restauración de foco y cierre con `Escape`, con adaptación móvil tipo bottom sheet y pruebas dedicadas.
 - [x] **Títulos de pasos visibles en el temporizador (`v1.20.3`)**: traslado del título fuera del anillo y debajo del tiempo transcurrido, con ajuste multilínea para evitar truncamientos en nombres largos y mejora de su anuncio accesible.
 - [x] **Mejor visualización del temporizador en pantallas pequeñas (`v1.20.2`)**: instrucciones largas con desplazamiento interno, interfaz compacta y anillo responsive para móviles, y barra de acciones sticky que mantiene navegación, inicio/pausa y reinicio accesibles sin ampliar la pantalla.
 - [x] **Configuración reproducible de Vitest con almacenamiento local (`v1.20.0`)**: configuración de jsdom con origen `http://localhost` en `vitest.config.js` para habilitar `localStorage` en pruebas automatizadas con las versiones actuales de Node.js y jsdom.

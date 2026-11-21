@@ -1,4 +1,44 @@
+import { useEffect, useId, useRef } from 'react';
 import { GearIcon, SunIcon, MoonIcon, ClipboardIcon, DocumentTextIcon } from '../icons/SvgIcons';
+
+const FOCUSABLE_SELECTOR =
+  'button:not([disabled]), [href], input:not([disabled]):not([tabindex="-1"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+function SettingsSwitch({ label, enabled, onToggle, description }) {
+  return (
+    <div className="flex min-h-14 items-center justify-between gap-4 py-2">
+      <div className="min-w-0 text-left">
+        <span className="block text-sm font-bold text-slate-800 dark:text-slate-200">
+          {label}
+        </span>
+        {description && (
+          <span className="mt-0.5 block text-xs leading-snug text-slate-500 dark:text-slate-400">
+            {description}
+          </span>
+        )}
+      </div>
+      <button
+        type="button"
+        role="switch"
+        aria-checked={enabled}
+        aria-label={label}
+        onClick={onToggle}
+        className={`relative h-7 w-12 shrink-0 overflow-hidden rounded-full transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-600 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 ${
+          enabled
+            ? 'bg-amber-800 dark:bg-amber-600'
+            : 'bg-slate-300 dark:bg-slate-600'
+        }`}
+      >
+        <span
+          aria-hidden="true"
+          className={`absolute left-1 top-1 h-5 w-5 rounded-full bg-white shadow-sm transition-transform duration-200 ${
+            enabled ? 'translate-x-5' : 'translate-x-0'
+          }`}
+        />
+      </button>
+    </div>
+  );
+}
 
 export default function SettingsModal({
   isOpen,
@@ -14,172 +54,220 @@ export default function SettingsModal({
   vibrationType,
   setVibrationType,
   onUnifiedImportJson,
-  onImportFromClipboard,
-  onOpenAbout
+  onImportFromClipboard
 }) {
+  const titleId = useId();
+  const descriptionId = useId();
+  const panelRef = useRef(null);
+  const fileInputRef = useRef(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const previouslyFocused = document.activeElement;
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    const focusableElements = () =>
+      Array.from(panelRef.current.querySelectorAll(FOCUSABLE_SELECTOR));
+    focusableElements()[0]?.focus();
+
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        onClose();
+        return;
+      }
+
+      if (event.key !== 'Tab') return;
+
+      const elements = focusableElements();
+      const first = elements[0];
+      const last = elements[elements.length - 1];
+
+      if (!first || !last) return;
+
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = originalOverflow;
+      previouslyFocused?.focus();
+    };
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
-      <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-sm w-full p-6 shadow-xl max-h-[85vh] overflow-y-auto space-y-5 border border-slate-100 dark:border-slate-800 flex flex-col">
-        <div className="flex justify-between items-start border-b border-slate-200 dark:border-slate-800 pb-3">
-          <div className="text-left">
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
-              <GearIcon className="w-5 h-5 text-amber-800 dark:text-amber-500" /> Configuración
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby={titleId}
+      aria-describedby={descriptionId}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-3 backdrop-blur-sm animate-fade-in dark:bg-slate-950/80 md:p-4"
+    >
+      <div
+        ref={panelRef}
+        className="flex h-[92dvh] max-h-[620px] w-full max-w-sm flex-col overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-xl dark:border-slate-800 dark:bg-slate-900"
+      >
+        <header className="flex shrink-0 items-start justify-between gap-3 border-b border-slate-200 px-4 py-3 dark:border-slate-800 md:px-5">
+          <div className="min-w-0 text-left">
+            <h3
+              id={titleId}
+              className="flex items-center gap-1.5 text-lg font-bold text-slate-900 dark:text-white"
+            >
+              <GearIcon className="h-5 w-5 text-amber-800 dark:text-amber-500" aria-hidden="true" />
+              Configuración
             </h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Personaliza tu experiencia de preparación</p>
+            <p
+              id={descriptionId}
+              className="mt-0.5 text-xs text-slate-500 dark:text-slate-400"
+            >
+              Personaliza tu experiencia de preparación
+            </p>
           </div>
           <button
+            type="button"
             onClick={onClose}
-            className="text-slate-400 dark:text-slate-300 hover:text-slate-600 dark:hover:text-slate-200 text-xl font-bold leading-none cursor-pointer"
+            aria-label="Cerrar configuración"
+            title="Cerrar configuración"
+            className="-mr-2 -mt-1 flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-2xl leading-none text-slate-500 transition hover:bg-slate-100 hover:text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-600 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
           >
-            &times;
+            <span aria-hidden="true">&times;</span>
           </button>
-        </div>
+        </header>
 
-        <div className="space-y-4 py-2">
-          {/* Theme selector */}
-          <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-800/60">
-            <div className="text-left">
-              <span className="text-sm font-bold text-slate-800 dark:text-slate-200 block">Tema Visual</span>
-              <span className="text-xs text-slate-500 dark:text-slate-400">Alterna entre modo claro y oscuro</span>
-            </div>
-            <button
-              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-              className="px-3 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition cursor-pointer text-xs font-bold flex items-center gap-1"
-              title={theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
-            >
-              <span className="flex items-center gap-1">{theme === 'dark' ? <><SunIcon className="w-3.5 h-3.5" /> Claro</> : <><MoonIcon className="w-3.5 h-3.5" /> Oscuro</>}</span>
-            </button>
-          </div>
-
-          {/* Modo manos libres */}
-          <div className="space-y-2.5 p-3 bg-amber-50 dark:bg-amber-950/20 rounded-xl border border-amber-200 dark:border-amber-500/20">
-            <div className="flex items-center justify-between">
-              <div className="text-left">
-                <span className="text-sm font-bold text-slate-800 dark:text-slate-200 block">Modo Manos Libres</span>
-                <span className="text-xs text-slate-500 dark:text-slate-400">Activa narración de pasos mientras el timer corre.</span>
-              </div>
-              <button
-                type="button"
-                onClick={() => setVoiceGuidanceEnabled(!voiceGuidanceEnabled)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
-                  voiceGuidanceEnabled
-                    ? 'bg-amber-800 text-white hover:bg-amber-900'
-                    : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-300 dark:hover:bg-slate-700'
-                }`}
-              >
-                {voiceGuidanceEnabled ? 'Activado' : 'Desactivado'}
-              </button>
-            </div>
-          </div>
-
-          {/* Sound Alerts */}
-          <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-800/60">
-            <div className="text-left">
-              <span className="text-sm font-bold text-slate-800 dark:text-slate-200 block">Alertas de Sonido</span>
-              <span className="text-xs text-slate-500 dark:text-slate-400">Sonido al cambiar de paso</span>
-            </div>
+        <section
+          aria-labelledby={`${titleId}-import`}
+          className="shrink-0 border-b border-slate-200 px-4 py-3 dark:border-slate-800 md:px-5"
+        >
+          <h4
+            id={`${titleId}-import`}
+            className="mb-2 text-[11px] font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400"
+          >
+            Importar recetas o granos
+          </h4>
+          <div className="grid grid-cols-2 gap-2">
             <button
               type="button"
-              onClick={() => setSoundEnabled(!soundEnabled)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
-                soundEnabled 
-                  ? 'bg-amber-800 text-white hover:bg-amber-900' 
-                  : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-300 dark:hover:bg-slate-700'
-              }`}
+              onClick={() => fileInputRef.current?.click()}
+              className="flex min-h-10 items-center justify-center gap-1.5 rounded-lg bg-amber-800 px-3 py-2 text-xs font-bold text-white shadow-sm transition hover:bg-amber-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-600 focus-visible:ring-offset-2 dark:bg-amber-700 dark:hover:bg-amber-800 dark:focus-visible:ring-offset-slate-900"
+              title="Importar desde archivo JSON"
             >
-              {soundEnabled ? 'Activado' : 'Desactivado'}
+              <DocumentTextIcon className="h-4 w-4 shrink-0" aria-hidden="true" />
+              Archivo JSON
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".json"
+              onChange={onUnifiedImportJson}
+              tabIndex={-1}
+              className="hidden"
+              aria-label="Seleccionar archivo JSON para importar"
+            />
+            <button
+              type="button"
+              onClick={onImportFromClipboard}
+              className="flex min-h-10 items-center justify-center gap-1.5 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-bold text-amber-900 transition hover:bg-amber-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-600 focus-visible:ring-offset-2 dark:border-amber-800/40 dark:bg-amber-950/20 dark:text-amber-300 dark:hover:bg-amber-950/40 dark:focus-visible:ring-offset-slate-900"
+              title="Importar desde el portapapeles"
+            >
+              <ClipboardIcon className="h-4 w-4 shrink-0" aria-hidden="true" />
+              Portapapeles
             </button>
           </div>
+        </section>
 
-          <div className="space-y-2.5 p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-800/60">
-            <div className="flex items-center justify-between">
-              <div className="text-left">
-                <span className="text-sm font-bold text-slate-800 dark:text-slate-200 block">Vibración Háptica</span>
-                <span className="text-xs text-slate-500 dark:text-slate-400">Vibrar en transiciones</span>
-              </div>
-              <button
-                type="button"
-                onClick={() => setVibrationEnabled(!vibrationEnabled)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
-                  vibrationEnabled 
-                    ? 'bg-amber-800 text-white hover:bg-amber-900' 
-                    : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-300 dark:hover:bg-slate-700'
-                }`}
-              >
-                {vibrationEnabled ? 'Activado' : 'Desactivado'}
-              </button>
-            </div>
-            
-            {vibrationEnabled && (
-              <div className="pt-2 border-t border-slate-200/50 dark:border-slate-700/50 flex items-center justify-between gap-2">
-                <label className="text-xs text-slate-600 dark:text-slate-400 font-semibold">Duración:</label>
-                <select
-                  value={vibrationType}
-                  onChange={(e) => setVibrationType(e.target.value)}
-                  className="p-1 border border-slate-200 dark:border-slate-700 rounded bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 text-xs focus:outline-none"
-                >
-                  <option value="short">Corta</option>
-                  <option value="normal">Normal</option>
-                  <option value="long">Larga</option>
-                </select>
-              </div>
-            )}
-          </div>
-
-          {/* Importar Datos */}
-          <div className="flex flex-col gap-2.5 p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-800/60">
-            <div className="text-left">
-              <span className="text-sm font-bold text-slate-800 dark:text-slate-200 block">Importar Datos</span>
-              <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Carga receta o grano desde archivo .json o portapapeles</span>
-            </div>
-            <div className="flex items-center gap-2 pt-1">
-              <label
-                className="flex-1 py-1.5 px-2.5 bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-800 text-white text-xs font-bold rounded-lg cursor-pointer transition flex items-center justify-center gap-1.5 shadow-sm select-none"
-                title="Importar desde archivo JSON"
-              >
-                <DocumentTextIcon className="w-3.5 h-3.5 shrink-0" />
-                <span>Archivo</span>
-                <input
-                  type="file"
-                  accept=".json"
-                  onChange={onUnifiedImportJson}
-                  className="hidden"
+        <div
+          role="region"
+          aria-label="Preferencias"
+          tabIndex={0}
+          className="min-h-0 flex-1 touch-pan-y overflow-y-auto overscroll-contain px-4 py-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-amber-600 md:px-5"
+        >
+          <section aria-labelledby={`${titleId}-preparation`}>
+            <h4
+              id={`${titleId}-preparation`}
+              className="text-[11px] font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400"
+            >
+              Preparación
+            </h4>
+            <div className="divide-y divide-slate-200/80 dark:divide-slate-800">
+              <SettingsSwitch
+                label="Modo Manos Libres"
+                description="Narra los pasos mientras corre el temporizador."
+                enabled={voiceGuidanceEnabled}
+                onToggle={() => setVoiceGuidanceEnabled(!voiceGuidanceEnabled)}
+              />
+              <SettingsSwitch
+                label="Alertas de Sonido"
+                enabled={soundEnabled}
+                onToggle={() => setSoundEnabled(!soundEnabled)}
+              />
+              <div>
+                <SettingsSwitch
+                  label="Vibración Háptica"
+                  enabled={vibrationEnabled}
+                  onToggle={() => setVibrationEnabled(!vibrationEnabled)}
                 />
-              </label>
+                {vibrationEnabled && (
+                  <div className="flex min-h-11 items-center justify-between gap-3 pb-2 pl-3">
+                    <label
+                      htmlFor={`${titleId}-vibration-duration`}
+                      className="text-xs font-semibold text-slate-600 dark:text-slate-400"
+                    >
+                      Duración
+                    </label>
+                    <select
+                      id={`${titleId}-vibration-duration`}
+                      value={vibrationType}
+                      onChange={(event) => setVibrationType(event.target.value)}
+                      className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-800 focus:border-amber-700 focus:outline-none focus:ring-2 focus:ring-amber-600/30 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                    >
+                      <option value="short">Corta</option>
+                      <option value="normal">Normal</option>
+                      <option value="long">Larga</option>
+                    </select>
+                  </div>
+                )}
+              </div>
+            </div>
+          </section>
+
+          <section
+            aria-labelledby={`${titleId}-application`}
+            className="mt-3 border-t border-slate-200 pt-3 dark:border-slate-800"
+          >
+            <h4
+              id={`${titleId}-application`}
+              className="text-[11px] font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400"
+            >
+              Aplicación
+            </h4>
+            <div className="flex min-h-14 items-center justify-between gap-4 py-2">
+              <span className="text-sm font-bold text-slate-800 dark:text-slate-200">
+                Tema visual
+              </span>
               <button
                 type="button"
-                onClick={onImportFromClipboard}
-                className="flex-1 py-1.5 px-2.5 bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-800 text-white text-xs font-bold rounded-lg cursor-pointer transition flex items-center justify-center gap-1.5 shadow-sm select-none"
-                title="Importar desde el portapapeles"
+                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                className="flex min-h-9 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 shadow-sm transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+                title={theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
               >
-                <ClipboardIcon className="w-3.5 h-3.5 shrink-0" />
-                <span>Portapapeles</span>
+                {theme === 'dark'
+                  ? <SunIcon className="h-4 w-4" aria-hidden="true" />
+                  : <MoonIcon className="h-4 w-4" aria-hidden="true" />}
+                {theme === 'dark' ? 'Claro' : 'Oscuro'}
               </button>
             </div>
-          </div>
-
-          {/* About link */}
-          <div className="flex justify-center pt-2">
-            <button
-              type="button"
-              onClick={onOpenAbout}
-              className="px-4 py-2 rounded-full text-xs font-medium text-amber-800 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/40 hover:bg-amber-100 dark:hover:bg-amber-900/30 transition cursor-pointer flex items-center gap-1.5"
-            >
-              <span>ⓘ</span>
-              <span>Acerca de la aplicación</span>
-            </button>
-          </div>
-        </div>
-
-        <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
-          <button
-            onClick={onClose}
-            className="w-full py-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl font-bold text-xs transition cursor-pointer"
-          >
-            Cerrar
-          </button>
+          </section>
         </div>
       </div>
     </div>

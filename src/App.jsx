@@ -185,7 +185,6 @@ export default function App() {
     handleImportFromClipboard,
     handleStartTimerImmediate,
     handleStartTimerFromSummary,
-    handleOpenAboutFromSettings,
     handleOpenAboutFromHeader,
     handleOpenSettingsFromHeader,
     handleOpenLibrary
@@ -619,7 +618,6 @@ export default function App() {
           setVibrationType={setVibrationType}
           onUnifiedImportJson={handleUnifiedImportJson}
           onImportFromClipboard={handleImportFromClipboard}
-          onOpenAbout={handleOpenAboutFromSettings}
         />
 
         <AboutModal

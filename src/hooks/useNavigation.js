@@ -323,12 +323,6 @@ export function useNavigation({ recipesSync, beansSync, historySync, recipes, se
     syncStateWithHistory({ view: 'timer', recipeId: recipe.id, customRecipe: recipe });
   }, [syncStateWithHistory]);
 
-  const handleOpenAboutFromSettings = useCallback(() => {
-    setIsSettingsOpen(false);
-    setIsAboutOpen(true);
-    navigateTo('about');
-  }, [navigateTo]);
-
   const handleOpenAboutFromHeader = useCallback(() => {
     setIsSettingsOpen(false);
     setIsAboutOpen(true);
@@ -383,7 +377,6 @@ export function useNavigation({ recipesSync, beansSync, historySync, recipes, se
     handleImportFromClipboard,
     handleStartTimerImmediate,
     handleStartTimerFromSummary,
-    handleOpenAboutFromSettings,
     handleOpenAboutFromHeader,
     handleOpenSettingsFromHeader,
     handleOpenLibrary

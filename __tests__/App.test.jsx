@@ -230,7 +230,7 @@ describe('App Component', () => {
   test('imports a recipe from JSON file', async () => {
     render(<App />);
     fireEvent.click(screen.getByTitle('Configuración'));
-    const importInput = screen.getByTitle('Importar desde archivo JSON').querySelector('input');
+    const importInput = screen.getByLabelText('Seleccionar archivo JSON para importar');
     
     const file = new File(['{}'], 'recipe.json', { type: 'application/json' });
     fireEvent.change(importInput, { target: { files: [file] } });
@@ -490,11 +490,12 @@ describe('App Component', () => {
   test('JSON import edge cases: missing files, invalid structure, duplicate name', async () => {
     render(<App />);
     fireEvent.click(screen.getByTitle('Configuración'));
-    const importInput = screen.getByTitle('Importar desde archivo JSON').querySelector('input');
+    const importInput = screen.getByLabelText('Seleccionar archivo JSON para importar');
 
     // 1. Missing files
     fireEvent.change(importInput, { target: { files: [] } });
-    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(screen.getAllByRole('dialog')).toHaveLength(1);
+    expect(screen.queryByText('Guardar Receta')).not.toBeInTheDocument();
 
     // 2. Invalid JSON structure (missing name)
     class InvalidFileReaderMock {
@@ -746,7 +747,7 @@ describe('App Component', () => {
     
     render(<App />);
     fireEvent.click(screen.getByTitle('Configuración'));
-    const importInput = screen.getByTitle('Importar desde archivo JSON').querySelector('input');
+    const importInput = screen.getByLabelText('Seleccionar archivo JSON para importar');
 
     class MultiDuplicateFileReaderMock {
       readAsText() {
@@ -887,7 +888,7 @@ describe('App Component', () => {
     // 1. JSON import invalid file contents error scenario (triggers catch in handleImportJson)
     render(<App />);
     fireEvent.click(screen.getByTitle('Configuración'));
-    const importInput = screen.getByTitle('Importar desde archivo JSON').querySelector('input');
+    const importInput = screen.getByLabelText('Seleccionar archivo JSON para importar');
     class InvalidJsonFileReaderMock {
       readAsText() {
         setTimeout(() => {
@@ -1101,8 +1102,8 @@ describe('App Component', () => {
     fireEvent.click(screen.getByTitle('Configuración'));
     expect(screen.getByText('Personaliza tu experiencia de preparación')).toBeInTheDocument();
     
-    // Close settings modal using "Cerrar" button
-    const closeBtn = screen.getAllByText('Cerrar').find(btn => btn.tagName === 'BUTTON');
+    // Close settings modal using the fixed header button
+    const closeBtn = screen.getByRole('button', { name: 'Cerrar configuración' });
     fireEvent.click(closeBtn);
     expect(screen.queryByText('Personaliza tu experiencia de preparación')).not.toBeInTheDocument();
 
@@ -1110,8 +1111,8 @@ describe('App Component', () => {
     fireEvent.click(screen.getByTitle('Configuración'));
     expect(screen.getByText('Personaliza tu experiencia de preparación')).toBeInTheDocument();
 
-    // Close settings modal using header Close (times) button
-    const closeXBtn = screen.getByText('×');
+    // Close settings modal again using the same accessible action
+    const closeXBtn = screen.getByRole('button', { name: 'Cerrar configuración' });
     fireEvent.click(closeXBtn);
     expect(screen.queryByText('Personaliza tu experiencia de preparación')).not.toBeInTheDocument();
   });
@@ -1124,20 +1125,20 @@ describe('App Component', () => {
     expect(screen.getByText('Personaliza tu experiencia de preparación')).toBeInTheDocument();
 
     // Locators for toggles
-    const soundToggle = screen.getByText('Alertas de Sonido').parentElement.parentElement.querySelector('button');
-    const vibrationToggle = screen.getByText('Vibración Háptica').parentElement.parentElement.querySelector('button');
+    const soundToggle = screen.getByRole('switch', { name: 'Alertas de Sonido' });
+    const vibrationToggle = screen.getByRole('switch', { name: 'Vibración Háptica' });
 
     // Default values check
-    expect(soundToggle).toHaveTextContent('Activado');
-    expect(vibrationToggle).toHaveTextContent('Activado');
-    expect(screen.getByText('Duración:')).toBeInTheDocument();
+    expect(soundToggle).toHaveAttribute('aria-checked', 'true');
+    expect(vibrationToggle).toHaveAttribute('aria-checked', 'true');
+    expect(screen.getByLabelText('Duración')).toBeInTheDocument();
     
-    const vibrationSelect = screen.getByText('Duración:').parentElement.querySelector('select');
+    const vibrationSelect = screen.getByLabelText('Duración');
     expect(vibrationSelect).toHaveValue('normal');
 
     // Click sound toggle -> disable
     fireEvent.click(soundToggle);
-    expect(soundToggle).toHaveTextContent('Desactivado');
+    expect(soundToggle).toHaveAttribute('aria-checked', 'false');
     expect(localStorage.getItem('coffee_sound_enabled')).toBe('false');
 
     // Change vibration duration type to 'long'
@@ -1146,24 +1147,24 @@ describe('App Component', () => {
 
     // Click vibration toggle -> disable
     fireEvent.click(vibrationToggle);
-    expect(vibrationToggle).toHaveTextContent('Desactivado');
+    expect(vibrationToggle).toHaveAttribute('aria-checked', 'false');
     expect(localStorage.getItem('coffee_vibration_enabled')).toBe('false');
     
     // Select should not be visible anymore
-    expect(screen.queryByText('Duración:')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('Duración')).not.toBeInTheDocument();
 
     // Click sound toggle -> enable
     fireEvent.click(soundToggle);
-    expect(soundToggle).toHaveTextContent('Activado');
+    expect(soundToggle).toHaveAttribute('aria-checked', 'true');
     expect(localStorage.getItem('coffee_sound_enabled')).toBe('true');
 
     // Click vibration toggle -> enable
     fireEvent.click(vibrationToggle);
-    expect(vibrationToggle).toHaveTextContent('Activado');
+    expect(vibrationToggle).toHaveAttribute('aria-checked', 'true');
     expect(localStorage.getItem('coffee_vibration_enabled')).toBe('true');
-    expect(screen.getByText('Duración:')).toBeInTheDocument();
+    expect(screen.getByLabelText('Duración')).toBeInTheDocument();
 
-    const vibrationSelectAfter = screen.getByText('Duración:').parentElement.querySelector('select');
+    const vibrationSelectAfter = screen.getByLabelText('Duración');
     expect(vibrationSelectAfter).toHaveValue('long'); // should keep the saved value
   });
 

@@ -412,10 +412,8 @@ describe('Coffee Beans Management Tests', () => {
     // Open settings modal to access unified import button
     fireEvent.click(screen.getByTitle('Configuración'));
 
-    const importLabel = screen.getByTitle('Importar desde archivo JSON');
-    expect(importLabel).toBeInTheDocument();
-
-    const fileInput = importLabel.querySelector('input[type="file"]');
+    expect(screen.getByRole('button', { name: 'Archivo JSON' })).toBeInTheDocument();
+    const fileInput = screen.getByLabelText('Seleccionar archivo JSON para importar');
     expect(fileInput).toBeInTheDocument();
 
     const dummyFile = new File(['{}'], 'grano.json', { type: 'application/json' });
@@ -465,8 +463,7 @@ describe('Coffee Beans Management Tests', () => {
     // Open settings modal to access unified import button
     fireEvent.click(screen.getByTitle('Configuración'));
 
-    const importLabel = screen.getByTitle('Importar desde archivo JSON');
-    const fileInput = importLabel.querySelector('input[type="file"]');
+    const fileInput = screen.getByLabelText('Seleccionar archivo JSON para importar');
 
     const dummyFile = new File(['{}'], 'invalid.json', { type: 'application/json' });
     fireEvent.change(fileInput, { target: { files: [dummyFile] } });

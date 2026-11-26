@@ -124,7 +124,8 @@ export default function App() {
     handleDeleteBeanClick,
     handleConfirmDeleteBean,
     confirmImportBean,
-    handleShareBean
+    handleShareBean,
+    handleUpdateBeanRating
   } = beansState;
 
   const {
@@ -551,6 +552,7 @@ export default function App() {
                 onEditBean={onStartEditBean}
                 onDeleteBean={onDeleteBeanClick}
                 onShareBean={onShareBean}
+                onRateBean={handleUpdateBeanRating}
               />
             )}
 

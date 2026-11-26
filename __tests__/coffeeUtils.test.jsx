@@ -354,7 +354,8 @@ describe('coffeeUtils', () => {
       sca_score: 90.5,
       altitude: '1800 msnm',
       tasting_notes: ['Jazmín', 'Melocotón', 'Cítrico'],
-      notes: 'Café excepcional con notas florales muy marcadas.'
+      notes: 'Café excepcional con notas florales muy marcadas.',
+      rating: 5
     };
 
     test('should compress and decompress a bean successfully maintaining data integrity', async () => {
@@ -378,6 +379,7 @@ describe('coffeeUtils', () => {
       expect(decompressed.altitude).toBe(testBean.altitude);
       expect(decompressed.tasting_notes).toEqual(testBean.tasting_notes);
       expect(decompressed.notes).toBe(testBean.notes);
+      expect(decompressed.rating).toBe(5);
     });
 
     test('should work with UTF-8 characters like accents and special characters', async () => {
@@ -421,6 +423,19 @@ describe('coffeeUtils', () => {
       const rawBase64 = btoa(JSON.stringify(rawBean));
       const decompressed = await decompressBean(rawBase64);
       expect(decompressed.name).toBe('Geisha');
+      expect(decompressed.rating).toBe(0);
+    });
+
+    test('should normalize invalid bean ratings while decoding', async () => {
+      const rawBean = { n: 'Geisha', q: 8 };
+      const rawBase64 = btoa(JSON.stringify(rawBean));
+      const decompressed = await decompressBean(rawBase64);
+      expect(decompressed.rating).toBe(0);
+
+      const booleanBean = { n: 'Geisha Boolean', q: true };
+      const booleanBase64 = btoa(JSON.stringify(booleanBean));
+      const booleanDecompressed = await decompressBean(booleanBase64);
+      expect(booleanDecompressed.rating).toBe(0);
     });
 
     test('should handle native DecompressionStream for bc1_ bean prefix if CompressionStream is available', async () => {

@@ -125,7 +125,8 @@ export const DEFAULT_BEANS = [
     sca_score: 86.5,
     altitude: '1900 msnm',
     tasting_notes: ['Cítrico', 'Floral', 'Miel'],
-    notes: 'Café muy floral y dulce con notas a jazmín y té negro.'
+    notes: 'Café muy floral y dulce con notas a jazmín y té negro.',
+    rating: 0
   }
 ];
 

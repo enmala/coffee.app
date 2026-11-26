@@ -1,3 +1,5 @@
+import { normalizeBeanRating } from './beanRating';
+
 // Instancia única y reutilizable de AudioContext para evitar crear/cerrar
 // contextos en cada pitido, lo que previene consumo innecesario de memoria
 // y bloqueos de audio en móviles/TWA.
@@ -474,7 +476,8 @@ export const compressBean = async (bean) => {
     s: bean.sca_score ? parseFloat(bean.sca_score) : null,
     a: bean.altitude || '',
     t: bean.tasting_notes || [],
-    x: bean.notes || ''
+    x: bean.notes || '',
+    q: normalizeBeanRating(bean.rating)
   };
 
   const jsonStr = JSON.stringify(minified);
@@ -556,7 +559,8 @@ export const decompressBean = async (encodedStr) => {
     sca_score: minified.s || '',
     altitude: minified.a || '',
     tasting_notes: minified.t || [],
-    notes: minified.x || ''
+    notes: minified.x || '',
+    rating: normalizeBeanRating(minified.q)
   };
 };
 
@@ -585,5 +589,3 @@ export const triggerVibration = (vibrationEnabled, vibrationType = 'normal', isC
     navigator.vibrate(pattern);
   }
 };
-
-

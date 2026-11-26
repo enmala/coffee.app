@@ -110,6 +110,97 @@ describe('Coffee Beans Management Tests', () => {
     expect(screen.getByText('"Perfil dulce y balanceado."')).toBeInTheDocument();
   });
 
+  test('should save and edit a personal bean rating', () => {
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: /Granos/ }));
+    fireEvent.click(screen.getByText('+ Agregar Grano'));
+    fireEvent.change(screen.getByLabelText('Nombre del Grano*'), { target: { value: 'Grano Favorito' } });
+    fireEvent.click(screen.getByRole('radio', { name: '4 estrellas' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Guardar Grano' }));
+    fireEvent.click(screen.getByRole('button', { name: /aceptar/i }));
+
+    expect(screen.getByLabelText('Valoración personal: 4 de 5 estrellas')).toBeInTheDocument();
+    expect(JSON.parse(localStorage.getItem('coffee_beans_v1'))[0].rating).toBe(4);
+
+    fireEvent.click(screen.getAllByTitle('Más opciones')[0]);
+    fireEvent.click(screen.getByTitle('Editar grano'));
+    expect(screen.getByRole('radio', { name: '4 estrellas' })).toHaveAttribute('aria-checked', 'true');
+    fireEvent.click(screen.getByRole('button', { name: 'Quitar valoración' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Guardar Grano' }));
+    fireEvent.click(screen.getByRole('button', { name: /aceptar/i }));
+
+    expect(screen.getAllByLabelText('Valoración personal: sin valorar').length).toBeGreaterThan(0);
+    expect(JSON.parse(localStorage.getItem('coffee_beans_v1'))[0].rating).toBe(0);
+  });
+
+  test('should update a bean rating without opening the full bean form', () => {
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: /Granos/ }));
+    fireEvent.click(screen.getByRole('button', { name: 'Editar valoración de Etiopía Sidamo' }));
+
+    expect(screen.getByRole('dialog', { name: 'Valoración personal' })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('radio', { name: '5 estrellas' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Guardar valoración' }));
+
+    expect(screen.getByLabelText('Valoración personal: 5 de 5 estrellas')).toBeInTheDocument();
+    expect(JSON.parse(localStorage.getItem('coffee_beans_v1'))[0].rating).toBe(5);
+    expect(screen.queryByText('Editar Grano de Café')).not.toBeInTheDocument();
+  });
+
+  test('should filter and sort beans by personal rating', () => {
+    localStorage.setItem('coffee_beans_v1', JSON.stringify([
+      { id: 'bean-low', name: 'Bajo', rating: 2 },
+      { id: 'bean-high', name: 'Alto', rating: 5 },
+      { id: 'bean-none', name: 'Sin nota' }
+    ]));
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: /Granos/ }));
+    fireEvent.click(screen.getByRole('button', { name: 'Ordenar granos' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Mejor valorados' }));
+
+    let beanHeadings = screen.getAllByRole('heading', { level: 3 });
+    expect(beanHeadings.map((heading) => heading.textContent)).toEqual(['Alto', 'Bajo', 'Sin nota']);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Filtrar por valoración' }));
+    fireEvent.click(screen.getByRole('button', { name: '2 estrellas' }));
+    beanHeadings = screen.getAllByRole('heading', { level: 3 });
+    expect(beanHeadings.map((heading) => heading.textContent)).toEqual(['Bajo']);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Filtrar por valoración' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Sin valorar' }));
+    expect(screen.getByText('Sin nota')).toBeInTheDocument();
+    expect(screen.queryByText('Bajo')).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Filtrar por valoración' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Todas' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Ordenar granos' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Menor valoración' }));
+    beanHeadings = screen.getAllByRole('heading', { level: 3 });
+    expect(beanHeadings.map((heading) => heading.textContent)).toEqual(['Sin nota', 'Bajo', 'Alto']);
+  });
+
+  test('should close filter and sort menus on Escape or outside click', () => {
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: /Granos/ }));
+    const filterButton = screen.getByRole('button', { name: 'Filtrar por valoración' });
+    fireEvent.click(filterButton);
+    expect(filterButton).toHaveAttribute('aria-expanded', 'true');
+
+    fireEvent.keyDown(document, { key: 'Escape' });
+    expect(filterButton).toHaveAttribute('aria-expanded', 'false');
+
+    const sortButton = screen.getByRole('button', { name: 'Ordenar granos' });
+    fireEvent.click(sortButton);
+    expect(sortButton).toHaveAttribute('aria-expanded', 'true');
+
+    fireEvent.pointerDown(screen.getByText('Tus Granos'));
+    expect(sortButton).toHaveAttribute('aria-expanded', 'false');
+  });
+
   test('should edit an existing coffee bean', () => {
     render(<App />);
 
@@ -344,7 +435,8 @@ describe('Coffee Beans Management Tests', () => {
       sca_score: 89.5,
       altitude: '1700m',
       tasting_notes: ['Jazmín', 'Bergamota'],
-      notes: 'Super dulce'
+      notes: 'Super dulce',
+      rating: 3
     };
 
     const compressed = await compressBean(newBeanToImport);
@@ -361,6 +453,7 @@ describe('Coffee Beans Management Tests', () => {
     expect(screen.getByText('Boquete')).toBeInTheDocument();
     expect(screen.getByText(/Natural/)).toBeInTheDocument();
     expect(screen.getByText('89.5')).toBeInTheDocument();
+    expect(screen.getByLabelText('Valoración personal: 3 de 5 estrellas')).toBeInTheDocument();
 
     const confirmBtn = screen.getByRole('button', { name: 'Guardar Grano' });
     fireEvent.click(confirmBtn);
@@ -370,6 +463,7 @@ describe('Coffee Beans Management Tests', () => {
 
     expect(screen.getByText('Imported Geisha')).toBeInTheDocument();
     expect(screen.getByText('Panama Farms')).toBeInTheDocument();
+    expect(JSON.parse(localStorage.getItem('coffee_beans_v1'))[0].rating).toBe(3);
 
     window.location = originalLocation;
   });
@@ -484,7 +578,7 @@ describe('Coffee Beans Management Tests', () => {
     expect(screen.getByText('Etiopía Sidamo')).toBeInTheDocument();
 
     // Type non-matching search term
-    const searchInput = screen.getByPlaceholderText(/Buscar por nombre, origen, finca/i);
+    const searchInput = screen.getByPlaceholderText('Buscar granos...');
     fireEvent.change(searchInput, { target: { value: 'Inexistente' } });
 
     expect(screen.queryByText('Etiopía Sidamo')).not.toBeInTheDocument();

@@ -1,3 +1,5 @@
+import StarRating from '../StarRating';
+
 export default function BeanFormModal({
   isOpen,
   editingBeanId,
@@ -212,6 +214,19 @@ export default function BeanFormModal({
                 className="w-full p-2 border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:outline-none focus:ring-1 focus:ring-amber-500"
               />
             </div>
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">
+              Valoración personal
+            </label>
+            <p className="text-[11px] text-slate-400 dark:text-slate-500">
+              Opcional. Esta valoración describe cuánto te gusta el grano.
+            </p>
+            <StarRating
+              value={newBean.rating}
+              onChange={(rating) => setNewBean({ ...newBean, rating })}
+            />
           </div>
 
           {/* Perfil de sabor / Notas de Cata */}

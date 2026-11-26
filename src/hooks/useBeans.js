@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { safeGetItem, safeSetItem } from '../utils/storageUtils';
 import { DEFAULT_BEANS } from '../constants/defaultData';
+import { normalizeBean, normalizeBeanRating } from '../utils/beanRating';
 
 const EMPTY_BEAN = {
   name: '',
@@ -17,12 +18,13 @@ const EMPTY_BEAN = {
   sca_score: '',
   altitude: '',
   tasting_notes: [],
-  notes: ''
+  notes: '',
+  rating: 0
 };
 
 export function useBeans() {
   const [beans, setBeans] = useState(() => {
-    return safeGetItem('coffee_beans_v1', DEFAULT_BEANS, Array.isArray);
+    return safeGetItem('coffee_beans_v1', DEFAULT_BEANS, Array.isArray).map(normalizeBean);
   });
 
   const [isEditingBean, setIsEditingBean] = useState(false);
@@ -125,7 +127,8 @@ export function useBeans() {
       variety: newBean.variety.trim(),
       sca_score: newBean.sca_score ? parseFloat(newBean.sca_score) : null,
       altitude: newBean.altitude.trim(),
-      notes: newBean.notes.trim()
+      notes: newBean.notes.trim(),
+      rating: normalizeBeanRating(newBean.rating)
     };
 
     if (editingBeanId) {
@@ -159,7 +162,8 @@ export function useBeans() {
       sca_score: bean.sca_score || '',
       altitude: bean.altitude || '',
       tasting_notes: bean.tasting_notes || [],
-      notes: bean.notes || ''
+      notes: bean.notes || '',
+      rating: normalizeBeanRating(bean.rating)
     });
     setEditingBeanId(bean.id);
     setIsEditingBean(true);
@@ -201,11 +205,11 @@ export function useBeans() {
       beanName = `${beanName} (${counter})`;
     }
 
-    const updated = {
+    const updated = normalizeBean({
       ...beanToImport,
       id: uniqueId,
       name: beanName
-    };
+    });
 
     setBeans((prev) => [updated, ...prev]);
     showAlert(`Grano de café importado correctamente como "${beanName}".`, "success");
@@ -218,6 +222,13 @@ export function useBeans() {
 
   const handleShareBean = useCallback((beanId, navigateTo) => {
     navigateTo('share-bean', { beanId });
+  }, []);
+
+  const handleUpdateBeanRating = useCallback((beanId, rating) => {
+    const normalizedRating = normalizeBeanRating(rating);
+    setBeans((prev) => prev.map((bean) => (
+      bean.id === beanId ? { ...bean, rating: normalizedRating } : bean
+    )));
   }, []);
 
   return {
@@ -252,6 +263,7 @@ export function useBeans() {
     handleDeleteBeanClick,
     handleConfirmDeleteBean,
     confirmImportBean,
-    handleShareBean
+    handleShareBean,
+    handleUpdateBeanRating
   };
 }

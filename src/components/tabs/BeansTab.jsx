@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { PencilIcon, TrashIcon, MapPinIcon, GearIcon, MountainIcon, ShareIcon, HomeIcon, UserIcon, FireIcon, PlantIcon, CalendarIcon, TrophyIcon, FunnelIcon, ArrowDownIcon } from '../icons/SvgIcons';
 import BeanFreshnessBadge from '../BeanFreshnessBadge';
 import StarRating from '../StarRating';
@@ -21,6 +21,29 @@ export default function BeansTab({
   const [sortOrder, setSortOrder] = useState('default');
   const [beanToRate, setBeanToRate] = useState(null);
   const [draftRating, setDraftRating] = useState(0);
+  const toolbarRef = useRef(null);
+
+  useEffect(() => {
+    if (!openToolbarMenu) return undefined;
+
+    const closeOnOutsideClick = (event) => {
+      if (!toolbarRef.current?.contains(event.target)) {
+        setOpenToolbarMenu(null);
+      }
+    };
+    const closeOnEscape = (event) => {
+      if (event.key === 'Escape') {
+        setOpenToolbarMenu(null);
+      }
+    };
+
+    document.addEventListener('pointerdown', closeOnOutsideClick);
+    document.addEventListener('keydown', closeOnEscape);
+    return () => {
+      document.removeEventListener('pointerdown', closeOnOutsideClick);
+      document.removeEventListener('keydown', closeOnEscape);
+    };
+  }, [openToolbarMenu]);
 
   const filteredBeans = useMemo(() => {
     const query = beanSearchQuery.toLowerCase().trim();
@@ -81,7 +104,7 @@ export default function BeansTab({
         </div>
       </div>
 
-      <div className="flex gap-2">
+      <div ref={toolbarRef} className="flex gap-2">
         <div className="relative min-w-0 flex-1">
           <input
             type="text"

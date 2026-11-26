@@ -116,7 +116,7 @@ describe('Coffee Beans Management Tests', () => {
     fireEvent.click(screen.getByRole('button', { name: /Granos/ }));
     fireEvent.click(screen.getByText('+ Agregar Grano'));
     fireEvent.change(screen.getByLabelText('Nombre del Grano*'), { target: { value: 'Grano Favorito' } });
-    fireEvent.click(screen.getByRole('button', { name: '4 estrellas' }));
+    fireEvent.click(screen.getByRole('radio', { name: '4 estrellas' }));
     fireEvent.click(screen.getByRole('button', { name: 'Guardar Grano' }));
     fireEvent.click(screen.getByRole('button', { name: /aceptar/i }));
 
@@ -125,7 +125,7 @@ describe('Coffee Beans Management Tests', () => {
 
     fireEvent.click(screen.getAllByTitle('Más opciones')[0]);
     fireEvent.click(screen.getByTitle('Editar grano'));
-    expect(screen.getByRole('button', { name: '4 estrellas' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('radio', { name: '4 estrellas' })).toHaveAttribute('aria-checked', 'true');
     fireEvent.click(screen.getByRole('button', { name: 'Quitar valoración' }));
     fireEvent.click(screen.getByRole('button', { name: 'Guardar Grano' }));
     fireEvent.click(screen.getByRole('button', { name: /aceptar/i }));
@@ -141,7 +141,7 @@ describe('Coffee Beans Management Tests', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Editar valoración de Etiopía Sidamo' }));
 
     expect(screen.getByRole('dialog', { name: 'Valoración personal' })).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: '5 estrellas' }));
+    fireEvent.click(screen.getByRole('radio', { name: '5 estrellas' }));
     fireEvent.click(screen.getByRole('button', { name: 'Guardar valoración' }));
 
     expect(screen.getByLabelText('Valoración personal: 5 de 5 estrellas')).toBeInTheDocument();
@@ -180,6 +180,25 @@ describe('Coffee Beans Management Tests', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Menor valoración' }));
     beanHeadings = screen.getAllByRole('heading', { level: 3 });
     expect(beanHeadings.map((heading) => heading.textContent)).toEqual(['Sin nota', 'Bajo', 'Alto']);
+  });
+
+  test('should close filter and sort menus on Escape or outside click', () => {
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: /Granos/ }));
+    const filterButton = screen.getByRole('button', { name: 'Filtrar por valoración' });
+    fireEvent.click(filterButton);
+    expect(filterButton).toHaveAttribute('aria-expanded', 'true');
+
+    fireEvent.keyDown(document, { key: 'Escape' });
+    expect(filterButton).toHaveAttribute('aria-expanded', 'false');
+
+    const sortButton = screen.getByRole('button', { name: 'Ordenar granos' });
+    fireEvent.click(sortButton);
+    expect(sortButton).toHaveAttribute('aria-expanded', 'true');
+
+    fireEvent.pointerDown(screen.getByText('Tus Granos'));
+    expect(sortButton).toHaveAttribute('aria-expanded', 'false');
   });
 
   test('should edit an existing coffee bean', () => {

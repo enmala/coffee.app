@@ -32,7 +32,7 @@ export default function StarRating({
 
   return (
     <div>
-      <div className="flex items-center gap-1" role="group" aria-label={label}>
+      <div className="flex items-center gap-1" role="radiogroup" aria-label={label}>
         {STAR_VALUES.map((star) => (
           <button
             key={star}
@@ -44,7 +44,8 @@ export default function StarRating({
                 : 'text-slate-300 dark:text-slate-700 hover:text-amber-400'
             }`}
             aria-label={`${star} estrella${star === 1 ? '' : 's'}`}
-            aria-pressed={star === rating}
+            role="radio"
+            aria-checked={star === rating}
             title={`Puntuar con ${star} estrella${star === 1 ? '' : 's'}`}
           >
             {star <= rating ? '★' : '☆'}

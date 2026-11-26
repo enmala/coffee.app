@@ -36,16 +36,11 @@ Los agentes de IA deben leer este archivo para saber qué implementar a continua
   - *Etiquetas:* [Prioridad: Media] [Complejidad: Baja]
   - *Descripción:* Emitir avisos anticipados sutiles (pulsos hápticos o pitidos cortos a los 3, 2 y 1 segundos restantes de cada paso) para que el barista prepare el vertido antes de que el paso concluya. Además, diferenciar acústicamente el tono de finalización completa de la receta respecto al cambio de paso intermedio.
 
-- [ ] **Evaluación interactiva inmediata post-extracción (Quick Feedback Modal)**
-  - *Etiquetas:* [Prioridad: Alta] [Complejidad: Media]
-  - *Descripción:* Al finalizar el temporizador, en lugar de cerrar con un diálogo estático que guarda un registro en blanco (0 estrellas y sin notas), presentar un modal rápido de evaluación para capturar la puntuación en estrellas (1-5) y seleccionar descriptores de sabor en caliente. Servirá además como disparador directo del motor de recomendaciones y ajustes de receta (Coffee Compass).
-
 - [ ] **Mejoras de Interfaz**
   - *Etiquetas:* [Prioridad: Media] [Complejidad: Baja]
   - [ ] En los formularios de edición de recetas y granos agregar un indicador de cambios sin guardar.
   - [x] En la edición de recetas mostrar un resumen en tiempo real (pasos totales, agua acumulada, tiempo total)
   - [ ] Diferenciar tab de historial de los de recetas y granos
-
 
 ---
 
@@ -183,3 +178,10 @@ Los agentes de IA deben leer este archivo para saber qué implementar a continua
   - *Descripción:* Configurar la exclusión explícita (`exclude`) en `vitest.config.js` para directorios de trabajo o worktrees (`.kilo/**`, `work/**`, `dist/**`), previniendo la detección redundante de pruebas y acelerando el tiempo de ejecución en entornos multi-árbol o CI.
 
 
+---
+## 🗑️ Descartado 
+
+- [X] **Evaluación interactiva inmediata post-extracción (Quick Feedback Modal)**
+  - *Etiquetas:* [Prioridad: Alta] [Complejidad: Media]
+  - *Descripción:* Al finalizar el temporizador, en lugar de cerrar con un diálogo estático que guarda un registro en blanco (0 estrellas y sin notas), presentar un modal rápido de evaluación para capturar la puntuación en estrellas (1-5) y seleccionar descriptores de sabor en caliente. Servirá además como disparador directo del motor de recomendaciones y ajustes de receta (Coffee Compass).
+  - *Motivo:* Inmediatamente al finalizar la preparación el usuario no ha probado el café resultante, tendría que dejar el modal en espera por un par de minutos antes de dar el feedback. Lo veo poco práctico.

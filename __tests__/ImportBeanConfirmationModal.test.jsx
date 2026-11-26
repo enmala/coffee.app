@@ -14,7 +14,8 @@ describe('ImportBeanConfirmationModal Component Tests', () => {
     sca_score: 90.5,
     altitude: '1800m',
     tasting_notes: ['Jazmín', 'Melocotón'],
-    notes: 'Increíble acidez floral.'
+    notes: 'Increíble acidez floral.',
+    rating: 4
   };
 
   const mockOnConfirm = vi.fn();
@@ -43,6 +44,7 @@ describe('ImportBeanConfirmationModal Component Tests', () => {
     expect(screen.getByText('Melocotón')).toBeInTheDocument();
     expect(screen.getByText('"Increíble acidez floral."')).toBeInTheDocument();
     expect(screen.getByText('Fecha de tueste: 2026-07-10')).toBeInTheDocument();
+    expect(screen.getByLabelText('Valoración personal: 4 de 5 estrellas')).toBeInTheDocument();
   });
 
   test('shows duplicate warning when bean name already exists', () => {

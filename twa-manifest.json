@@ -20,8 +20,8 @@
     "path": "./android.keystore",
     "alias": "android"
   },
-  "appVersionName": "1.20.4",
-  "appVersionCode": 73,
+  "appVersionName": "1.21.0",
+  "appVersionCode": 74,
   "shortcuts": [],
   "generatorApp": "bubblewrap-cli",
   "webManifestUrl": "https://barista.bitslab.cl/manifest.webmanifest",
@@ -39,5 +39,5 @@
   "additionalTrustedOrigins": [],
   "retainedBundles": [],
   "displayOverride": [],
-  "appVersion": "1.20.4"
+  "appVersion": "1.21.0"
 }

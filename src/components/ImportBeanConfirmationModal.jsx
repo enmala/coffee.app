@@ -1,4 +1,5 @@
 import { MapPinIcon, GearIcon, MountainIcon, HomeIcon, UserIcon, FireIcon, PlantIcon, CalendarIcon, TrophyIcon, CoffeeBeanIcon } from './icons/SvgIcons';
+import StarRating from './StarRating';
 
 export default function ImportBeanConfirmationModal({ bean, existingBeans = [], onConfirm, onCancel }) {
   if (!bean) return null;
@@ -42,6 +43,9 @@ export default function ImportBeanConfirmationModal({ bean, existingBeans = [], 
                   Tostador: {bean.roaster}
                 </p>
               )}
+              <div className="mt-1">
+                <StarRating value={bean.rating} showUnratedText />
+              </div>
             </div>
           </div>
 
